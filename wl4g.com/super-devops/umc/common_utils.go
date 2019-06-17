@@ -17,6 +17,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -50,6 +51,30 @@ func exec_shell(s string) (string, error) {
 	err := cmd.Run()
 	checkErr(err)
 	return out.String(), err
+}
+
+func getDocker() [] DockerInfo{
+	var command string  = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
+	s, _ := exec_shell(command)
+	var dockerInfos [] DockerInfo
+	if (s != "") {
+		s = strings.ReplaceAll(s, "\n", ",")
+		s = strings.TrimSuffix(s,",")
+		s = "[" + s + "]"
+		json.Unmarshal([]byte(s), &dockerInfos)
+	}
+	return dockerInfos;
+}
+
+type DockerInfo struct {
+	ContainerId   string        `json:"containerId"`
+	Name string                 `json:"name"`
+	CpuPerc string                 `json:"cpuPerc"`
+	MemUsage string                 `json:"memUsage"`
+	MemPerc string                 `json:"memPerc"`
+	NetIO string                 `json:"netIO"`
+	BlockIO string                 `json:"blockIO"`
+	PIDs string                 `json:"PIDs"`
 }
 
 //错误处理函数

@@ -87,14 +87,16 @@ func main() {
 	}*/
 	//get()
 
-	go memThread()
+	//go memThread()
 	//	go cpuThread()
 	//	go diskThread()
 	//go netThread()
 
-	for true {
+	/*for true {
 		time.Sleep(100000 * time.Millisecond)
-	}
+	}*/
+
+	dockerThread()
 
 }
 
@@ -186,6 +188,19 @@ func netThread() {
 	}
 }
 
+func dockerThread()  {
+	for true {
+		dockerInfo := getDocker()
+		MainLogger.Info(String(dockerInfo))
+		var result Docker
+		result.Id = id
+		result.Type = "docker"
+		result.DockerInfos = dockerInfo
+		post("docker",result)
+		time.Sleep(delay * time.Millisecond)
+	}
+}
+
 //提交数据
 func post(ty string, v interface{}) {
 	data := String(v)
@@ -218,19 +233,19 @@ func getDisk() []DiskInfo {
 }
 
 type Mem struct {
-	Id   string                 `json:"id"`
+	Id   string                 `json:"physicalId"`
 	Type string                 `json:"type"`
 	Mem  *mem.VirtualMemoryStat `json:"memInfo"`
 }
 
 type Cpu struct {
-	Id   string    `json:"id"`
+	Id   string    `json:"physicalId"`
 	Type string    `json:"type"`
 	Cpu  []float64 `json:"cpu"`
 }
 
 type Disk struct {
-	Id    string     `json:"id"`
+	Id    string     `json:"physicalId"`
 	Type  string     `json:"type"`
 	Disks []DiskInfo `json:"diskInfos"`
 }
@@ -241,7 +256,7 @@ type DiskInfo struct {
 }
 
 type NetInfos struct {
-	Id      string    `json:"id"`
+	Id      string    `json:"physicalId"`
 	Type    string    `json:"type"`
 	NetInfo []NetInfo `json:"netInfos"`
 }
@@ -257,6 +272,12 @@ type NetInfo struct {
 	Close     int `json:"close"`
 	Listen    int `json:"listen"`
 	Closing   int `json:"closing"`
+}
+
+type Docker struct {
+	Id   string    `json:"physicalId"`
+	Type string    `json:"type"`
+	DockerInfos  []DockerInfo `json:"dockerInfos"`
 }
 
 func String(v interface{}) string {
