@@ -19,12 +19,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -33,23 +31,10 @@ import (
 	"time"
 )
 
-//#全局变量(默认配置)
-//数据提交地址
-var serverUri string = "http://localhost:14046/umc/basic"
+//physicalId
+var physicalId string = "UNKNOWN"
 
-//频率,多少毫秒执行一次
-var delay time.Duration = 10000
-
-//网卡
-var netCard string = "eth0"
-
-//gather port
-var port string = "22,6380"
-
-//id
-var id string = "UNKNOW"
-
-var confPath string = ""
+var confPath string = CONF_DEFAULT_FILENAME
 
 //初始化
 func init() {
@@ -57,25 +42,13 @@ func init() {
 	flag.StringVar(&confPath, "p", CONF_DEFAULT_FILENAME, "conf path")
 	flag.Parse()
 	//flag.Usage()//usage
-	fmt.Println("confPath=" + confPath)
-	//读取配置--read config
-	config, err := yaml.ReadFile(confPath)
-	if err != nil {
-		MainLogger.Error("Process error!", zap.Error(err))
-	} else {
-		serverUri, err = (config.Get("server-uri"))
-		delayb, _ := (config.GetInt("physical.delay"))
-		delay = time.Duration(delayb)
-		netCard, err = (config.Get("physical.net"))
-		port, _ = config.Get("physical.gatherPort")
-	}
-	MainLogger.Info("Initial config for - ",
-		zap.String("serverUri", serverUri),
-		zap.String("delay", time.Duration.String(delay)),
-		zap.String("netCard", netCard))
+	MainLogger.Info("confPath=" + confPath)
+
+	//0618,配置改成用对象接收
+	getConf(confPath)
 
 	//init
-	getId()
+	getId()//获取ip信息,作为Physical的标示
 }
 
 //主函数
@@ -96,8 +69,12 @@ func main() {
 		time.Sleep(100000 * time.Millisecond)
 	}*/
 
-	dockerThread()
+	//dockerThread()
 
+
+	initKafka()
+	send("hahaha")
+	defer producer.Close()
 }
 
 //mem
@@ -108,13 +85,13 @@ func memThread() {
 		fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 		//fmt.Println(v)
 
-		result.Id = id
+		result.Id = physicalId
 		result.Type = "mem"
 		result.Mem = v
 
 		fmt.Println("result = " + String(result))
 		post("mem", result)
-		time.Sleep(delay * time.Millisecond)
+		time.Sleep(conf.Physical.Delay * time.Millisecond)
 	}
 }
 
@@ -128,11 +105,11 @@ func cpuThread() {
 		fmt.Println(p)
 		/*pa, _ := cpu.Percent(10000* time.Millisecond, true)
 		fmt.Println(pa)*/
-		result.Id = id
+		result.Id = physicalId
 		result.Type = "cpu"
 		result.Cpu = p
 		post("cpu", result)
-		time.Sleep(delay * time.Millisecond)
+		time.Sleep(conf.Physical.Delay * time.Millisecond)
 	}
 }
 
@@ -143,18 +120,18 @@ func diskThread() {
 		var result Disk
 		disks := getDisk()
 		fmt.Println(disks)
-		result.Id = id
+		result.Id = physicalId
 		result.Type = "disk"
 		result.Disks = disks
 		post("disk", result)
-		time.Sleep(delay * time.Millisecond)
+		time.Sleep(conf.Physical.Delay * time.Millisecond)
 	}
 
 }
 
 //net
 func netThread() {
-	ports := strings.Split(port, ",")
+	ports := strings.Split(conf.Physical.GatherPort, ",")
 	for true {
 		var result NetInfos
 		//n, _ := net.IOCounters(true)
@@ -180,11 +157,11 @@ func netThread() {
 				n = append(n, netinfo)
 			}
 		}
-		result.Id = id
+		result.Id = physicalId
 		result.Type = "net"
 		result.NetInfo = n
 		post("net", result)
-		time.Sleep(delay * time.Millisecond)
+		time.Sleep(conf.Physical.Delay * time.Millisecond)
 	}
 }
 
@@ -193,18 +170,28 @@ func dockerThread()  {
 		dockerInfo := getDocker()
 		MainLogger.Info(String(dockerInfo))
 		var result Docker
-		result.Id = id
+		result.Id = physicalId
 		result.Type = "docker"
 		result.DockerInfos = dockerInfo
 		post("docker",result)
-		time.Sleep(delay * time.Millisecond)
+		time.Sleep(conf.Physical.Delay * time.Millisecond)
 	}
 }
 
 //提交数据
 func post(ty string, v interface{}) {
 	data := String(v)
-	request, _ := http.NewRequest("POST", serverUri+"/"+ty, strings.NewReader(data))
+
+	if conf.PostMode=="kafka" {
+		postKafka(ty,data)
+	}else{
+		postHttp(ty,data)
+	}
+}
+
+//post by http
+func postHttp(ty string, data string) {
+	request, _ := http.NewRequest("POST", conf.ServerUri+"/"+ty, strings.NewReader(data))
 	//json
 	request.Header.Set("Content-Type", "application/json")
 	//post数据并接收http响应
@@ -216,6 +203,11 @@ func post(ty string, v interface{}) {
 		respBody, _ := ioutil.ReadAll(resp.Body)
 		fmt.Printf("response data:%v\n", string(respBody))
 	}
+}
+
+//post by kafka
+func postKafka(ty string, data string) {
+	send(data)
 }
 
 func getDisk() []DiskInfo {
@@ -292,10 +284,10 @@ func getId() {
 	nets, _ := net.Interfaces()
 	var found bool = false
 	for _, value := range nets {
-		if strings.EqualFold(netCard, value.Name) {
+		if strings.EqualFold(conf.Physical.Net, value.Name) {
 			hardwareAddr := value.HardwareAddr
 			fmt.Println("found net card:" + hardwareAddr)
-			id = hardwareAddr
+			physicalId = hardwareAddr
 			reg := regexp.MustCompile(`(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}`)
 			for _, addr := range value.Addrs {
 				add := addr.Addr
@@ -303,7 +295,7 @@ func getId() {
 					fmt.Println("found ip " + add)
 					found = true
 					//id = add+" "+id
-					id = add
+					physicalId = add
 					break
 				}
 			}

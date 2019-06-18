@@ -48,4 +48,17 @@ var CONF_DEFAULT_DELAY time.Duration = 10000
 var CONF_DEFAULT_COLLECT_PARTS string = "22,6380"
 
 // Default local umc-agent instance ID.
-var CONF_DEFAULT_INSTANCEID string = "UNKNOW"
+var CONF_DEFAULT_INSTANCEID string = "UNKNOWN"
+
+//Default server uri
+var CONF_DEFAULT_SERVER_URI string = "http://localhost:14046/umc/basic"
+
+//Default kafka url
+var CONF_DEFAULT_KAFKA_URL string = "localhost:9092"
+
+//Default kafka topic
+var CONF_DEFAULT_KAFKA_TOPIC string = "umc-watcher"
+
+//Default post mode
+var CONF_DFEFAULT_POST_MODE string = "http"
+
