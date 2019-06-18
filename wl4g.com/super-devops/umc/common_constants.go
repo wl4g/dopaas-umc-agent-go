@@ -62,3 +62,6 @@ var CONF_DEFAULT_KAFKA_TOPIC string = "umc-watcher"
 //Default post mode
 var CONF_DFEFAULT_POST_MODE string = "http"
 
+//Default post mode
+var CONF_DFEFAULT_SUBMIT_MODE string = "together"
+

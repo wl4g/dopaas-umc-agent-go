@@ -93,3 +93,12 @@ func ReadAll(filePth string) string {
 	s, _ := ioutil.ReadAll(f)
 	return string(s)
 }
+
+
+func toJsonString(v interface{}) string {
+	s, err := json.Marshal(v)
+	if err != nil {
+		fmt.Printf("Marshal data error:%v\n", err)
+	}
+	return string(s)
+}

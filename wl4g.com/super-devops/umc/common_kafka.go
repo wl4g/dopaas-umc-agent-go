@@ -13,6 +13,7 @@ func initKafka()  {
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	// 随机的分区类型：返回一个分区器，该分区器每次选择一个随机分区
 	config.Producer.Partitioner = sarama.NewRandomPartitioner
+
 	// 是否等待成功和失败后的响应
 	config.Producer.Return.Successes = true
 
@@ -28,9 +29,9 @@ func send(text string)  {
 
 	//构建发送的消息，
 	msg := &sarama.ProducerMessage {
-		Topic:"mytest",
+		Topic:conf.KafkaConf.Topic,
 		Value:sarama.ByteEncoder(text),
-		//Partition: int32(10),//
+		Partition: int32(conf.KafkaConf.Partiations),//
 		//Key:        sarama.StringEncoder("key"),//
 	}
 

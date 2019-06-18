@@ -16,7 +16,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/shirou/gopsutil/cpu"
@@ -49,32 +48,37 @@ func init() {
 
 	//init
 	getId()//获取ip信息,作为Physical的标示
+
+	//init kafka
+	initKafka()
 }
 
 //主函数
 func main() {
-	//死循环
-	/*for true {
-		get()
-		time.Sleep(delay * time.Millisecond)
-	}*/
-	//get()
 
-	//go memThread()
-	//	go cpuThread()
-	//	go diskThread()
-	//go netThread()
-
-	/*for true {
+	if(conf.TogetherOrSeparate=="together"){
+		go totalThread()
+	}else{
+		go memThread()
+		go cpuThread()
+		go diskThread()
+		go netThread()
+		go dockerThread()
+	}
+	for true {
 		time.Sleep(100000 * time.Millisecond)
-	}*/
+	}
 
-	//dockerThread()
+	//for Test
+	//go memThread()
+	//go cpuThread()
+	//go diskThread()
+	//go netThread()
+	//go dockerThread()
+	//go totalThread()
 
-
-	initKafka()
-	send("hahaha")
-	defer producer.Close()
+	//close kafka (Meaningless)
+	//defer producer.Close()
 }
 
 //mem
@@ -84,12 +88,10 @@ func memThread() {
 		v, _ := mem.VirtualMemory()
 		fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 		//fmt.Println(v)
-
 		result.Id = physicalId
 		result.Type = "mem"
 		result.Mem = v
-
-		fmt.Println("result = " + String(result))
+		fmt.Println("result = " + toJsonString(result))
 		post("mem", result)
 		time.Sleep(conf.Physical.Delay * time.Millisecond)
 	}
@@ -101,7 +103,6 @@ func cpuThread() {
 		var result Cpu
 		p, _ := cpu.Percent(0, false)
 		//p, _ := cpu.Times(true)
-
 		fmt.Println(p)
 		/*pa, _ := cpu.Percent(10000* time.Millisecond, true)
 		fmt.Println(pa)*/
@@ -115,10 +116,9 @@ func cpuThread() {
 
 //disk
 func diskThread() {
-
 	for true {
 		var result Disk
-		disks := getDisk()
+		disks := getDisks()
 		fmt.Println(disks)
 		result.Id = physicalId
 		result.Type = "disk"
@@ -126,37 +126,27 @@ func diskThread() {
 		post("disk", result)
 		time.Sleep(conf.Physical.Delay * time.Millisecond)
 	}
+}
 
+func getDisks() []DiskInfo {
+	partitionStats, _ := disk.Partitions(false)
+	var disks []DiskInfo
+	for _, value := range partitionStats {
+		var disk1 DiskInfo
+		mountpoint := value.Mountpoint
+		usageStat, _ := disk.Usage(mountpoint)
+		disk1.PartitionStat = value
+		disk1.Usage = *usageStat
+		disks = append(disks, disk1)
+	}
+	return disks
 }
 
 //net
 func netThread() {
-	ports := strings.Split(conf.Physical.GatherPort, ",")
 	for true {
 		var result NetInfos
-		//n, _ := net.IOCounters(true)
-		//fmt.Println(n)
-		//te, _ := net.Interfaces()
-		//fmt.Println(te)
-		var n []NetInfo
-		for _, p := range ports {
-			re := getNet(p)
-			res := strings.Split(re, " ")
-			if len(res) == 9 {
-				var netinfo NetInfo
-				netinfo.Port, _ = strconv.Atoi(p)
-				netinfo.Up, _ = strconv.Atoi(res[0])
-				netinfo.Down, _ = strconv.Atoi(res[1])
-				netinfo.Count, _ = strconv.Atoi(res[2])
-				netinfo.Estab, _ = strconv.Atoi(res[3])
-				netinfo.CloseWait, _ = strconv.Atoi(res[4])
-				netinfo.TimeWait, _ = strconv.Atoi(res[5])
-				netinfo.Close, _ = strconv.Atoi(res[6])
-				netinfo.Listen, _ = strconv.Atoi(res[7])
-				netinfo.Closing, _ = strconv.Atoi(res[8])
-				n = append(n, netinfo)
-			}
-		}
+		n := getNetInfo()
 		result.Id = physicalId
 		result.Type = "net"
 		result.NetInfo = n
@@ -165,10 +155,38 @@ func netThread() {
 	}
 }
 
+func getNetInfo() []NetInfo {
+	ports := strings.Split(conf.Physical.GatherPort, ",")
+	//n, _ := net.IOCounters(true)
+	//fmt.Println(n)
+	//te, _ := net.Interfaces()
+	//fmt.Println(te)
+	var n []NetInfo
+	for _, p := range ports {
+		re := getNet(p)
+		res := strings.Split(re, " ")
+		if len(res) == 9 {
+			var netinfo NetInfo
+			netinfo.Port, _ = strconv.Atoi(p)
+			netinfo.Up, _ = strconv.Atoi(res[0])
+			netinfo.Down, _ = strconv.Atoi(res[1])
+			netinfo.Count, _ = strconv.Atoi(res[2])
+			netinfo.Estab, _ = strconv.Atoi(res[3])
+			netinfo.CloseWait, _ = strconv.Atoi(res[4])
+			netinfo.TimeWait, _ = strconv.Atoi(res[5])
+			netinfo.Close, _ = strconv.Atoi(res[6])
+			netinfo.Listen, _ = strconv.Atoi(res[7])
+			netinfo.Closing, _ = strconv.Atoi(res[8])
+			n = append(n, netinfo)
+		}
+	}
+	return n
+}
+
 func dockerThread()  {
 	for true {
 		dockerInfo := getDocker()
-		MainLogger.Info(String(dockerInfo))
+		MainLogger.Info(toJsonString(dockerInfo))
 		var result Docker
 		result.Id = physicalId
 		result.Type = "docker"
@@ -178,9 +196,39 @@ func dockerThread()  {
 	}
 }
 
+func totalThread()  {
+	for true {
+		var result Total
+
+		result.Id = physicalId
+		result.Type = "total"
+
+		v, _ := mem.VirtualMemory()
+		result.Mem = v
+
+		p, _ := cpu.Percent(0, false)
+		result.Cpu = p
+
+		disks := getDisks()
+		result.Disks = disks
+
+		n := getNetInfo()
+		result.NetInfo = n
+
+		dockerInfo := getDocker()
+		result.DockerInfos = dockerInfo
+
+		post("total",result)
+		time.Sleep(conf.Physical.Delay * time.Millisecond)
+	}
+}
+
+
+
+
 //提交数据
 func post(ty string, v interface{}) {
-	data := String(v)
+	data := toJsonString(v)
 
 	if conf.PostMode=="kafka" {
 		postKafka(ty,data)
@@ -210,18 +258,16 @@ func postKafka(ty string, data string) {
 	send(data)
 }
 
-func getDisk() []DiskInfo {
-	partitionStats, _ := disk.Partitions(false)
-	var disks []DiskInfo
-	for _, value := range partitionStats {
-		var disk1 DiskInfo
-		mountpoint := value.Mountpoint
-		usageStat, _ := disk.Usage(mountpoint)
-		disk1.PartitionStat = value
-		disk1.Usage = *usageStat
-		disks = append(disks, disk1)
-	}
-	return disks
+
+
+type Total struct {
+	Id   string                 `json:"physicalId"`
+	Type string                 `json:"type"`
+	Mem  *mem.VirtualMemoryStat `json:"memInfo"`
+	Cpu  []float64 `json:"cpu"`
+	Disks []DiskInfo `json:"diskInfos"`
+	NetInfo []NetInfo `json:"netInfos"`
+	DockerInfos  []DockerInfo `json:"dockerInfos"`
 }
 
 type Mem struct {
@@ -272,13 +318,7 @@ type Docker struct {
 	DockerInfos  []DockerInfo `json:"dockerInfos"`
 }
 
-func String(v interface{}) string {
-	s, err := json.Marshal(v)
-	if err != nil {
-		fmt.Printf("Marshal data error:%v\n", err)
-	}
-	return string(s)
-}
+
 
 func getId() {
 	nets, _ := net.Interfaces()

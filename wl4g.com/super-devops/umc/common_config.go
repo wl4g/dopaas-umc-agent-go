@@ -1,9 +1,9 @@
 package main
 
 import (
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 	"time"
 )
 
@@ -12,6 +12,7 @@ var conf Conf
 type Conf struct {
 	ServerUri string   `yaml:"server-uri"`
 	PostMode string		`yaml:"post-mode"`
+	TogetherOrSeparate string `yaml:"together-or-separate"`
 	Physical Physical   `yaml:"physical"`
 	KafkaConf KafkaConf `yaml:"kafka"`
 }
@@ -25,16 +26,17 @@ type Physical struct {
 type KafkaConf struct {
 	Url string `yaml:"url"`
 	Topic string `yaml:"topic"`
+	Partiations int32 `yaml:""`
 }
 
 func getConf(path string)  {
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Printf("yamlFile.Get err   #%v ", err)
+		MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
 	}
 	err = yaml.Unmarshal(yamlFile, &conf)
 	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
+		MainLogger.Info("Unmarshal - ", zap.Error(err))
 	}
 
 	//Set Default
@@ -55,6 +57,9 @@ func getConf(path string)  {
 	}
 	if conf.PostMode=="" {
 		conf.PostMode=CONF_DEFAULT_KAFKA_TOPIC
+	}
+	if(conf.TogetherOrSeparate==""){
+		conf.TogetherOrSeparate = CONF_DFEFAULT_SUBMIT_MODE
 	}
 
 }
