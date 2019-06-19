@@ -13,13 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-package main
+package log
 
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
+	"umc-agent/pkg/common"
 )
 
 //
@@ -87,9 +88,9 @@ var LmdbLogger *zap.Logger
 var HttpLogger *zap.Logger
 
 func init() {
-	MainLogger = newZapLogger(LOG_MAIN_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "Main")
-	GatewayLogger = newZapLogger(LOG_GATEWAY_FILENAME, zapcore.DebugLevel, 128, 30, 7, true, "Gateway")
-	HttpLogger = newZapLogger(LOG_HTTP_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "http")
-	RedisLogger = newZapLogger(LOG_REDIS_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "redis")
-	LmdbLogger = newZapLogger(LOG_LMDB_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "lmdb")
+	MainLogger = newZapLogger(common.LOG_MAIN_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "Main")
+	GatewayLogger = newZapLogger(common.LOG_GATEWAY_FILENAME, zapcore.DebugLevel, 128, 30, 7, true, "Gateway")
+	HttpLogger = newZapLogger(common.LOG_HTTP_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "http")
+	RedisLogger = newZapLogger(common.LOG_REDIS_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "redis")
+	LmdbLogger = newZapLogger(common.LOG_LMDB_FILENAME, zapcore.InfoLevel, 128, 30, 7, true, "lmdb")
 }

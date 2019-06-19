@@ -13,13 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-package main
+package config
 
 import (
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"time"
+	"umc-agent/pkg/common"
+	"umc-agent/pkg/log"
 )
 
 var conf Conf
@@ -47,34 +49,34 @@ type KafkaConf struct {
 func getConf(path string) {
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
-		MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
+		log.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
 	}
 	err = yaml.Unmarshal(yamlFile, &conf)
 	if err != nil {
-		MainLogger.Info("Unmarshal - ", zap.Error(err))
+		log.MainLogger.Info("Unmarshal - ", zap.Error(err))
 	}
 
-	//Set Default
+	// Set Default
 	if conf.ServerUri == "" {
-		conf.ServerUri = CONF_DEFAULT_SERVER_URI
+		conf.ServerUri = common.CONF_DEFAULT_SERVER_URI
 	}
 	if conf.Physical.Net == "" {
-		conf.Physical.Net = CONF_DEFAULT_NETCARD
+		conf.Physical.Net = common.CONF_DEFAULT_NETCARD
 	}
 	if conf.Physical.Delay == 0 {
-		conf.Physical.Delay = CONF_DEFAULT_DELAY
+		conf.Physical.Delay = common.CONF_DEFAULT_DELAY
 	}
 	if conf.KafkaConf.Url == "" {
-		conf.KafkaConf.Url = CONF_DEFAULT_KAFKA_URL
+		conf.KafkaConf.Url = common.CONF_DEFAULT_KAFKA_URL
 	}
 	if conf.KafkaConf.Topic == "" {
-		conf.KafkaConf.Topic = CONF_DEFAULT_KAFKA_TOPIC
+		conf.KafkaConf.Topic = common.CONF_DEFAULT_KAFKA_TOPIC
 	}
 	if conf.PostMode == "" {
-		conf.PostMode = CONF_DEFAULT_KAFKA_TOPIC
+		conf.PostMode = common.CONF_DEFAULT_KAFKA_TOPIC
 	}
 	if conf.TogetherOrSeparate == "" {
-		conf.TogetherOrSeparate = CONF_DFEFAULT_SUBMIT_MODE
+		conf.TogetherOrSeparate = common.CONF_DFEFAULT_SUBMIT_MODE
 	}
 
 }

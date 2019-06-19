@@ -28,34 +28,41 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"umc-agent/pkg/common"
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/launcher"
+	"umc-agent/pkg/log"
+	"umc-agent/pkg/monitor/physical"
+	"umc-agent/pkg/monitor/share"
+	"umc-agent/pkg/monitor/virtual"
 )
 
 //physicalId
 var physicalId string = "UNKNOWN"
 
-var confPath string = CONF_DEFAULT_FILENAME
+var confPath string = common.CONF_DEFAULT_FILENAME
 
 //初始化
 func init() {
 	//get conf path
-	flag.StringVar(&confPath, "p", CONF_DEFAULT_FILENAME, "conf path")
+	flag.StringVar(&confPath, "p", common.CONF_DEFAULT_FILENAME, "conf path")
 	flag.Parse()
 	//flag.Usage()//usage
-	MainLogger.Info("confPath=" + confPath)
+	log.MainLogger.Info("confPath=" + confPath)
 
 	//0618,配置改成用对象接收
-	getConf(confPath)
+	config.getConf(confPath)
 
 	//init
 	getId() //获取ip信息,作为Physical的标示
 
 	//init kafka
-	initKafka()
+	launcher.initKafka()
 }
 
 //主函数
 func main() {
-	if conf.TogetherOrSeparate == "together" {
+	if config.Conf.TogetherOrSeparate == "together" {
 		go totalThread()
 	} else {
 		go memThread()
@@ -83,23 +90,23 @@ func main() {
 //mem
 func memThread() {
 	for true {
-		var result Mem
+		var result share.Mem
 		v, _ := mem.VirtualMemory()
 		fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 		//fmt.Println(v)
 		result.Id = physicalId
 		result.Type = "mem"
 		result.Mem = v
-		fmt.Println("result = " + toJsonString(result))
-		post("mem", result)
-		time.Sleep(conf.Physical.Delay * time.Millisecond)
+		fmt.Println("result = " + common.ToJsonString(result))
+		launcher.DoSendSubmit("mem", result)
+		time.Sleep(config.Physical.Delay * time.Millisecond)
 	}
 }
 
 //cpu
 func cpuThread() {
 	for true {
-		var result Cpu
+		var result physical.Cpu
 		p, _ := cpu.Percent(0, false)
 		//p, _ := cpu.Times(true)
 		fmt.Println(p)
@@ -109,29 +116,29 @@ func cpuThread() {
 		result.Type = "cpu"
 		result.Cpu = p
 		post("cpu", result)
-		time.Sleep(conf.Physical.Delay * time.Millisecond)
+		time.Sleep(config.Physical.Delay * time.Millisecond)
 	}
 }
 
 //disk
 func diskThread() {
 	for true {
-		var result Disk
+		var result physical.Disk
 		disks := getDisks()
 		fmt.Println(disks)
 		result.Id = physicalId
 		result.Type = "disk"
 		result.Disks = disks
 		post("disk", result)
-		time.Sleep(conf.Physical.Delay * time.Millisecond)
+		time.Sleep(config.Physical.Delay * time.Millisecond)
 	}
 }
 
-func getDisks() []DiskInfo {
+func getDisks() []share.DiskInfo {
 	partitionStats, _ := disk.Partitions(false)
-	var disks []DiskInfo
+	var disks []physical.DiskInfo
 	for _, value := range partitionStats {
-		var disk1 DiskInfo
+		var disk1 physical.DiskInfo
 		mountpoint := value.Mountpoint
 		usageStat, _ := disk.Usage(mountpoint)
 		disk1.PartitionStat = value
@@ -144,28 +151,28 @@ func getDisks() []DiskInfo {
 //net
 func netThread() {
 	for true {
-		var result NetInfos
+		var result share.NetInfos
 		n := getNetInfo()
 		result.Id = physicalId
 		result.Type = "net"
 		result.NetInfo = n
 		post("net", result)
-		time.Sleep(conf.Physical.Delay * time.Millisecond)
+		time.Sleep(config.Physical.Delay * time.Millisecond)
 	}
 }
 
-func getNetInfo() []NetInfo {
-	ports := strings.Split(conf.Physical.GatherPort, ",")
+func getNetInfo() []share.NetInfo {
+	ports := strings.Split(config.Physical.GatherPort, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()
 	//fmt.Println(te)
-	var n []NetInfo
+	var n []physical.NetInfo
 	for _, p := range ports {
-		re := getNet(p)
+		re := common.getNet(p)
 		res := strings.Split(re, " ")
 		if len(res) == 9 {
-			var netinfo NetInfo
+			var netinfo physical.NetInfo
 			netinfo.Port, _ = strconv.Atoi(p)
 			netinfo.Up, _ = strconv.Atoi(res[0])
 			netinfo.Down, _ = strconv.Atoi(res[1])
@@ -184,20 +191,20 @@ func getNetInfo() []NetInfo {
 
 func dockerThread() {
 	for true {
-		dockerInfo := getDocker()
-		MainLogger.Info(toJsonString(dockerInfo))
-		var result Docker
+		dockerInfo := virtual.GetDocker()
+		log.MainLogger.Info(common.ToJsonString(dockerInfo))
+		var result virtual.Docker
 		result.Id = physicalId
 		result.Type = "docker"
 		result.DockerInfos = dockerInfo
-		post("docker", result)
-		time.Sleep(conf.Physical.Delay * time.Millisecond)
+		launcher.DoSendSubmit("docker", result)
+		time.Sleep(config.Physical.Delay * time.Millisecond)
 	}
 }
 
 func totalThread() {
 	for true {
-		var result Total
+		var result physical.Total
 
 		result.Id = physicalId
 		result.Type = "total"
@@ -214,109 +221,19 @@ func totalThread() {
 		n := getNetInfo()
 		result.NetInfo = n
 
-		dockerInfo := getDocker()
+		dockerInfo := virtual.GetDocker()
 		result.DockerInfos = dockerInfo
 
-		post("total", result)
-		time.Sleep(conf.Physical.Delay * time.Millisecond)
+		launcher.DoSendSubmit("total", result)
+		time.Sleep(config.Physical.Delay * time.Millisecond)
 	}
-}
-
-//提交数据
-func post(ty string, v interface{}) {
-	data := toJsonString(v)
-
-	if conf.PostMode == "kafka" {
-		postKafka(ty, data)
-	} else {
-		postHttp(ty, data)
-	}
-}
-
-//post by http
-func postHttp(ty string, data string) {
-	request, _ := http.NewRequest("POST", conf.ServerUri+"/"+ty, strings.NewReader(data))
-	//json
-	request.Header.Set("Content-Type", "application/json")
-	//post数据并接收http响应
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		fmt.Printf("post data error:%v\n", err)
-	} else {
-		fmt.Println("post a data successful.")
-		respBody, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("response data:%v\n", string(respBody))
-	}
-}
-
-//post by kafka
-func postKafka(ty string, data string) {
-	send(data)
-}
-
-type Total struct {
-	Id          string                 `json:"physicalId"`
-	Type        string                 `json:"type"`
-	Mem         *mem.VirtualMemoryStat `json:"memInfo"`
-	Cpu         []float64              `json:"cpu"`
-	Disks       []DiskInfo             `json:"diskInfos"`
-	NetInfo     []NetInfo              `json:"netInfos"`
-	DockerInfos []DockerInfo           `json:"dockerInfos"`
-}
-
-type Mem struct {
-	Id   string                 `json:"physicalId"`
-	Type string                 `json:"type"`
-	Mem  *mem.VirtualMemoryStat `json:"memInfo"`
-}
-
-type Cpu struct {
-	Id   string    `json:"physicalId"`
-	Type string    `json:"type"`
-	Cpu  []float64 `json:"cpu"`
-}
-
-type Disk struct {
-	Id    string     `json:"physicalId"`
-	Type  string     `json:"type"`
-	Disks []DiskInfo `json:"diskInfos"`
-}
-
-type DiskInfo struct {
-	PartitionStat disk.PartitionStat `json:"partitionStat"`
-	Usage         disk.UsageStat     `json:"usage"`
-}
-
-type NetInfos struct {
-	Id      string    `json:"physicalId"`
-	Type    string    `json:"type"`
-	NetInfo []NetInfo `json:"netInfos"`
-}
-
-type NetInfo struct {
-	Port      int `json:"port"`
-	Up        int `json:"up"`
-	Down      int `json:"down"`
-	Count     int `json:"count"`
-	Estab     int `json:"estab"`
-	CloseWait int `json:"closeWait"`
-	TimeWait  int `json:"timeWait"`
-	Close     int `json:"close"`
-	Listen    int `json:"listen"`
-	Closing   int `json:"closing"`
-}
-
-type Docker struct {
-	Id          string       `json:"physicalId"`
-	Type        string       `json:"type"`
-	DockerInfos []DockerInfo `json:"dockerInfos"`
 }
 
 func getId() {
 	nets, _ := net.Interfaces()
 	var found bool = false
 	for _, value := range nets {
-		if strings.EqualFold(conf.Physical.Net, value.Name) {
+		if strings.EqualFold(config.Physical.Net, value.Name) {
 			hardwareAddr := value.HardwareAddr
 			fmt.Println("found net card:" + hardwareAddr)
 			physicalId = hardwareAddr

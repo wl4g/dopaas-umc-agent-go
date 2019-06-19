@@ -13,50 +13,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-package main
+package launcher
 
 import (
 	"github.com/Shopify/sarama"
 	"go.uber.org/zap"
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/log"
 )
 
-var producer sarama.SyncProducer
+var kafkaProducer sarama.SyncProducer
 
-func initKafka() {
-	config := sarama.NewConfig()
+func buildKafkaProducer() {
+	producerConfig := sarama.NewConfig()
 	// 等待服务器所有副本都保存成功后的响应
-	config.Producer.RequiredAcks = sarama.WaitForAll
+	producerConfig.Producer.RequiredAcks = sarama.WaitForAll
+
 	// 随机的分区类型：返回一个分区器，该分区器每次选择一个随机分区
-	config.Producer.Partitioner = sarama.NewRandomPartitioner
+	producerConfig.Producer.Partitioner = sarama.NewRandomPartitioner
 
 	// 是否等待成功和失败后的响应
-	config.Producer.Return.Successes = true
+	producerConfig.Producer.Return.Successes = true
 
 	// 使用给定代理地址和配置创建一个同步生产者
 	var err error
-	producer, err = sarama.NewSyncProducer([]string{conf.KafkaConf.Url}, config)
+	kafkaProducer, err = sarama.NewSyncProducer([]string{config.KafkaConf.Url}, producerConfig)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func send(text string) {
-
+func doKafkaProducer(text string) {
 	//构建发送的消息，
 	msg := &sarama.ProducerMessage{
-		Topic:     conf.KafkaConf.Topic,
+		Topic:     config.KafkaConf.Topic,
 		Value:     sarama.ByteEncoder(text),
-		Partition: int32(conf.KafkaConf.Partitions), //
+		Partition: int32(config.KafkaConf.Partitions), //
 		//Key:        sarama.StringEncoder("key"),//
 	}
 
-	partition, offset, err := producer.SendMessage(msg)
+	partition, offset, err := kafkaProducer.SendMessage(msg)
 
 	if err != nil {
-		MainLogger.Error("Send message Fail", zap.Error(err))
+		log.MainLogger.Error("Send message Fail", zap.Error(err))
 	}
 
-	MainLogger.Info("Send message Success - ",
+	log.MainLogger.Info("Send message Success - ",
 		zap.Int32("Partition", partition),
 		zap.Int64("offset", offset))
 

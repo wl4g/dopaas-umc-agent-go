@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-package main
+package common
 
 import (
 	"bytes"
@@ -35,13 +35,13 @@ func getNet(port string) string {
 		command = ReadAll(commandPath)
 	}
 	command2 := strings.Replace(command, "#{port}", port, -1)
-	s, _ := exec_shell(command2)
+	s, _ := ExecShell(command2)
 	fmt.Println(s)
 	return s
 }
 
 //阻塞式的执行外部shell命令的函数,等待执行完毕并返回标准输出
-func exec_shell(s string) (string, error) {
+func ExecShell(s string) (string, error) {
 	//函数返回一个*Cmd，用于使用给出的参数执行name指定的程序
 	cmd := exec.Command("/bin/bash", "-c", s)
 	//读取io.Writer类型的cmd.Stdout，再通过bytes.Buffer(缓冲byte类型的缓冲器)将byte类型转化为string类型(out.String():这是bytes类型提供的接口)
@@ -51,30 +51,6 @@ func exec_shell(s string) (string, error) {
 	err := cmd.Run()
 	checkErr(err)
 	return out.String(), err
-}
-
-func getDocker() []DockerInfo {
-	var command string = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
-	s, _ := exec_shell(command)
-	var dockerInfos []DockerInfo
-	if s != "" {
-		s = strings.ReplaceAll(s, "\n", ",")
-		s = strings.TrimSuffix(s, ",")
-		s = "[" + s + "]"
-		json.Unmarshal([]byte(s), &dockerInfos)
-	}
-	return dockerInfos
-}
-
-type DockerInfo struct {
-	ContainerId string `json:"containerId"`
-	Name        string `json:"name"`
-	CpuPerc     string `json:"cpuPerc"`
-	MemUsage    string `json:"memUsage"`
-	MemPerc     string `json:"memPerc"`
-	NetIO       string `json:"netIO"`
-	BlockIO     string `json:"blockIO"`
-	PIDs        string `json:"PIDs"`
 }
 
 //错误处理函数
@@ -94,7 +70,7 @@ func ReadAll(filePth string) string {
 	return string(s)
 }
 
-func toJsonString(v interface{}) string {
+func ToJsonString(v interface{}) string {
 	s, err := json.Marshal(v)
 	if err != nil {
 		fmt.Printf("Marshal data error:%v\n", err)
