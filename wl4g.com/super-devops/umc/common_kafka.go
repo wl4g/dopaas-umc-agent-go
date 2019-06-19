@@ -19,7 +19,7 @@ func initKafka()  {
 
 	// 使用给定代理地址和配置创建一个同步生产者
 	var err error
-	producer, err = sarama.NewSyncProducer([]string{"localhost:9092"}, config)
+	producer, err = sarama.NewSyncProducer([]string{conf.KafkaConf.Url}, config)
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func send(text string)  {
 	partition, offset, err := producer.SendMessage(msg)
 
 	if err != nil {
-		MainLogger.Error("Send message Fail")
+		MainLogger.Error("Send message Fail",zap.Error(err))
 	}
 
 	MainLogger.Info("Send message Success - ",

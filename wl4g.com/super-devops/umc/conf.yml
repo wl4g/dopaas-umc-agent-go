@@ -18,7 +18,7 @@ physical:
 #kafka
 kafka:
   url: localhost:9092
-  topic: umc-watcher
+  topic: __devops_umc_agent_metric_
   partiations: 10
 
 

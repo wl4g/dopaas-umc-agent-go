@@ -57,7 +57,7 @@ var CONF_DEFAULT_SERVER_URI string = "http://localhost:14046/umc/basic"
 var CONF_DEFAULT_KAFKA_URL string = "localhost:9092"
 
 //Default kafka topic
-var CONF_DEFAULT_KAFKA_TOPIC string = "umc-watcher"
+var CONF_DEFAULT_KAFKA_TOPIC string = "__devops_umc_agent_metric_"
 
 //Default post mode
 var CONF_DFEFAULT_POST_MODE string = "http"
