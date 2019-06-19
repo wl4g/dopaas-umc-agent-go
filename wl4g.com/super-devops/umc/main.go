@@ -56,7 +56,7 @@ func init() {
 //主函数
 func main() {
 
-	/*if(conf.TogetherOrSeparate=="together"){
+	if(conf.TogetherOrSeparate=="together"){
 		go totalThread()
 	}else{
 		go memThread()
@@ -67,10 +67,10 @@ func main() {
 	}
 	for true {
 		time.Sleep(100000 * time.Millisecond)
-	}*/
+	}
 
 	//for Test
-	memThread()
+	//memThread()
 	//go cpuThread()
 	//go diskThread()
 	//go netThread()

@@ -81,7 +81,7 @@ type DockerInfo struct {
 func checkErr(err error) {
 	if err != nil {
 		fmt.Println(err)
-		panic(err)
+		//panic(err)
 	}
 }
 
