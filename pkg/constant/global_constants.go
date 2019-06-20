@@ -20,45 +20,46 @@ import (
 )
 
 //
-// Log constants definitions.
-//
-
-var LOG_BASE_DIR string = "./log/"
-var LOG_MAIN_FILENAME string = LOG_BASE_DIR + "main.log"
-var LOG_HTTP_FILENAME string = LOG_BASE_DIR + "http.log"
-var LOG_GATEWAY_FILENAME string = LOG_BASE_DIR + "gateway.log"
-var LOG_KAFKA_FILENAME string = LOG_BASE_DIR + "kafka.log"
-
-//
-// Config constants definitions.
+// Basic constants.
 //
 
 // Default profile path.
-var CONF_DEFAULT_FILENAME string = "/etc/umc-agent.yml"
+var DefaultConfigPath = "/etc/umc-agent.yml"
+
+//
+// Log constants.
+//
+
+var DefaultLogBaseDir = "./log/"
+var DefaultLogMainFilename = DefaultLogBaseDir + "main.log"
+var DefaultLogHttpFilename = DefaultLogBaseDir + "http.log"
+var DefaultLogGatewayFilename = DefaultLogBaseDir + "gateway.log"
+
+//
+// Launcher constants.
+//
+
+// Default http server gateway
+var DefaultHttpServerGateway = "http://localhost:14046/umc/basic"
+
+// Default launcher kafka bootstrap servers.
+var DefaultLauncherKafkaServers = "localhost:9092"
+
+// Default launcher kafka topic.
+var DefaultLauncherKafkaTopic = "__devops_umc_agent_metric_"
+
+// Default launcher kafka partitions.
+var DefaultLauncherKafkaPartitions int32 = 10
+
+//
+// Indicators constants.
+//
 
 // Default netcard name.
-var CONF_DEFAULT_NETCARD string = "eth0"
+var DefaultNetcard = "eth0"
 
-// Default scanning frequency (in milliseconds).
-var CONF_DEFAULT_DELAY time.Duration = 10000
+// Default indicator delay.
+var DefaultIndicatorsDelay time.Duration = 60000
 
-// Default collection ports range.
-var CONF_DEFAULT_COLLECT_PARTS string = "22,6380"
-
-// Default local umc-agent instance ID.
-var CONF_DEFAULT_INSTANCEID string = "UNKNOWN"
-
-//Default server uri
-var CONF_DEFAULT_SERVER_URI string = "http://localhost:14046/umc/basic"
-
-//Default kafka url
-var CONF_DEFAULT_KAFKA_URL string = "localhost:9092"
-
-//Default kafka topic
-var CONF_DEFAULT_KAFKA_TOPIC string = "__devops_umc_agent_metric_"
-
-//Default post mode
-var CONF_DFEFAULT_POST_MODE string = "http"
-
-//Default post mode
-var CONF_DFEFAULT_SUBMIT_MODE string = "together"
+// Default network indicator ports range.
+var DefaultNetIndicatorPortRange = "22,6380"

@@ -46,6 +46,7 @@ type HttpLauncherProperties struct {
 }
 
 type KafkaLauncherProperties struct {
+	Enabled          bool   `yaml:"launcher.kafka.enabled"`
 	BootstrapServers string `yaml:"launcher.kafka.bootstrap.servers"`
 	Topic            string `yaml:"launcher.kafka.topic"`
 	Partitions       int32  `yaml:"launcher.kafka.partitions"`
@@ -102,35 +103,61 @@ type EmqIndicatorProperties struct {
 	Delay time.Duration `yaml:"indicators.emq.delay"`
 }
 
-// Initialize global properties.
-func InitGlobalProperties(path string) {
+// Initialize global config properties.
+func InitGlobalConfig(path string) {
+	// Set defaults
+	setDefaults()
+
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
 	}
+
 	err = yaml.Unmarshal(yamlFile, &GlobalConfig)
 	if err != nil {
-		log.MainLogger.Info("Unmarshal - ", zap.Error(err))
+		log.MainLogger.Error("Unmarshal error", zap.Error(err))
 	}
+}
 
-	// Set Default
-	if GlobalConfig.ServerGateway == "" {
-		GlobalConfig.ServerGateway = constant.CONF_DEFAULT_SERVER_URI
+// Set defaults
+func setDefaults() {
+	globalConfig := &GlobalProperties{
+		Launcher: LauncherProperties{
+			Http: HttpLauncherProperties{
+				ServerGateway: constant.DefaultHttpServerGateway,
+			},
+			Kafka: KafkaLauncherProperties{
+				Enabled:          false,
+				BootstrapServers: constant.DefaultLauncherKafkaServers,
+				Topic:            constant.DefaultLauncherKafkaTopic,
+				Partitions:       constant.DefaultLauncherKafkaPartitions,
+			},
+		},
+		Indicators: IndicatorsProperties{
+			Netcard: constant.DefaultNetcard,
+			Physical: PhysicalIndicatorProperties{
+				Delay:     constant.DefaultIndicatorsDelay,
+				RangePort: constant.DefaultNetIndicatorPortRange,
+			},
+			Virtual: VirtualIndicatorProperties{
+				Delay: constant.DefaultIndicatorsDelay,
+			},
+			Redis: RedisIndicatorProperties{
+				Delay: constant.DefaultIndicatorsDelay,
+			},
+			Kafka: KafkaIndicatorProperties{
+				Delay: constant.DefaultIndicatorsDelay,
+			},
+			Zookeeper: ZookeeperIndicatorProperties{
+				Delay: constant.DefaultIndicatorsDelay,
+			},
+			Etcd: EtcdIndicatorProperties{
+				Delay: constant.DefaultIndicatorsDelay,
+			},
+			Emq: EmqIndicatorProperties{
+				Delay: constant.DefaultIndicatorsDelay,
+			},
+		},
 	}
-	if GlobalConfig.PhysicalPropertiesObj.Net == "" {
-		GlobalConfig.PhysicalPropertiesObj.Net = constant.CONF_DEFAULT_NETCARD
-	}
-	if GlobalConfig.PhysicalPropertiesObj.Delay == 0 {
-		GlobalConfig.PhysicalPropertiesObj.Delay = constant.CONF_DEFAULT_DELAY
-	}
-	if GlobalConfig.KafkaProducerPropertiesObj.bootstrapServers == "" {
-		GlobalConfig.KafkaProducerPropertiesObj.bootstrapServers = constant.CONF_DEFAULT_KAFKA_URL
-	}
-	if GlobalConfig.KafkaProducerPropertiesObj.Topic == "" {
-		GlobalConfig.KafkaProducerPropertiesObj.Topic = constant.CONF_DEFAULT_KAFKA_TOPIC
-	}
-	if GlobalConfig.Provider == "" {
-		GlobalConfig.Provider = constant.CONF_DEFAULT_KAFKA_TOPIC
-	}
-
+	GlobalConfig = *globalConfig
 }

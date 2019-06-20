@@ -21,22 +21,26 @@ import (
 	"time"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
+	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/log"
 	"umc-agent/pkg/monitor/physical"
 	"umc-agent/pkg/monitor/virtual"
 )
 
-var confPath string = constant.CONF_DEFAULT_FILENAME
+var confPath string = constant.DefaultConfigPath
 
 func init() {
 	// Command config path
-	flag.StringVar(&confPath, "p", constant.CONF_DEFAULT_FILENAME, "Config must is required!")
+	flag.StringVar(&confPath, "p", constant.DefaultConfigPath, "Config must is required!")
 	flag.Parse()
 	//flag.Usage()
 	log.MainLogger.Info("Initialize config path", zap.String("confPath", confPath))
 
-	// Init global configuration
-	config.InitGlobalProperties(confPath)
+	// Init global config.
+	config.InitGlobalConfig(confPath)
+
+	// Init kafka launcher.(if necessary)
+	launcher.InitKafkaLauncherIfNecessary()
 }
 
 func main() {

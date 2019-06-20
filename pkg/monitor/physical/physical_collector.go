@@ -48,7 +48,7 @@ func BasicIndicatorsRunner() {
 		stat.NetStats = getNetworkStatsInfo()
 
 		launcher.DoSendSubmit("total", stat)
-		time.Sleep(config.GlobalConfig.PhysicalPropertiesObj.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
 	}
 }
 
@@ -69,7 +69,7 @@ func getDiskStatsInfo() []share.DiskStat {
 
 // Network stats info
 func getNetworkStatsInfo() []share.NetworkStat {
-	ports := strings.Split(config.GlobalConfig.PhysicalPropertiesObj.GatherPort, ",")
+	ports := strings.Split(config.GlobalConfig.Indicators.Physical.RangePort, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()
@@ -98,5 +98,5 @@ func getNetworkStatsInfo() []share.NetworkStat {
 
 func init() {
 	// Init physical hardware identify
-	physicalIndicatorId = common.GetPhysicalId(config.GlobalConfig.PhysicalPropertiesObj.Net)
+	physicalIndicatorId = common.GetPhysicalId(config.GlobalConfig.Indicators.Netcard)
 }

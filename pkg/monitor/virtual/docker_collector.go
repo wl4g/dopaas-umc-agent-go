@@ -37,7 +37,7 @@ func DockerIndicatorsRunner() {
 		result.Type = "docker"
 		result.DockerStats = dockerStats
 		launcher.DoSendSubmit("docker", result)
-		time.Sleep(config.GlobalConfig.PhysicalPropertiesObj.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
 	}
 }
 

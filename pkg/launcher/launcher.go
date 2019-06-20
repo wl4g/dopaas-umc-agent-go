@@ -28,19 +28,18 @@ import (
 func DoSendSubmit(ty string, v interface{}) {
 	data := common.ToJSONString(v)
 
-	if config.GlobalConfig.Provider == "kafka" {
+	// Kafka launcher takes precedence over HTTP launcher.
+	if config.GlobalConfig.Launcher.Kafka.Enabled == true {
 		doSendKafka(ty, data)
 	} else {
 		doSendHttp(ty, data)
 	}
 }
 
-// Monitor data to HTTP gateway
+// Send indicators-data to http gateway
 func doSendHttp(ty string, data string) {
-	request, _ := http.NewRequest("POST", config.GlobalConfig.ServerGateway+"/"+ty, strings.NewReader(data))
-	//json
+	request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+ty, strings.NewReader(data))
 	request.Header.Set("Content-Type", "application/json")
-	//post数据并接收http响应
 	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
 		fmt.Printf("post data error:%v\n", err)
@@ -51,7 +50,7 @@ func doSendHttp(ty string, data string) {
 	}
 }
 
-// Monitor data to Kafka gateway
+// Send indicators-data to Kafka
 func doSendKafka(ty string, data string) {
 	doProducer(data)
 }

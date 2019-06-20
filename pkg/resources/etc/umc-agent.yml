@@ -21,6 +21,7 @@ launcher:
   http:
     server-gateway: http://10.0.0.26:14046/umc/basic
   kafka:
+    enabled: true # This enabled switch takes precedence over the HTTP launcher.
     bootstrap.servers: localhost:9092
     #topic: __devops_umc_agent_metric_
     #partitions: 10

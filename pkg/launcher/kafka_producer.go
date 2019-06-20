@@ -24,31 +24,34 @@ import (
 
 var kafkaProducer sarama.SyncProducer
 
-func initProducer() {
-	producerConfig := sarama.NewConfig()
-	// 等待服务器所有副本都保存成功后的响应
-	producerConfig.Producer.RequiredAcks = sarama.WaitForAll
+// Init kafka producer launcher(if necessary)
+func InitKafkaLauncherIfNecessary() {
+	if config.GlobalConfig.Launcher.Kafka.Enabled == true { // If kafka producer enabled?
+		producerConfig := sarama.NewConfig()
+		// 等待服务器所有副本都保存成功后的响应
+		producerConfig.Producer.RequiredAcks = sarama.WaitForAll
 
-	// 随机的分区类型：返回一个分区器，该分区器每次选择一个随机分区
-	producerConfig.Producer.Partitioner = sarama.NewRandomPartitioner
+		// 随机的分区类型：返回一个分区器，该分区器每次选择一个随机分区
+		producerConfig.Producer.Partitioner = sarama.NewRandomPartitioner
 
-	// 是否等待成功和失败后的响应
-	producerConfig.Producer.Return.Successes = true
+		// 是否等待成功和失败后的响应
+		producerConfig.Producer.Return.Successes = true
 
-	// 使用给定代理地址和配置创建一个同步生产者
-	var err error
-	kafkaProducer, err = sarama.NewSyncProducer([]string{config.GlobalConfig.KafkaProducerPropertiesObj.bootstrapServers}, producerConfig)
-	if err != nil {
-		panic(err)
+		// 使用给定代理地址和配置创建一个同步生产者
+		var err error
+		kafkaProducer, err = sarama.NewSyncProducer([]string{config.GlobalConfig.Launcher.Kafka.BootstrapServers}, producerConfig)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
 func doProducer(text string) {
 	//构建发送的消息，
 	msg := &sarama.ProducerMessage{
-		Topic:     config.GlobalConfig.KafkaProducerPropertiesObj.Topic,
+		Topic:     config.GlobalConfig.Launcher.Kafka.Topic,
 		Value:     sarama.ByteEncoder(text),
-		Partition: int32(config.GlobalConfig.KafkaProducerPropertiesObj.Partitions),
+		Partition: int32(config.GlobalConfig.Launcher.Kafka.Partitions),
 		//Key:     sarama.StringEncoder("key"),
 	}
 
@@ -61,10 +64,4 @@ func doProducer(text string) {
 	log.MainLogger.Info("Send message Success - ",
 		zap.Int32("Partition", partition),
 		zap.Int64("offset", offset))
-
-}
-
-func init() {
-	// Init kafka producer(if necessary)
-	initProducer()
 }
