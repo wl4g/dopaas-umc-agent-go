@@ -17,14 +17,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/mem"
-	"github.com/shirou/gopsutil/net"
-	"regexp"
-	"strconv"
-	"strings"
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
@@ -34,9 +26,6 @@ import (
 	"umc-agent/pkg/monitor/share"
 	"umc-agent/pkg/monitor/virtual"
 )
-
-//physicalId
-var physicalId string = "UNKNOWN"
 
 var confPath string = common.CONF_DEFAULT_FILENAME
 
@@ -52,7 +41,7 @@ func init() {
 	config.GetConf(confPath)
 
 	//init
-	getId() //获取ip信息,作为Physical的标示
+	share.PhysicalId = common.GetPhysicalId() //获取ip信息,作为Physical的标示
 
 	//init kafka
 	launcher.BuildKafkaProducer()
@@ -61,13 +50,13 @@ func init() {
 //主函数
 func main() {
 	if config.GlobalPropertiesObj.Batch == true {
-		go totalThread()
+		go share.TotalThread()
 	} else {
-		go memThread()
-		go cpuThread()
-		go diskThread()
-		go netThread()
-		go dockerThread()
+		go physical.MemThread()
+		go physical.CpuThread()
+		go physical.DiskThread()
+		go physical.NetThread()
+		go virtual.DockerThread()
 	}
 	for true {
 		time.Sleep(100000 * time.Millisecond)
@@ -83,172 +72,4 @@ func main() {
 
 	//close kafka (Meaningless)
 	//defer producer.Close()
-}
-
-//mem
-func memThread() {
-	for true {
-		var result share.Total
-		v, _ := mem.VirtualMemory()
-		fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
-		//fmt.Println(v)
-		result.Id = physicalId
-		result.Type = "mem"
-		result.Mem = v
-		fmt.Println("result = " + common.ToJsonString(result))
-		launcher.DoSendSubmit("mem", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
-
-//cpu
-func cpuThread() {
-	for true {
-		var result share.Total
-		p, _ := cpu.Percent(0, false)
-		//p, _ := cpu.Times(true)
-		fmt.Println(p)
-		/*pa, _ := cpu.Percent(10000* time.Millisecond, true)
-		fmt.Println(pa)*/
-		result.Id = physicalId
-		result.Type = "cpu"
-		result.Cpu = p
-		launcher.DoSendSubmit("cpu", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
-
-//disk
-func diskThread() {
-	for true {
-		var result share.Total
-		disks := getDisks()
-		fmt.Println(disks)
-		result.Id = physicalId
-		result.Type = "disk"
-		result.DiskInfos = disks
-		launcher.DoSendSubmit("disk", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
-
-func getDisks() []physical.DiskInfo {
-	partitionStats, _ := disk.Partitions(false)
-	var disks []physical.DiskInfo
-	for _, value := range partitionStats {
-		var disk1 physical.DiskInfo
-		mountpoint := value.Mountpoint
-		usageStat, _ := disk.Usage(mountpoint)
-		disk1.PartitionStat = value
-		disk1.Usage = *usageStat
-		disks = append(disks, disk1)
-	}
-	return disks
-}
-
-//net
-func netThread() {
-	for true {
-		var result share.Total
-		n := getNetInfo()
-		result.Id = physicalId
-		result.Type = "net"
-		result.NetInfos = n
-		launcher.DoSendSubmit("net", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
-
-func getNetInfo() []physical.NetInfo {
-	ports := strings.Split(config.GlobalPropertiesObj.PhysicalPropertiesObj.GatherPort, ",")
-	//n, _ := net.IOCounters(true)
-	//fmt.Println(n)
-	//te, _ := net.Interfaces()
-	//fmt.Println(te)
-	var n []physical.NetInfo
-	for _, p := range ports {
-		re := common.GetNet(p)
-		res := strings.Split(re, " ")
-		if len(res) == 9 {
-			var netinfo physical.NetInfo
-			netinfo.Port, _ = strconv.Atoi(p)
-			netinfo.Up, _ = strconv.Atoi(res[0])
-			netinfo.Down, _ = strconv.Atoi(res[1])
-			netinfo.Count, _ = strconv.Atoi(res[2])
-			netinfo.Estab, _ = strconv.Atoi(res[3])
-			netinfo.CloseWait, _ = strconv.Atoi(res[4])
-			netinfo.TimeWait, _ = strconv.Atoi(res[5])
-			netinfo.Close, _ = strconv.Atoi(res[6])
-			netinfo.Listen, _ = strconv.Atoi(res[7])
-			netinfo.Closing, _ = strconv.Atoi(res[8])
-			n = append(n, netinfo)
-		}
-	}
-	return n
-}
-
-func dockerThread() {
-	for true {
-		dockerInfo := virtual.GetDocker()
-		log.MainLogger.Info(common.ToJsonString(dockerInfo))
-		var result share.Total
-		result.Id = physicalId
-		result.Type = "docker"
-		result.DockerInfos = dockerInfo
-		launcher.DoSendSubmit("docker", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
-
-func totalThread() {
-	for true {
-		var result share.Total
-
-		result.Id = physicalId
-		result.Type = "total"
-
-		v, _ := mem.VirtualMemory()
-		result.Mem = v
-
-		p, _ := cpu.Percent(0, false)
-		result.Cpu = p
-
-		disks := getDisks()
-		result.DiskInfos = disks
-
-		n := getNetInfo()
-		result.NetInfos = n
-
-		dockerInfo := virtual.GetDocker()
-		result.DockerInfos = dockerInfo
-
-		launcher.DoSendSubmit("total", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
-
-func getId() {
-	nets, _ := net.Interfaces()
-	var found bool = false
-	for _, value := range nets {
-		if strings.EqualFold(config.GlobalPropertiesObj.PhysicalPropertiesObj.Net, value.Name) {
-			hardwareAddr := value.HardwareAddr
-			fmt.Println("found net card:" + hardwareAddr)
-			physicalId = hardwareAddr
-			reg := regexp.MustCompile(`(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}`)
-			for _, addr := range value.Addrs {
-				add := addr.Addr
-				if len(reg.FindAllString(add, -1)) > 0 {
-					fmt.Println("found ip " + add)
-					found = true
-					//id = add+" "+id
-					physicalId = add
-					break
-				}
-			}
-		}
-	}
-	if !found {
-		panic("net found ip,Please check the net conf")
-	}
 }
