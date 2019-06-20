@@ -19,7 +19,7 @@ import (
 	"github.com/Shopify/sarama"
 	"go.uber.org/zap"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/log"
+	"umc-agent/pkg/logging"
 )
 
 var kafkaProducer sarama.SyncProducer
@@ -58,10 +58,10 @@ func doProducer(text string) {
 	partition, offset, err := kafkaProducer.SendMessage(msg)
 
 	if err != nil {
-		log.MainLogger.Error("Send message Fail", zap.Error(err))
+		logging.MainLogger.Error("Send message Fail", zap.Error(err))
 	}
 
-	log.MainLogger.Info("Send message Success - ",
+	logging.MainLogger.Info("Send message Success - ",
 		zap.Int32("Partition", partition),
 		zap.Int64("offset", offset))
 }

@@ -21,7 +21,7 @@ import (
 	"io/ioutil"
 	"time"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/log"
+	"umc-agent/pkg/logging"
 )
 
 // Global config properties.
@@ -110,12 +110,12 @@ func InitGlobalConfig(path string) {
 
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
+		logging.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
 	}
 
 	err = yaml.Unmarshal(yamlFile, &GlobalConfig)
 	if err != nil {
-		log.MainLogger.Error("Unmarshal error", zap.Error(err))
+		logging.MainLogger.Error("Unmarshal error", zap.Error(err))
 	}
 }
 

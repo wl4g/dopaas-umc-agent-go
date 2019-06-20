@@ -22,7 +22,7 @@ import (
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/launcher"
-	"umc-agent/pkg/log"
+	"umc-agent/pkg/logging"
 )
 
 var DockerIndicatorId = "UNKNOWN_DOCKER_INDICATOR_ID"
@@ -31,7 +31,7 @@ var DockerIndicatorId = "UNKNOWN_DOCKER_INDICATOR_ID"
 func DockerIndicatorsRunner() {
 	for true {
 		dockerStats := getDockerStats()
-		log.MainLogger.Info(common.ToJSONString(dockerStats))
+		logging.MainLogger.Info(common.ToJSONString(dockerStats))
 		var result DockerStatInfo
 		result.Id = DockerIndicatorId
 		result.Type = "docker"

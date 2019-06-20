@@ -13,19 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package common
-
-import (
-	"encoding/json"
-	"go.uber.org/zap"
-	"umc-agent/pkg/logging"
-)
-
-// To JSON string.
-func ToJSONString(v interface{}) string {
-	s, err := json.Marshal(v)
-	if err != nil {
-		logging.MainLogger.Error("Marshal data error", zap.Error(err))
-	}
-	return string(s)
-}
+package logging

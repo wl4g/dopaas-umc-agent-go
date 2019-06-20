@@ -30,10 +30,10 @@ var DefaultConfigPath = "/etc/umc-agent.yml"
 // Log constants.
 //
 
-var DefaultLogBaseDir = "./log/"
-var DefaultLogMainFilename = DefaultLogBaseDir + "main.log"
-var DefaultLogHttpFilename = DefaultLogBaseDir + "http.log"
-var DefaultLogGatewayFilename = DefaultLogBaseDir + "gateway.log"
+var DefaultLogBaseDir = "./logging/"
+var DefaultLogMainFilename = DefaultLogBaseDir + "main.logging"
+var DefaultLogHttpFilename = DefaultLogBaseDir + "http.logging"
+var DefaultLogGatewayFilename = DefaultLogBaseDir + "gateway.logging"
 
 //
 // Launcher constants.

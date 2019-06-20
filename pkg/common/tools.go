@@ -21,7 +21,7 @@ import (
 	"go.uber.org/zap"
 	"regexp"
 	"strings"
-	"umc-agent/pkg/log"
+	"umc-agent/pkg/logging"
 )
 
 var commandPath = "./pkg/resources/net.port.sh.txt"
@@ -36,7 +36,7 @@ func GetNetworkInterfaces(port string) string {
 	cmd := strings.Replace(command, "#{port}", port, -1)
 	s, _ := ExecShell(cmd)
 
-	log.MainLogger.Debug("Exec complete", zap.String("result", s))
+	logging.MainLogger.Debug("Exec complete", zap.String("result", s))
 	return s
 }
 
@@ -49,7 +49,7 @@ func GetPhysicalId(netcard string) string {
 	for _, value := range nets {
 		if strings.EqualFold(netcard, value.Name) {
 			hardwareAddr := value.HardwareAddr
-			log.MainLogger.Info("Found network information", zap.String("hardwareAddr", hardwareAddr))
+			logging.MainLogger.Info("Found network information", zap.String("hardwareAddr", hardwareAddr))
 
 			physicalId = hardwareAddr
 			reg := regexp.MustCompile(`(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}`)

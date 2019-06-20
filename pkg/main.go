@@ -22,7 +22,7 @@ import (
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
 	"umc-agent/pkg/launcher"
-	"umc-agent/pkg/log"
+	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/physical"
 	"umc-agent/pkg/monitor/virtual"
 )
@@ -34,7 +34,7 @@ func init() {
 	flag.StringVar(&confPath, "p", constant.DefaultConfigPath, "Config must is required!")
 	flag.Parse()
 	//flag.Usage()
-	log.MainLogger.Info("Initialize config path", zap.String("confPath", confPath))
+	logging.MainLogger.Info("Initialize config path", zap.String("confPath", confPath))
 
 	// Init global config.
 	config.InitGlobalConfig(confPath)
