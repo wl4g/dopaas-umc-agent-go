@@ -24,59 +24,57 @@ import (
 	"umc-agent/pkg/log"
 )
 
-var conf Conf
+var GlobalPropertiesObj GlobalProperties
 
-type Conf struct {
-	ServerUri          string    `yaml:"server-uri"`
-	PostMode           string    `yaml:"post-mode"`
-	TogetherOrSeparate string    `yaml:"together-or-separate"`
-	Physical           Physical  `yaml:"physical"`
-	KafkaConf          KafkaConf `yaml:"kafka"`
+type GlobalProperties struct {
+	ServerUri                  string                  `yaml:"server-uri"`
+	Provider                   string                  `yaml:"provider"`
+	Batch                      bool                    `yaml:"batch"`
+	PhysicalPropertiesObj      PhysicalProperties      `yaml:"physical"`
+	KafkaProducerPropertiesObj KafkaProducerProperties `yaml:"kafka"`
 }
 
-type Physical struct {
+type PhysicalProperties struct {
 	Delay      time.Duration `yaml:"delay"`
 	Net        string        `yaml:"net"`
 	GatherPort string        `yaml:"gather-port"`
 }
 
-type KafkaConf struct {
+type KafkaProducerProperties struct {
 	Url        string `yaml:"url"`
 	Topic      string `yaml:"topic"`
 	Partitions int32  `yaml:""`
 }
 
-func getConf(path string) {
+func GetConf(path string) {
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
 	}
-	err = yaml.Unmarshal(yamlFile, &conf)
+	err = yaml.Unmarshal(yamlFile, &GlobalPropertiesObj)
 	if err != nil {
 		log.MainLogger.Info("Unmarshal - ", zap.Error(err))
 	}
 
 	// Set Default
-	if conf.ServerUri == "" {
-		conf.ServerUri = common.CONF_DEFAULT_SERVER_URI
+	if GlobalPropertiesObj.ServerUri == "" {
+		GlobalPropertiesObj.ServerUri = common.CONF_DEFAULT_SERVER_URI
 	}
-	if conf.Physical.Net == "" {
-		conf.Physical.Net = common.CONF_DEFAULT_NETCARD
+	if GlobalPropertiesObj.PhysicalPropertiesObj.Net == "" {
+		GlobalPropertiesObj.PhysicalPropertiesObj.Net = common.CONF_DEFAULT_NETCARD
 	}
-	if conf.Physical.Delay == 0 {
-		conf.Physical.Delay = common.CONF_DEFAULT_DELAY
+	if GlobalPropertiesObj.PhysicalPropertiesObj.Delay == 0 {
+		GlobalPropertiesObj.PhysicalPropertiesObj.Delay = common.CONF_DEFAULT_DELAY
 	}
-	if conf.KafkaConf.Url == "" {
-		conf.KafkaConf.Url = common.CONF_DEFAULT_KAFKA_URL
+	if GlobalPropertiesObj.KafkaProducerPropertiesObj.Url == "" {
+		GlobalPropertiesObj.KafkaProducerPropertiesObj.Url = common.CONF_DEFAULT_KAFKA_URL
 	}
-	if conf.KafkaConf.Topic == "" {
-		conf.KafkaConf.Topic = common.CONF_DEFAULT_KAFKA_TOPIC
+	if GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic == "" {
+		GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic = common.CONF_DEFAULT_KAFKA_TOPIC
 	}
-	if conf.PostMode == "" {
-		conf.PostMode = common.CONF_DEFAULT_KAFKA_TOPIC
+	if GlobalPropertiesObj.Provider == "" {
+		GlobalPropertiesObj.Provider = common.CONF_DEFAULT_KAFKA_TOPIC
 	}
-	if conf.TogetherOrSeparate == "" {
-		conf.TogetherOrSeparate = common.CONF_DFEFAULT_SUBMIT_MODE
-	}
+
 
 }

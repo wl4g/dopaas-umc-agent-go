@@ -15,12 +15,7 @@
  */
 package virtual
 
-import (
-	"github.com/shirou/gopsutil/mem"
-	"umc-agent/pkg/monitor/share"
-)
-
-type DockerTotal struct {
+/*type DockerTotal struct {
 	Id          string                 `json:"physicalId"`
 	Type        string                 `json:"type"`
 	Mem         *mem.VirtualMemoryStat `json:"memInfo"`
@@ -28,13 +23,13 @@ type DockerTotal struct {
 	Disks       []share.DiskInfo       `json:"diskInfos"`
 	NetInfo     []share.NetInfo        `json:"netInfos"`
 	DockerInfos []DockerInfo           `json:"dockerInfos"`
-}
+}*/
 
-type Docker struct {
+/*type Docker struct {
 	Id          string       `json:"physicalId"`
 	Type        string       `json:"type"`
 	DockerInfos []DockerInfo `json:"dockerInfos"`
-}
+}*/
 
 type DockerInfo struct {
 	ContainerId string `json:"containerId"`

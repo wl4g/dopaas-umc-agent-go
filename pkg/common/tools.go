@@ -25,12 +25,12 @@ import (
 	"strings"
 )
 
-var commandPath = "./netCommand.txt"
+var commandPath = "./pkg/resources/netCommand.txt"
 var command string
 
 //var sumCommand = "ss -n sport == 22|awk '{sumup += $3};{sumdo += $4};END {print sumup,sumdo}'"
 
-func getNet(port string) string {
+func GetNet(port string) string {
 	if command == "" {
 		command = ReadAll(commandPath)
 	}

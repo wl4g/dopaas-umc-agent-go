@@ -16,57 +16,18 @@
 package share
 
 import (
-	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
+	"umc-agent/pkg/monitor/physical"
+	"umc-agent/pkg/monitor/virtual"
 )
 
 type Total struct {
-	Id      string                 `json:"physicalId"`
-	Type    string                 `json:"type"`
-	Mem     *mem.VirtualMemoryStat `json:"memInfo"`
-	Cpu     []float64              `json:"cpu"`
-	Disks   []DiskInfo             `json:"diskInfos"`
-	NetInfo []NetInfo              `json:"netInfos"`
+	Id      	string                 `json:"physicalId"`
+	Type    	string                 `json:"type"`
+	Mem     	*mem.VirtualMemoryStat `json:"memInfo"`
+	Cpu     	[]float64              `json:"cpu"`
+	DiskInfos   []physical.DiskInfo    `json:"diskInfos"`
+	NetInfos 	[]physical.NetInfo     `json:"netInfos"`
+	DockerInfos []virtual.DockerInfo 	   `json:"dockerInfos"`
 }
 
-type Mem struct {
-	Id   string                 `json:"physicalId"`
-	Type string                 `json:"type"`
-	Mem  *mem.VirtualMemoryStat `json:"memInfo"`
-}
-
-type Cpu struct {
-	Id   string    `json:"physicalId"`
-	Type string    `json:"type"`
-	Cpu  []float64 `json:"cpu"`
-}
-
-type Disk struct {
-	Id    string     `json:"physicalId"`
-	Type  string     `json:"type"`
-	Disks []DiskInfo `json:"diskInfos"`
-}
-
-type DiskInfo struct {
-	PartitionStat disk.PartitionStat `json:"partitionStat"`
-	Usage         disk.UsageStat     `json:"usage"`
-}
-
-type NetInfos struct {
-	Id      string    `json:"physicalId"`
-	Type    string    `json:"type"`
-	NetInfo []NetInfo `json:"netInfos"`
-}
-
-type NetInfo struct {
-	Port      int `json:"port"`
-	Up        int `json:"up"`
-	Down      int `json:"down"`
-	Count     int `json:"count"`
-	Estab     int `json:"estab"`
-	CloseWait int `json:"closeWait"`
-	TimeWait  int `json:"timeWait"`
-	Close     int `json:"close"`
-	Listen    int `json:"listen"`
-	Closing   int `json:"closing"`
-}

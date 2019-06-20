@@ -2,10 +2,10 @@
 server-uri: http://10.0.0.26:14046/umc/basic
 
 #post mode==kafka,http(default)
-post-mode: kafka
+provider: kafka
 
 #submit mode(default together) , delay together or separate
-together-or-separate: together
+batch: true
 
 #physical
 physical:

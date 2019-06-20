@@ -22,8 +22,6 @@ import (
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
-	"io/ioutil"
-	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -51,18 +49,18 @@ func init() {
 	log.MainLogger.Info("confPath=" + confPath)
 
 	//0618,配置改成用对象接收
-	config.getConf(confPath)
+	config.GetConf(confPath)
 
 	//init
 	getId() //获取ip信息,作为Physical的标示
 
 	//init kafka
-	launcher.initKafka()
+	launcher.BuildKafkaProducer()
 }
 
 //主函数
 func main() {
-	if config.Conf.TogetherOrSeparate == "together" {
+	if config.GlobalPropertiesObj.Batch == true {
 		go totalThread()
 	} else {
 		go memThread()
@@ -90,7 +88,7 @@ func main() {
 //mem
 func memThread() {
 	for true {
-		var result share.Mem
+		var result share.Total
 		v, _ := mem.VirtualMemory()
 		fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
 		//fmt.Println(v)
@@ -99,14 +97,14 @@ func memThread() {
 		result.Mem = v
 		fmt.Println("result = " + common.ToJsonString(result))
 		launcher.DoSendSubmit("mem", result)
-		time.Sleep(config.Physical.Delay * time.Millisecond)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
 //cpu
 func cpuThread() {
 	for true {
-		var result physical.Cpu
+		var result share.Total
 		p, _ := cpu.Percent(0, false)
 		//p, _ := cpu.Times(true)
 		fmt.Println(p)
@@ -115,26 +113,26 @@ func cpuThread() {
 		result.Id = physicalId
 		result.Type = "cpu"
 		result.Cpu = p
-		post("cpu", result)
-		time.Sleep(config.Physical.Delay * time.Millisecond)
+		launcher.DoSendSubmit("cpu", result)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
 //disk
 func diskThread() {
 	for true {
-		var result physical.Disk
+		var result share.Total
 		disks := getDisks()
 		fmt.Println(disks)
 		result.Id = physicalId
 		result.Type = "disk"
-		result.Disks = disks
-		post("disk", result)
-		time.Sleep(config.Physical.Delay * time.Millisecond)
+		result.DiskInfos = disks
+		launcher.DoSendSubmit("disk", result)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
-func getDisks() []share.DiskInfo {
+func getDisks() []physical.DiskInfo {
 	partitionStats, _ := disk.Partitions(false)
 	var disks []physical.DiskInfo
 	for _, value := range partitionStats {
@@ -151,25 +149,25 @@ func getDisks() []share.DiskInfo {
 //net
 func netThread() {
 	for true {
-		var result share.NetInfos
+		var result share.Total
 		n := getNetInfo()
 		result.Id = physicalId
 		result.Type = "net"
-		result.NetInfo = n
-		post("net", result)
-		time.Sleep(config.Physical.Delay * time.Millisecond)
+		result.NetInfos = n
+		launcher.DoSendSubmit("net", result)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
-func getNetInfo() []share.NetInfo {
-	ports := strings.Split(config.Physical.GatherPort, ",")
+func getNetInfo() []physical.NetInfo {
+	ports := strings.Split(config.GlobalPropertiesObj.PhysicalPropertiesObj.GatherPort, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()
 	//fmt.Println(te)
 	var n []physical.NetInfo
 	for _, p := range ports {
-		re := common.getNet(p)
+		re := common.GetNet(p)
 		res := strings.Split(re, " ")
 		if len(res) == 9 {
 			var netinfo physical.NetInfo
@@ -193,18 +191,18 @@ func dockerThread() {
 	for true {
 		dockerInfo := virtual.GetDocker()
 		log.MainLogger.Info(common.ToJsonString(dockerInfo))
-		var result virtual.Docker
+		var result share.Total
 		result.Id = physicalId
 		result.Type = "docker"
 		result.DockerInfos = dockerInfo
 		launcher.DoSendSubmit("docker", result)
-		time.Sleep(config.Physical.Delay * time.Millisecond)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
 func totalThread() {
 	for true {
-		var result physical.Total
+		var result share.Total
 
 		result.Id = physicalId
 		result.Type = "total"
@@ -216,16 +214,16 @@ func totalThread() {
 		result.Cpu = p
 
 		disks := getDisks()
-		result.Disks = disks
+		result.DiskInfos = disks
 
 		n := getNetInfo()
-		result.NetInfo = n
+		result.NetInfos = n
 
 		dockerInfo := virtual.GetDocker()
 		result.DockerInfos = dockerInfo
 
 		launcher.DoSendSubmit("total", result)
-		time.Sleep(config.Physical.Delay * time.Millisecond)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
@@ -233,7 +231,7 @@ func getId() {
 	nets, _ := net.Interfaces()
 	var found bool = false
 	for _, value := range nets {
-		if strings.EqualFold(config.Physical.Net, value.Name) {
+		if strings.EqualFold(config.GlobalPropertiesObj.PhysicalPropertiesObj.Net, value.Name) {
 			hardwareAddr := value.HardwareAddr
 			fmt.Println("found net card:" + hardwareAddr)
 			physicalId = hardwareAddr

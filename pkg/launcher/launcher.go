@@ -28,7 +28,7 @@ import (
 func DoSendSubmit(ty string, v interface{}) {
 	data := common.ToJsonString(v)
 
-	if config.Conf.PostMode == "kafka" {
+	if config.GlobalPropertiesObj.Provider == "kafka" {
 		doSendKafka(ty, data)
 	} else {
 		doSendHttp(ty, data)
@@ -37,7 +37,7 @@ func DoSendSubmit(ty string, v interface{}) {
 
 // Monitor data to HTTP gateway
 func doSendHttp(ty string, data string) {
-	request, _ := http.NewRequest("POST", config.Conf.ServerUri+"/"+ty, strings.NewReader(data))
+	request, _ := http.NewRequest("POST", config.GlobalPropertiesObj.ServerUri+"/"+ty, strings.NewReader(data))
 	//json
 	request.Header.Set("Content-Type", "application/json")
 	//post数据并接收http响应
