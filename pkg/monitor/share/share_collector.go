@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+ * Copyright 2017 ~ 2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,38 @@
 package share
 
 import (
+	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
+	"time"
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/monitor/physical"
 	"umc-agent/pkg/monitor/virtual"
 )
 
-//physicalId
-var PhysicalId string = "UNKNOWN"
+func TotalThread() {
+	for true {
+		var result Total
 
-type Total struct {
-	Id          string                 `json:"physicalId"`
-	Type        string                 `json:"type"`
-	Mem         *mem.VirtualMemoryStat `json:"memInfo"`
-	Cpu         []float64              `json:"cpu"`
-	DiskInfos   []physical.DiskInfo    `json:"diskInfos"`
-	NetInfos    []physical.NetInfo     `json:"netInfos"`
-	DockerInfos []virtual.DockerInfo   `json:"dockerInfos"`
+		result.Id = PhysicalId
+		result.Type = "total"
+
+		v, _ := mem.VirtualMemory()
+		result.Mem = v
+
+		p, _ := cpu.Percent(0, false)
+		result.Cpu = p
+
+		disks := physical.GetDisks()
+		result.DiskInfos = disks
+
+		n := physical.GetNetInfo()
+		result.NetInfos = n
+
+		dockerInfo := virtual.GetDocker()
+		result.DockerInfos = dockerInfo
+
+		launcher.DoSendSubmit("total", result)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
+	}
 }

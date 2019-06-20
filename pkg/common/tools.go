@@ -22,7 +22,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
+	"umc-agent/pkg/config"
+	"github.com/shirou/gopsutil/net"
 )
 
 var commandPath = "./pkg/resources/net.port.sh"
@@ -77,3 +80,37 @@ func ToJsonString(v interface{}) string {
 	}
 	return string(s)
 }
+
+func GetPhysicalId() string{
+	var physicalId string
+	nets, _ := net.Interfaces()
+	var found bool = false
+	for _, value := range nets {
+		if strings.EqualFold(config.GlobalPropertiesObj.PhysicalPropertiesObj.Net, value.Name) {
+			hardwareAddr := value.HardwareAddr
+			fmt.Println("found net card:" + hardwareAddr)
+			physicalId = hardwareAddr
+			reg := regexp.MustCompile(`(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}`)
+			for _, addr := range value.Addrs {
+				add := addr.Addr
+				if len(reg.FindAllString(add, -1)) > 0 {
+					fmt.Println("found ip " + add)
+					//id = add+" "+id
+					a := strings.Split(add,"/")
+					if(len(a)>=2){
+						physicalId = a[0]
+					}else{
+						physicalId = add
+					}
+					found = true
+					break
+				}
+			}
+		}
+	}
+	if !found {
+		panic("net found ip,Please check the net conf")
+	}
+	return physicalId
+}
+

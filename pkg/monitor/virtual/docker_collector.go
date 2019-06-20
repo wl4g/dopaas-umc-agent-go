@@ -18,8 +18,26 @@ package virtual
 import (
 	"encoding/json"
 	"strings"
+	"time"
 	"umc-agent/pkg/common"
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/launcher"
+	"umc-agent/pkg/log"
+	"umc-agent/pkg/monitor/share"
 )
+
+func DockerThread() {
+	for true {
+		dockerInfo := GetDocker()
+		log.MainLogger.Info(common.ToJsonString(dockerInfo))
+		var result share.Total
+		result.Id = share.PhysicalId
+		result.Type = "docker"
+		result.DockerInfos = dockerInfo
+		launcher.DoSendSubmit("docker", result)
+		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
+	}
+}
 
 func GetDocker() []DockerInfo {
 	var command string = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
