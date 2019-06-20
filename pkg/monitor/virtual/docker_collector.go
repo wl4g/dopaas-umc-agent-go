@@ -26,10 +26,11 @@ import (
 	"umc-agent/pkg/monitor/share"
 )
 
-func DockerThread() {
+// Docker indicators runner
+func DockerIndicatorsRunner() {
 	for true {
-		dockerInfo := GetDocker()
-		log.MainLogger.Info(common.ToJsonString(dockerInfo))
+		dockerInfo := GetDockerStatsInfo()
+		log.MainLogger.Info(common.ToJSONString(dockerInfo))
 		var result share.Total
 		result.Id = share.PhysicalId
 		result.Type = "docker"
@@ -39,10 +40,11 @@ func DockerThread() {
 	}
 }
 
-func GetDocker() []DockerInfo {
-	var command string = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
+// Docker stats info
+func GetDockerStatsInfo() []share.DockerInfo {
+	var command = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
 	s, _ := common.ExecShell(command)
-	var dockerInfos []DockerInfo
+	var dockerInfos []share.DockerInfo
 	if s != "" {
 		s = strings.ReplaceAll(s, "\n", ",")
 		s = strings.TrimSuffix(s, ",")

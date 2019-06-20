@@ -29,8 +29,8 @@ import (
 	"umc-agent/pkg/monitor/share"
 )
 
-//mem
-func MemThread() {
+// Memory indicators runner
+func MemIndicatorsRunner() {
 	for true {
 		var result share.Total
 		v, _ := mem.VirtualMemory()
@@ -39,14 +39,14 @@ func MemThread() {
 		result.Id = share.PhysicalId
 		result.Type = "mem"
 		result.Mem = v
-		fmt.Println("result = " + common.ToJsonString(result))
+		fmt.Println("result = " + common.ToJSONString(result))
 		launcher.DoSendSubmit("mem", result)
 		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
-//cpu
-func CpuThread() {
+// CPU indicators runner
+func CpuIndicatorsRunner() {
 	for true {
 		var result share.Total
 		p, _ := cpu.Percent(0, false)
@@ -62,11 +62,11 @@ func CpuThread() {
 	}
 }
 
-//disk
-func DiskThread() {
+// Disk indicators runner
+func DiskIndicatorsRunner() {
 	for true {
 		var result share.Total
-		disks := GetDisks()
+		disks := GetDiskStatsInfo()
 		fmt.Println(disks)
 		result.Id = share.PhysicalId
 		result.Type = "disk"
@@ -76,11 +76,12 @@ func DiskThread() {
 	}
 }
 
-func GetDisks() []DiskInfo {
+// Disks stats info
+func GetDiskStatsInfo() []share.DiskInfo {
 	partitionStats, _ := disk.Partitions(false)
-	var disks []DiskInfo
+	var disks []share.DiskInfo
 	for _, value := range partitionStats {
-		var disk1 DiskInfo
+		var disk1 share.DiskInfo
 		mountpoint := value.Mountpoint
 		usageStat, _ := disk.Usage(mountpoint)
 		disk1.PartitionStat = value
@@ -90,11 +91,11 @@ func GetDisks() []DiskInfo {
 	return disks
 }
 
-//net
-func NetThread() {
+// Network indicators runner
+func NetIndicatorsRunner() {
 	for true {
 		var result share.Total
-		n := GetNetInfo()
+		n := GetNetworkStatsInfo()
 		result.Id = share.PhysicalId
 		result.Type = "net"
 		result.NetInfos = n
@@ -103,18 +104,19 @@ func NetThread() {
 	}
 }
 
-func GetNetInfo() []NetInfo {
+// Network stats info
+func GetNetworkStatsInfo() []share.NetInfo {
 	ports := strings.Split(config.GlobalPropertiesObj.PhysicalPropertiesObj.GatherPort, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()
 	//fmt.Println(te)
-	var n []NetInfo
+	var n []share.NetInfo
 	for _, p := range ports {
-		re := common.GetNet(p)
+		re := common.GetNetworkInterfaces(p)
 		res := strings.Split(re, " ")
 		if len(res) == 9 {
-			var netinfo NetInfo
+			var netinfo share.NetInfo
 			netinfo.Port, _ = strconv.Atoi(p)
 			netinfo.Up, _ = strconv.Atoi(res[0])
 			netinfo.Down, _ = strconv.Atoi(res[1])

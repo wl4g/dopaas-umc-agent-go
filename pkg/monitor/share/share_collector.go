@@ -25,7 +25,8 @@ import (
 	"umc-agent/pkg/monitor/virtual"
 )
 
-func TotalThread() {
+// Composite indicators runner
+func CompositeIndicatorsRunner() {
 	for true {
 		var result Total
 
@@ -38,14 +39,11 @@ func TotalThread() {
 		p, _ := cpu.Percent(0, false)
 		result.Cpu = p
 
-		disks := physical.GetDisks()
-		result.DiskInfos = disks
+		result.DiskInfos = physical.GetDiskStatsInfo()
 
-		n := physical.GetNetInfo()
-		result.NetInfos = n
+		result.NetInfos = physical.GetNetworkStatsInfo()
 
-		dockerInfo := virtual.GetDocker()
-		result.DockerInfos = dockerInfo
+		result.DockerInfos = virtual.GetDockerStatsInfo()
 
 		launcher.DoSendSubmit("total", result)
 		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)

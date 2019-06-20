@@ -16,77 +16,37 @@
 package common
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"os/exec"
+	"go.uber.org/zap"
 	"regexp"
 	"strings"
-	"umc-agent/pkg/config"
-	"github.com/shirou/gopsutil/net"
+	"umc-agent/pkg/log"
 )
 
-var commandPath = "./pkg/resources/net.port.sh"
+var commandPath = "./pkg/resources/net.port.sh.txt"
 var command string
 
-//var sumCommand = "ss -n sport == 22|awk '{sumup += $3};{sumdo += $4};END {print sumup,sumdo}'"
-
-func GetNet(port string) string {
+// Get network interfaces.
+// e.g. var sumCommand = "ss -n sport == 22|awk '{sumup += $3};{sumdo += $4};END {print sumup,sumdo}'"
+func GetNetworkInterfaces(port string) string {
 	if command == "" {
-		command = ReadAll(commandPath)
+		command = ReadFileToString(commandPath)
 	}
-	command2 := strings.Replace(command, "#{port}", port, -1)
-	s, _ := ExecShell(command2)
-	fmt.Println(s)
+	cmd := strings.Replace(command, "#{port}", port, -1)
+	s, _ := ExecShell(cmd)
+
+	log.MainLogger.Debug("Exec complete", zap.String("result", s))
 	return s
 }
 
-//阻塞式的执行外部shell命令的函数,等待执行完毕并返回标准输出
-func ExecShell(s string) (string, error) {
-	//函数返回一个*Cmd，用于使用给出的参数执行name指定的程序
-	cmd := exec.Command("/bin/bash", "-c", s)
-	//读取io.Writer类型的cmd.Stdout，再通过bytes.Buffer(缓冲byte类型的缓冲器)将byte类型转化为string类型(out.String():这是bytes类型提供的接口)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	//Run执行c包含的命令，并阻塞直到完成。  这里stdout被取出，cmd.Wait()无法正确获取stdin,stdout,stderr，则阻塞在那了
-	err := cmd.Run()
-	checkErr(err)
-	return out.String(), err
-}
-
-//错误处理函数
-func checkErr(err error) {
-	if err != nil {
-		fmt.Println(err)
-		//panic(err)
-	}
-}
-
-func ReadAll(filePth string) string {
-	f, err := os.Open(filePth)
-	if err != nil {
-		panic(err)
-	}
-	s, _ := ioutil.ReadAll(f)
-	return string(s)
-}
-
-func ToJsonString(v interface{}) string {
-	s, err := json.Marshal(v)
-	if err != nil {
-		fmt.Printf("Marshal data error:%v\n", err)
-	}
-	return string(s)
-}
-
-func GetPhysicalId() string{
+// Get hardware information such as network card as
+// physical host identification.
+func GetPhysicalId(netcard string) string {
 	var physicalId string
 	nets, _ := net.Interfaces()
-	var found bool = false
+	var found = false
 	for _, value := range nets {
-		if strings.EqualFold(config.GlobalPropertiesObj.PhysicalPropertiesObj.Net, value.Name) {
+		if strings.EqualFold(netcard, value.Name) {
 			hardwareAddr := value.HardwareAddr
 			fmt.Println("found net card:" + hardwareAddr)
 			physicalId = hardwareAddr
@@ -96,10 +56,10 @@ func GetPhysicalId() string{
 				if len(reg.FindAllString(add, -1)) > 0 {
 					fmt.Println("found ip " + add)
 					//id = add+" "+id
-					a := strings.Split(add,"/")
-					if(len(a)>=2){
+					a := strings.Split(add, "/")
+					if len(a) >= 2 {
 						physicalId = a[0]
-					}else{
+					} else {
 						physicalId = add
 					}
 					found = true
@@ -113,4 +73,3 @@ func GetPhysicalId() string{
 	}
 	return physicalId
 }
-

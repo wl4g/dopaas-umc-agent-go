@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package common
+package constant
 
 import (
 	"time"
@@ -26,9 +26,7 @@ import (
 var LOG_BASE_DIR string = "./log/"
 var LOG_MAIN_FILENAME string = LOG_BASE_DIR + "main.log"
 var LOG_HTTP_FILENAME string = LOG_BASE_DIR + "http.log"
-var LOG_LMDB_FILENAME string = LOG_BASE_DIR + "lmdb.log"
 var LOG_GATEWAY_FILENAME string = LOG_BASE_DIR + "gateway.log"
-var LOG_REDIS_FILENAME string = LOG_BASE_DIR + "redis.log"
 var LOG_KAFKA_FILENAME string = LOG_BASE_DIR + "kafka.log"
 
 //

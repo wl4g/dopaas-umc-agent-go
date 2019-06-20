@@ -17,9 +17,11 @@ package main
 
 import (
 	"flag"
+	"go.uber.org/zap"
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/constant"
 	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/log"
 	"umc-agent/pkg/monitor/physical"
@@ -27,49 +29,36 @@ import (
 	"umc-agent/pkg/monitor/virtual"
 )
 
-var confPath string = common.CONF_DEFAULT_FILENAME
+var confPath string = constant.CONF_DEFAULT_FILENAME
 
-//初始化
 func init() {
-	//get conf path
-	flag.StringVar(&confPath, "p", common.CONF_DEFAULT_FILENAME, "conf path")
+	// Command config path
+	flag.StringVar(&confPath, "p", constant.CONF_DEFAULT_FILENAME, "Config must is required!")
 	flag.Parse()
-	//flag.Usage()//usage
-	log.MainLogger.Info("confPath=" + confPath)
+	//flag.Usage()
+	log.MainLogger.Info("Initialize config path", zap.String("confPath", confPath))
 
-	//0618,配置改成用对象接收
-	config.GetConf(confPath)
+	// Init global configuration
+	config.InitGlobalProperties(confPath)
 
-	//init
-	share.PhysicalId = common.GetPhysicalId() //获取ip信息,作为Physical的标示
+	// Init physical hardware identify
+	share.PhysicalId = common.GetPhysicalId(config.GlobalPropertiesObj.PhysicalPropertiesObj.Net)
 
-	//init kafka
-	launcher.BuildKafkaProducer()
+	// Init kafka producer(if necessary)
+	launcher.InitKafkaProducer()
 }
 
-//主函数
 func main() {
 	if config.GlobalPropertiesObj.Batch == true {
-		go share.TotalThread()
+		go share.CompositeIndicatorsRunner()
 	} else {
-		go physical.MemThread()
-		go physical.CpuThread()
-		go physical.DiskThread()
-		go physical.NetThread()
-		go virtual.DockerThread()
+		go physical.MemIndicatorsRunner()
+		go physical.CpuIndicatorsRunner()
+		go physical.DiskIndicatorsRunner()
+		go physical.NetIndicatorsRunner()
+		go virtual.DockerIndicatorsRunner()
 	}
 	for true {
 		time.Sleep(100000 * time.Millisecond)
 	}
-
-	//for Test
-	//memThread()
-	//go cpuThread()
-	//go diskThread()
-	//go netThread()
-	//go dockerThread()
-	//go totalThread()
-
-	//close kafka (Meaningless)
-	//defer producer.Close()
 }

@@ -14,30 +14,3 @@
  * limitations under the License.
  */
 package virtual
-
-/*type DockerTotal struct {
-	Id          string                 `json:"physicalId"`
-	Type        string                 `json:"type"`
-	Mem         *mem.VirtualMemoryStat `json:"memInfo"`
-	Cpu         []float64              `json:"cpu"`
-	Disks       []share.DiskInfo       `json:"diskInfos"`
-	NetInfo     []share.NetInfo        `json:"netInfos"`
-	DockerInfos []DockerInfo           `json:"dockerInfos"`
-}*/
-
-/*type Docker struct {
-	Id          string       `json:"physicalId"`
-	Type        string       `json:"type"`
-	DockerInfos []DockerInfo `json:"dockerInfos"`
-}*/
-
-type DockerInfo struct {
-	ContainerId string `json:"containerId"`
-	Name        string `json:"name"`
-	CpuPerc     string `json:"cpuPerc"`
-	MemUsage    string `json:"memUsage"`
-	MemPerc     string `json:"memPerc"`
-	NetIO       string `json:"netIO"`
-	BlockIO     string `json:"blockIO"`
-	PIDs        string `json:"PIDs"`
-}

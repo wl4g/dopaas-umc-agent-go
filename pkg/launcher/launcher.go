@@ -26,7 +26,7 @@ import (
 
 // 提交数据
 func DoSendSubmit(ty string, v interface{}) {
-	data := common.ToJsonString(v)
+	data := common.ToJSONString(v)
 
 	if config.GlobalPropertiesObj.Provider == "kafka" {
 		doSendKafka(ty, data)

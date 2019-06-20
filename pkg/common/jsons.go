@@ -13,4 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package physical
+package common
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// To JSON string.
+func ToJSONString(v interface{}) string {
+	s, err := json.Marshal(v)
+	if err != nil {
+		fmt.Printf("Marshal data error:%v\n", err)
+	}
+	return string(s)
+}

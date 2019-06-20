@@ -13,4 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package physical
+package common
+
+import (
+	"io/ioutil"
+	"os"
+)
+
+// Read file to string.
+func ReadFileToString(filePth string) string {
+	f, err := os.Open(filePth)
+	if err != nil {
+		panic(err)
+	}
+	s, _ := ioutil.ReadAll(f)
+	return string(s)
+}

@@ -20,7 +20,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"time"
-	"umc-agent/pkg/common"
+	"umc-agent/pkg/constant"
 	"umc-agent/pkg/log"
 )
 
@@ -46,7 +46,8 @@ type KafkaProducerProperties struct {
 	Partitions int32  `yaml:""`
 }
 
-func GetConf(path string) {
+// Initialize the build configuration object
+func InitGlobalProperties(path string) {
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
@@ -58,23 +59,22 @@ func GetConf(path string) {
 
 	// Set Default
 	if GlobalPropertiesObj.ServerUri == "" {
-		GlobalPropertiesObj.ServerUri = common.CONF_DEFAULT_SERVER_URI
+		GlobalPropertiesObj.ServerUri = constant.CONF_DEFAULT_SERVER_URI
 	}
 	if GlobalPropertiesObj.PhysicalPropertiesObj.Net == "" {
-		GlobalPropertiesObj.PhysicalPropertiesObj.Net = common.CONF_DEFAULT_NETCARD
+		GlobalPropertiesObj.PhysicalPropertiesObj.Net = constant.CONF_DEFAULT_NETCARD
 	}
 	if GlobalPropertiesObj.PhysicalPropertiesObj.Delay == 0 {
-		GlobalPropertiesObj.PhysicalPropertiesObj.Delay = common.CONF_DEFAULT_DELAY
+		GlobalPropertiesObj.PhysicalPropertiesObj.Delay = constant.CONF_DEFAULT_DELAY
 	}
 	if GlobalPropertiesObj.KafkaProducerPropertiesObj.Url == "" {
-		GlobalPropertiesObj.KafkaProducerPropertiesObj.Url = common.CONF_DEFAULT_KAFKA_URL
+		GlobalPropertiesObj.KafkaProducerPropertiesObj.Url = constant.CONF_DEFAULT_KAFKA_URL
 	}
 	if GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic == "" {
-		GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic = common.CONF_DEFAULT_KAFKA_TOPIC
+		GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic = constant.CONF_DEFAULT_KAFKA_TOPIC
 	}
 	if GlobalPropertiesObj.Provider == "" {
-		GlobalPropertiesObj.Provider = common.CONF_DEFAULT_KAFKA_TOPIC
+		GlobalPropertiesObj.Provider = constant.CONF_DEFAULT_KAFKA_TOPIC
 	}
-
 
 }

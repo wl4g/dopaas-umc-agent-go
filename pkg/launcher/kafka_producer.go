@@ -24,7 +24,7 @@ import (
 
 var kafkaProducer sarama.SyncProducer
 
-func BuildKafkaProducer() {
+func InitKafkaProducer() {
 	producerConfig := sarama.NewConfig()
 	// 等待服务器所有副本都保存成功后的响应
 	producerConfig.Producer.RequiredAcks = sarama.WaitForAll
@@ -48,8 +48,8 @@ func doKafkaProducer(text string) {
 	msg := &sarama.ProducerMessage{
 		Topic:     config.GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic,
 		Value:     sarama.ByteEncoder(text),
-		Partition: int32(config.GlobalPropertiesObj.KafkaProducerPropertiesObj.Partitions), //
-		//Key:        sarama.StringEncoder("key"),//
+		Partition: int32(config.GlobalPropertiesObj.KafkaProducerPropertiesObj.Partitions),
+		//Key:     sarama.StringEncoder("key"),
 	}
 
 	partition, offset, err := kafkaProducer.SendMessage(msg)
