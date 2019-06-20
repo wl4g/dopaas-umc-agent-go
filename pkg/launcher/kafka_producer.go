@@ -37,7 +37,7 @@ func initProducer() {
 
 	// 使用给定代理地址和配置创建一个同步生产者
 	var err error
-	kafkaProducer, err = sarama.NewSyncProducer([]string{config.GlobalPropertiesObj.KafkaProducerPropertiesObj.Url}, producerConfig)
+	kafkaProducer, err = sarama.NewSyncProducer([]string{config.GlobalConfig.KafkaProducerPropertiesObj.bootstrapServers}, producerConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -46,9 +46,9 @@ func initProducer() {
 func doProducer(text string) {
 	//构建发送的消息，
 	msg := &sarama.ProducerMessage{
-		Topic:     config.GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic,
+		Topic:     config.GlobalConfig.KafkaProducerPropertiesObj.Topic,
 		Value:     sarama.ByteEncoder(text),
-		Partition: int32(config.GlobalPropertiesObj.KafkaProducerPropertiesObj.Partitions),
+		Partition: int32(config.GlobalConfig.KafkaProducerPropertiesObj.Partitions),
 		//Key:     sarama.StringEncoder("key"),
 	}
 

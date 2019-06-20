@@ -24,57 +24,113 @@ import (
 	"umc-agent/pkg/log"
 )
 
-var GlobalPropertiesObj GlobalProperties
+// Global config properties.
+var GlobalConfig GlobalProperties
 
 type GlobalProperties struct {
-	ServerUri                  string                  `yaml:"server-uri"`
-	Provider                   string                  `yaml:"provider"`
-	Batch                      bool                    `yaml:"batch"`
-	PhysicalPropertiesObj      PhysicalProperties      `yaml:"physical"`
-	KafkaProducerPropertiesObj KafkaProducerProperties `yaml:"kafka"`
+	Launcher   LauncherProperties
+	Indicators IndicatorsProperties
 }
 
-type PhysicalProperties struct {
-	Delay      time.Duration `yaml:"delay"`
-	Net        string        `yaml:"net"`
-	GatherPort string        `yaml:"gather-port"`
+// ---------------------
+// Launcher properties.
+// ---------------------
+
+type LauncherProperties struct {
+	Http  HttpLauncherProperties
+	Kafka KafkaLauncherProperties
 }
 
-type KafkaProducerProperties struct {
-	Url        string `yaml:"url"`
-	Topic      string `yaml:"topic"`
-	Partitions int32  `yaml:""`
+type HttpLauncherProperties struct {
+	ServerGateway string `yaml:"launcher.http.server-gateway"`
 }
 
-// Initialize the build configuration object
+type KafkaLauncherProperties struct {
+	BootstrapServers string `yaml:"launcher.kafka.bootstrap.servers"`
+	Topic            string `yaml:"launcher.kafka.topic"`
+	Partitions       int32  `yaml:"launcher.kafka.partitions"`
+}
+
+// ----------------------
+// Indicators properties.
+// ----------------------
+
+type IndicatorsProperties struct {
+	Netcard   string `yaml:"netcard"`
+	Physical  PhysicalIndicatorProperties
+	Virtual   VirtualIndicatorProperties
+	Redis     RedisIndicatorProperties
+	Zookeeper ZookeeperIndicatorProperties
+	Kafka     KafkaIndicatorProperties
+	Etcd      EtcdIndicatorProperties
+	Emq       EmqIndicatorProperties
+}
+
+// Indicators physical properties.
+type PhysicalIndicatorProperties struct {
+	Delay     time.Duration `yaml:"indicators.physical.delay"`
+	RangePort string        `yaml:"indicators.physical.range-port"`
+}
+
+// Indicators virtual properties.
+type VirtualIndicatorProperties struct {
+	Delay time.Duration `yaml:"indicators.virtual.delay"`
+}
+
+// Indicators redis properties.
+type RedisIndicatorProperties struct {
+	Delay time.Duration `yaml:"indicators.redis.delay"`
+}
+
+// Indicators zookeeper properties.
+type ZookeeperIndicatorProperties struct {
+	Delay time.Duration `yaml:"indicators.zookeeper.delay"`
+}
+
+// Indicators kafka properties.
+type KafkaIndicatorProperties struct {
+	Delay time.Duration `yaml:"indicators.kafka.delay"`
+}
+
+// Indicators etcd properties.
+type EtcdIndicatorProperties struct {
+	Delay time.Duration `yaml:"indicators.etcd.delay"`
+}
+
+// Indicators emq properties.
+type EmqIndicatorProperties struct {
+	Delay time.Duration `yaml:"indicators.emq.delay"`
+}
+
+// Initialize global properties.
 func InitGlobalProperties(path string) {
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
 	}
-	err = yaml.Unmarshal(yamlFile, &GlobalPropertiesObj)
+	err = yaml.Unmarshal(yamlFile, &GlobalConfig)
 	if err != nil {
 		log.MainLogger.Info("Unmarshal - ", zap.Error(err))
 	}
 
 	// Set Default
-	if GlobalPropertiesObj.ServerUri == "" {
-		GlobalPropertiesObj.ServerUri = constant.CONF_DEFAULT_SERVER_URI
+	if GlobalConfig.ServerGateway == "" {
+		GlobalConfig.ServerGateway = constant.CONF_DEFAULT_SERVER_URI
 	}
-	if GlobalPropertiesObj.PhysicalPropertiesObj.Net == "" {
-		GlobalPropertiesObj.PhysicalPropertiesObj.Net = constant.CONF_DEFAULT_NETCARD
+	if GlobalConfig.PhysicalPropertiesObj.Net == "" {
+		GlobalConfig.PhysicalPropertiesObj.Net = constant.CONF_DEFAULT_NETCARD
 	}
-	if GlobalPropertiesObj.PhysicalPropertiesObj.Delay == 0 {
-		GlobalPropertiesObj.PhysicalPropertiesObj.Delay = constant.CONF_DEFAULT_DELAY
+	if GlobalConfig.PhysicalPropertiesObj.Delay == 0 {
+		GlobalConfig.PhysicalPropertiesObj.Delay = constant.CONF_DEFAULT_DELAY
 	}
-	if GlobalPropertiesObj.KafkaProducerPropertiesObj.Url == "" {
-		GlobalPropertiesObj.KafkaProducerPropertiesObj.Url = constant.CONF_DEFAULT_KAFKA_URL
+	if GlobalConfig.KafkaProducerPropertiesObj.bootstrapServers == "" {
+		GlobalConfig.KafkaProducerPropertiesObj.bootstrapServers = constant.CONF_DEFAULT_KAFKA_URL
 	}
-	if GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic == "" {
-		GlobalPropertiesObj.KafkaProducerPropertiesObj.Topic = constant.CONF_DEFAULT_KAFKA_TOPIC
+	if GlobalConfig.KafkaProducerPropertiesObj.Topic == "" {
+		GlobalConfig.KafkaProducerPropertiesObj.Topic = constant.CONF_DEFAULT_KAFKA_TOPIC
 	}
-	if GlobalPropertiesObj.Provider == "" {
-		GlobalPropertiesObj.Provider = constant.CONF_DEFAULT_KAFKA_TOPIC
+	if GlobalConfig.Provider == "" {
+		GlobalConfig.Provider = constant.CONF_DEFAULT_KAFKA_TOPIC
 	}
 
 }

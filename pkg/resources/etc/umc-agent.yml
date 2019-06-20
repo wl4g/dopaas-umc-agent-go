@@ -28,14 +28,14 @@ launcher:
 #
 # Resource health indicators monitor configuration.
 #
-indicator:
+indicators:
+  # Network card name.
+  netcard: en0
   # Physical indicators.
   physical:
-    #delay(ms)
+    # Delay(ms)
     delay: 10000
-    #network card
-    net: en0
-    gather-port: 22,9092
+    range-port: 22,9092
   # Virtual indicators.
   virtual:
   # Redis indicators.
