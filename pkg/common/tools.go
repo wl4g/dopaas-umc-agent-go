@@ -25,7 +25,7 @@ import (
 	"strings"
 )
 
-var commandPath = "./pkg/resources/netCommand.txt"
+var commandPath = "./pkg/resources/net.port.sh"
 var command string
 
 //var sumCommand = "ss -n sport == 22|awk '{sumup += $3};{sumdo += $4};END {print sumup,sumdo}'"

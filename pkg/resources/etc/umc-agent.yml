@@ -1,0 +1,50 @@
+# Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+#
+# Agent monitors production sending data configuration, supports HTTP and Kafka server
+# receiving gateway, defaults to http. post sending.
+#
+launcher:
+  http:
+    server-gateway: http://10.0.0.26:14046/umc/basic
+  kafka:
+    bootstrap.servers: localhost:9092
+    #topic: __devops_umc_agent_metric_
+    #partitions: 10
+
+#
+# Resource health indicators monitor configuration.
+#
+indicator:
+  # Physical indicators.
+  physical:
+    #delay(ms)
+    delay: 10000
+    #network card
+    net: en0
+    gather-port: 22,9092
+  # Virtual indicators.
+  virtual:
+  # Redis indicators.
+  redis:
+  # Zookeeper indicators.
+  zookeeper:
+  # Kafka indicators.
+  kafka:
+  # Etcd indicators.
+  etcd:
+  # Emq indicators.
+  emq:
