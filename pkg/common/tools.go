@@ -17,6 +17,7 @@ package common
 
 import (
 	"fmt"
+	"github.com/shirou/gopsutil/net"
 	"go.uber.org/zap"
 	"regexp"
 	"strings"
@@ -48,7 +49,8 @@ func GetPhysicalId(netcard string) string {
 	for _, value := range nets {
 		if strings.EqualFold(netcard, value.Name) {
 			hardwareAddr := value.HardwareAddr
-			fmt.Println("found net card:" + hardwareAddr)
+			log.MainLogger.Info("Found network information", zap.String("hardwareAddr", hardwareAddr))
+
 			physicalId = hardwareAddr
 			reg := regexp.MustCompile(`(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}`)
 			for _, addr := range value.Addrs {

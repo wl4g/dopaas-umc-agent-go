@@ -14,3 +14,23 @@
  * limitations under the License.
  */
 package virtual
+
+import (
+	"umc-agent/pkg/monitor/share"
+)
+
+type DockerStatInfo struct {
+	share.TotalStat
+	DockerStats []DockerStat `json:"dockerInfos"`
+}
+
+type DockerStat struct {
+	ContainerId string `json:"containerId"`
+	Name        string `json:"name"`
+	CpuPerc     string `json:"cpuPerc"`
+	MemUsage    string `json:"memUsage"`
+	MemPerc     string `json:"memPerc"`
+	NetIO       string `json:"netIO"`
+	BlockIO     string `json:"blockIO"`
+	PIDs        string `json:"PIDs"`
+}

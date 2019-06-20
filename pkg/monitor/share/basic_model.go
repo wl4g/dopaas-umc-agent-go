@@ -20,25 +20,21 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
-// PhysicalId
-var PhysicalId string = "UNKNOWN"
-
-type Total struct {
-	Id          string                 `json:"physicalId"`
-	Type        string                 `json:"type"`
-	Mem         *mem.VirtualMemoryStat `json:"memInfo"`
-	Cpu         []float64              `json:"cpu"`
-	DiskInfos   []DiskInfo             `json:"diskInfos"`
-	NetInfos    []NetInfo              `json:"netInfos"`
-	DockerInfos []DockerInfo           `json:"dockerInfos"`
+type TotalStat struct {
+	Id        string                 `json:"physicalId"`
+	Type      string                 `json:"type"`
+	Mem       *mem.VirtualMemoryStat `json:"memInfo"`
+	Cpu       []float64              `json:"cpu"`
+	DiskStats []DiskStat             `json:"diskInfos"`
+	NetStats  []NetworkStat          `json:"netInfos"`
 }
 
-type DiskInfo struct {
+type DiskStat struct {
 	PartitionStat disk.PartitionStat `json:"partitionStat"`
 	Usage         disk.UsageStat     `json:"usage"`
 }
 
-type NetInfo struct {
+type NetworkStat struct {
 	Port      int `json:"port"`
 	Up        int `json:"up"`
 	Down      int `json:"down"`
@@ -49,15 +45,4 @@ type NetInfo struct {
 	Close     int `json:"close"`
 	Listen    int `json:"listen"`
 	Closing   int `json:"closing"`
-}
-
-type DockerInfo struct {
-	ContainerId string `json:"containerId"`
-	Name        string `json:"name"`
-	CpuPerc     string `json:"cpuPerc"`
-	MemUsage    string `json:"memUsage"`
-	MemPerc     string `json:"memPerc"`
-	NetIO       string `json:"netIO"`
-	BlockIO     string `json:"blockIO"`
-	PIDs        string `json:"PIDs"`
 }

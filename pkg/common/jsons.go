@@ -17,14 +17,15 @@ package common
 
 import (
 	"encoding/json"
-	"fmt"
+	"go.uber.org/zap"
+	"umc-agent/pkg/log"
 )
 
 // To JSON string.
 func ToJSONString(v interface{}) string {
 	s, err := json.Marshal(v)
 	if err != nil {
-		fmt.Printf("Marshal data error:%v\n", err)
+		log.MainLogger.Error("Marshal data error", zap.Error(err))
 	}
 	return string(s)
 }

@@ -16,7 +16,6 @@
 package physical
 
 import (
-	"fmt"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
@@ -29,59 +28,36 @@ import (
 	"umc-agent/pkg/monitor/share"
 )
 
-// Memory indicators runner
-func MemIndicatorsRunner() {
-	for true {
-		var result share.Total
-		v, _ := mem.VirtualMemory()
-		fmt.Printf("Total: %v, Free:%v, UsedPercent:%f%%\n", v.Total, v.Free, v.UsedPercent)
-		//fmt.Println(v)
-		result.Id = share.PhysicalId
-		result.Type = "mem"
-		result.Mem = v
-		fmt.Println("result = " + common.ToJSONString(result))
-		launcher.DoSendSubmit("mem", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
+var physicalIndicatorId = "UNKNOWN_PHYSICAL_INDICATOR_ID"
 
-// CPU indicators runner
-func CpuIndicatorsRunner() {
+// Physical indicators runner
+func BasicIndicatorsRunner() {
 	for true {
-		var result share.Total
+		var stat share.TotalStat
+
+		stat.Id = physicalIndicatorId
+		stat.Type = "physical"
+
 		p, _ := cpu.Percent(0, false)
-		//p, _ := cpu.Times(true)
-		fmt.Println(p)
-		/*pa, _ := cpu.Percent(10000* time.Millisecond, true)
-		fmt.Println(pa)*/
-		result.Id = share.PhysicalId
-		result.Type = "cpu"
-		result.Cpu = p
-		launcher.DoSendSubmit("cpu", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
+		stat.Cpu = p
 
-// Disk indicators runner
-func DiskIndicatorsRunner() {
-	for true {
-		var result share.Total
-		disks := GetDiskStatsInfo()
-		fmt.Println(disks)
-		result.Id = share.PhysicalId
-		result.Type = "disk"
-		result.DiskInfos = disks
-		launcher.DoSendSubmit("disk", result)
+		v, _ := mem.VirtualMemory()
+		stat.Mem = v
+
+		stat.DiskStats = getDiskStatsInfo()
+		stat.NetStats = getNetworkStatsInfo()
+
+		launcher.DoSendSubmit("total", stat)
 		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
 // Disks stats info
-func GetDiskStatsInfo() []share.DiskInfo {
+func getDiskStatsInfo() []share.DiskStat {
 	partitionStats, _ := disk.Partitions(false)
-	var disks []share.DiskInfo
+	var disks []share.DiskStat
 	for _, value := range partitionStats {
-		var disk1 share.DiskInfo
+		var disk1 share.DiskStat
 		mountpoint := value.Mountpoint
 		usageStat, _ := disk.Usage(mountpoint)
 		disk1.PartitionStat = value
@@ -91,32 +67,19 @@ func GetDiskStatsInfo() []share.DiskInfo {
 	return disks
 }
 
-// Network indicators runner
-func NetIndicatorsRunner() {
-	for true {
-		var result share.Total
-		n := GetNetworkStatsInfo()
-		result.Id = share.PhysicalId
-		result.Type = "net"
-		result.NetInfos = n
-		launcher.DoSendSubmit("net", result)
-		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
-	}
-}
-
 // Network stats info
-func GetNetworkStatsInfo() []share.NetInfo {
+func getNetworkStatsInfo() []share.NetworkStat {
 	ports := strings.Split(config.GlobalPropertiesObj.PhysicalPropertiesObj.GatherPort, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()
 	//fmt.Println(te)
-	var n []share.NetInfo
+	var n []share.NetworkStat
 	for _, p := range ports {
 		re := common.GetNetworkInterfaces(p)
 		res := strings.Split(re, " ")
 		if len(res) == 9 {
-			var netinfo share.NetInfo
+			var netinfo share.NetworkStat
 			netinfo.Port, _ = strconv.Atoi(p)
 			netinfo.Up, _ = strconv.Atoi(res[0])
 			netinfo.Down, _ = strconv.Atoi(res[1])
@@ -131,4 +94,9 @@ func GetNetworkStatsInfo() []share.NetInfo {
 		}
 	}
 	return n
+}
+
+func init() {
+	// Init physical hardware identify
+	physicalIndicatorId = common.GetPhysicalId(config.GlobalPropertiesObj.PhysicalPropertiesObj.Net)
 }

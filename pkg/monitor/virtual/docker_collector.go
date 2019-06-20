@@ -23,33 +23,34 @@ import (
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/log"
-	"umc-agent/pkg/monitor/share"
 )
+
+var DockerIndicatorId = "UNKNOWN_DOCKER_INDICATOR_ID"
 
 // Docker indicators runner
 func DockerIndicatorsRunner() {
 	for true {
-		dockerInfo := GetDockerStatsInfo()
-		log.MainLogger.Info(common.ToJSONString(dockerInfo))
-		var result share.Total
-		result.Id = share.PhysicalId
+		dockerStats := getDockerStats()
+		log.MainLogger.Info(common.ToJSONString(dockerStats))
+		var result DockerStatInfo
+		result.Id = DockerIndicatorId
 		result.Type = "docker"
-		result.DockerInfos = dockerInfo
+		result.DockerStats = dockerStats
 		launcher.DoSendSubmit("docker", result)
 		time.Sleep(config.GlobalPropertiesObj.PhysicalPropertiesObj.Delay * time.Millisecond)
 	}
 }
 
 // Docker stats info
-func GetDockerStatsInfo() []share.DockerInfo {
-	var command = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
-	s, _ := common.ExecShell(command)
-	var dockerInfos []share.DockerInfo
+func getDockerStats() []DockerStat {
+	var cmd = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
+	s, _ := common.ExecShell(cmd)
+	var dockerStats []DockerStat
 	if s != "" {
 		s = strings.ReplaceAll(s, "\n", ",")
 		s = strings.TrimSuffix(s, ",")
 		s = "[" + s + "]"
-		json.Unmarshal([]byte(s), &dockerInfos)
+		json.Unmarshal([]byte(s), &dockerStats)
 	}
-	return dockerInfos
+	return dockerStats
 }

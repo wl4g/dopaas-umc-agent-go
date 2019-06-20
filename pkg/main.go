@@ -19,13 +19,10 @@ import (
 	"flag"
 	"go.uber.org/zap"
 	"time"
-	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/log"
 	"umc-agent/pkg/monitor/physical"
-	"umc-agent/pkg/monitor/share"
 	"umc-agent/pkg/monitor/virtual"
 )
 
@@ -40,24 +37,11 @@ func init() {
 
 	// Init global configuration
 	config.InitGlobalProperties(confPath)
-
-	// Init physical hardware identify
-	share.PhysicalId = common.GetPhysicalId(config.GlobalPropertiesObj.PhysicalPropertiesObj.Net)
-
-	// Init kafka producer(if necessary)
-	launcher.InitKafkaProducer()
 }
 
 func main() {
-	if config.GlobalPropertiesObj.Batch == true {
-		go share.CompositeIndicatorsRunner()
-	} else {
-		go physical.MemIndicatorsRunner()
-		go physical.CpuIndicatorsRunner()
-		go physical.DiskIndicatorsRunner()
-		go physical.NetIndicatorsRunner()
-		go virtual.DockerIndicatorsRunner()
-	}
+	go physical.BasicIndicatorsRunner()
+	go virtual.DockerIndicatorsRunner()
 	for true {
 		time.Sleep(100000 * time.Millisecond)
 	}

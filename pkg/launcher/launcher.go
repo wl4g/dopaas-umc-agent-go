@@ -53,5 +53,5 @@ func doSendHttp(ty string, data string) {
 
 // Monitor data to Kafka gateway
 func doSendKafka(ty string, data string) {
-	doKafkaProducer(data)
+	doProducer(data)
 }
