@@ -24,6 +24,8 @@ import (
 	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/physical"
+	"umc-agent/pkg/monitor/redis"
+	"umc-agent/pkg/monitor/virtual"
 	"umc-agent/pkg/monitor/zookeeper"
 )
 
@@ -34,25 +36,22 @@ func init() {
 	flag.StringVar(&confPath, "c", constant.DefaultConfigPath, "Config must is required!")
 	flag.Parse()
 	//flag.Usage()
+
 	logging.MainLogger.Info("Initialize config file", zap.String("confPath", confPath))
 
 	// Init global config.
 	config.InitGlobalConfig(confPath)
-
-	// Init physical indicator identifyId
-	physical.InitPhysicalIndicatorId()
 
 	// Init kafka launcher.(if necessary)
 	launcher.InitKafkaLauncherIfNecessary()
 }
 
 func main() {
-	//go physical.BasicIndicatorsRunner()
-	//go virtual.DockerIndicatorsRunner()
-	//go redis.RedisIndicatorsRunner()
-	//go zookeeper.ZookeeperIndicatorsRunner()
+	go physical.IndicatorsRunner()
+	go virtual.IndicatorsRunner()
+	go redis.IndicatorsRunner()
+	go zookeeper.IndicatorsRunner()
 
-	zookeeper.ZookeeperIndicatorsRunner()
 	for true {
 		time.Sleep(100000 * time.Millisecond)
 	}

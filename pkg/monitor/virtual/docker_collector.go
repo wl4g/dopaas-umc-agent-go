@@ -17,6 +17,7 @@ package virtual
 
 import (
 	"encoding/json"
+	"go.uber.org/zap"
 	"strings"
 	"time"
 	"umc-agent/pkg/common"
@@ -25,17 +26,17 @@ import (
 	"umc-agent/pkg/logging"
 )
 
-var DockerIndicatorId = "UNKNOWN_DOCKER_INDICATOR_ID"
-
 // Docker indicators runner
-func DockerIndicatorsRunner() {
+func IndicatorsRunner() {
+	// Loop monitor
 	for true {
 		dockerStats := getDockerStats()
 		logging.MainLogger.Info(common.ToJSONString(dockerStats))
 		var result DockerStatInfo
-		result.Id = DockerIndicatorId
+		result.Id = config.LocalHardwareAddrId
 		result.Type = "docker"
 		result.DockerStats = dockerStats
+
 		launcher.DoSendSubmit("docker", result)
 		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
 	}
@@ -44,6 +45,8 @@ func DockerIndicatorsRunner() {
 // Docker stats info
 func getDockerStats() []DockerStat {
 	var cmd = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
+	logging.MainLogger.Info("Execution docker stat", zap.String("cmd", cmd))
+
 	s, _ := common.ExecShell(cmd)
 	var dockerStats []DockerStat
 	if s != "" {

@@ -20,6 +20,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"time"
+	"umc-agent/pkg/common"
 	"umc-agent/pkg/constant"
 )
 
@@ -105,7 +106,7 @@ type RedisIndicatorProperties struct {
 // Indicators zookeeper properties.
 type ZookeeperIndicatorProperties struct {
 	Delay      time.Duration `yaml:"delay"`
-	Host       string        `yaml:"host"`
+	Servers    string        `yaml:"servers"`
 	Command    string        `yaml:"command"`
 	Properties string        `yaml:"properties"`
 }
@@ -133,7 +134,10 @@ type ConsulIndicatorProperties struct {
 // Global configuration.
 var GlobalConfig GlobalProperties
 
-// Initialize global config properties.
+// Local hardware addr ID.
+var LocalHardwareAddrId = ""
+
+// Init global config properties.
 func InitGlobalConfig(path string) {
 	// Set defaults
 	setDefaults()
@@ -147,6 +151,9 @@ func InitGlobalConfig(path string) {
 	if err != nil {
 		fmt.Printf("Unmarshal config '%s' error! %s", path, err)
 	}
+
+	// Post properties.
+	afterPropertiesSet()
 }
 
 // Set defaults
@@ -191,7 +198,7 @@ func setDefaults() {
 			},
 			Zookeeper: ZookeeperIndicatorProperties{
 				Delay:      constant.DefaultIndicatorsDelay,
-				Host:       constant.DefaultWatchZkServers,
+				Servers:    constant.DefaultWatchZkServers,
 				Command:    constant.DefaultWatchZkServers,
 				Properties: constant.DefaultWatchZkServers,
 			},
@@ -207,4 +214,12 @@ func setDefaults() {
 		},
 	}
 	GlobalConfig = *globalConfig
+}
+
+// Properties settings after initialization
+func afterPropertiesSet() {
+	LocalHardwareAddrId = common.GetHardwareAddr(GlobalConfig.Indicators.Netcard)
+	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
+		panic("net found ip,Please check the net conf")
+	}
 }

@@ -28,20 +28,13 @@ import (
 	"umc-agent/pkg/monitor/share"
 )
 
-var PhysicalIndicatorId = "UNKNOWN_PHYSICAL_INDICATOR_ID"
-
-// Inti physical indicatorId
-func InitPhysicalIndicatorId() {
-	// Physical hardware identify
-	PhysicalIndicatorId = common.GetPhysicalId(config.GlobalConfig.Indicators.Netcard)
-}
-
 // Physical indicators runner
-func BasicIndicatorsRunner() {
+func IndicatorsRunner() {
+	// Loop monitor
 	for true {
 		var stat share.TotalStat
 
-		stat.Id = PhysicalIndicatorId
+		stat.Id = config.LocalHardwareAddrId
 		stat.Type = "physical"
 
 		p, _ := cpu.Percent(0, false)
@@ -100,9 +93,4 @@ func getNetworkStatsInfo() []share.NetworkStat {
 		}
 	}
 	return n
-}
-
-func GetPhysicalIndicatorId() {
-	// Init physical hardware identify
-	PhysicalIndicatorId = common.GetPhysicalId(config.GlobalConfig.Indicators.Netcard)
 }

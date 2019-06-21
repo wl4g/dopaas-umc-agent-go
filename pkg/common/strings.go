@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package redis
+package common
 
-type Redis struct {
-	Id         string `json:"physicalId"`
-	Type       string `json:"type"`
-	RedisInfos []Info `json:"redisInfos"`
-}
-
-type Info struct {
-	Port       string            `json:"port"`
-	Properties map[string]string `json:"properties"`
+// Check whether the string contains
+func StringsContains(array []string, val string) bool {
+	for i := 0; i < len(array); i++ {
+		if array[i] == val {
+			return true
+		}
+	}
+	return false
 }

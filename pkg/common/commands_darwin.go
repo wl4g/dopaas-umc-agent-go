@@ -17,9 +17,8 @@ package common
 
 import (
 	"bytes"
-	"go.uber.org/zap"
+	"fmt"
 	"os/exec"
-	"umc-agent/pkg/logging"
 )
 
 // Blocking the execution of shell commands, waiting for execution
@@ -33,7 +32,7 @@ func ExecShell(s string) (string, error) {
 	//Run执行c包含的命令，并阻塞直到完成。  这里stdout被取出，cmd.Wait()无法正确获取stdin,stdout,stderr，则阻塞在那了
 	err := cmd.Run()
 	if err != nil {
-		logging.MainLogger.Error("Exec error!", zap.Error(err))
+		fmt.Printf("Execution error! %s", err)
 	}
 
 	return out.String(), err

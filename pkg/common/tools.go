@@ -16,12 +16,9 @@
 package common
 
 import (
-	"fmt"
 	"github.com/shirou/gopsutil/net"
-	"go.uber.org/zap"
 	"regexp"
 	"strings"
-	"umc-agent/pkg/logging"
 )
 
 var commandPath = "./pkg/resources/cmd/net.port.sh.txt"
@@ -36,51 +33,34 @@ func GetNetworkInterfaces(port string) string {
 	cmd := strings.Replace(command, "#{port}", port, -1)
 	s, _ := ExecShell(cmd)
 
-	logging.MainLogger.Debug("Exec complete", zap.String("result", s))
+	//fmt.Printf("Execution completed for - '%s'", s)
 	return s
 }
 
 // Get hardware information such as network card as
 // physical host identification.
-func GetPhysicalId(netcard string) string {
-	var physicalId string
+func GetHardwareAddr(netcard string) string {
+	var hardwareId = ""
 	nets, _ := net.Interfaces()
-	var found = false
-	for _, value := range nets {
-		if strings.EqualFold(netcard, value.Name) {
-			hardwareAddr := value.HardwareAddr
-			logging.MainLogger.Info("Found network information", zap.String("hardwareAddr", hardwareAddr))
+ok:
+	for _, netStat := range nets {
+		if strings.EqualFold(netcard, netStat.Name) {
+			//fmt.Printf("Found network interfaces for - '%s'", netStat.HardwareAddr)
 
-			physicalId = hardwareAddr
 			reg := regexp.MustCompile(`(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})(\.(2(5[0-5]{1}|[0-4]\d{1})|[0-1]?\d{1,2})){3}`)
-			for _, addr := range value.Addrs {
-				add := addr.Addr
-				if len(reg.FindAllString(add, -1)) > 0 {
-					fmt.Println("found ip " + add)
-					//id = add+" "+id
-					a := strings.Split(add, "/")
+			for _, addr := range netStat.Addrs {
+				_addr := addr.Addr
+				if len(reg.FindAllString(_addr, -1)) > 0 {
+					a := strings.Split(_addr, "/")
 					if len(a) >= 2 {
-						physicalId = a[0]
+						hardwareId = a[0]
 					} else {
-						physicalId = add
+						hardwareId = _addr
 					}
-					found = true
-					break
+					break ok
 				}
 			}
 		}
 	}
-	if !found {
-		panic("net found ip,Please check the net conf")
-	}
-	return physicalId
-}
-
-func StringsContains(array []string, val string) bool {
-	for i := 0; i < len(array); i++ {
-		if array[i] == val {
-			return true
-		}
-	}
-	return false
+	return hardwareId
 }

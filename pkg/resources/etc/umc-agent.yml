@@ -43,6 +43,7 @@ logging:
 #
 indicators:
   # Network card name.
+  #netcard: 无线网络连接 2
   netcard: en0
   # Physical indicators.
   physical:
@@ -89,7 +90,7 @@ indicators:
   # Zookeeper indicators.
   zookeeper:
     delay: 10000
-    host: localhost:2181
+    servers: localhost:2181
     commands: mntr,conf
     properties:
       zk_avg_latency,
