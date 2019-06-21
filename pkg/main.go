@@ -24,6 +24,7 @@ import (
 	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/physical"
+	"umc-agent/pkg/monitor/zookeeper"
 )
 
 func init() {
@@ -46,8 +47,12 @@ func init() {
 }
 
 func main() {
-	go physical.BasicIndicatorsRunner()
+	//go physical.BasicIndicatorsRunner()
 	//go virtual.DockerIndicatorsRunner()
+	//go redis.RedisIndicatorsRunner()
+	//go zookeeper.ZookeeperIndicatorsRunner()
+
+	zookeeper.ZookeeperIndicatorsRunner()
 	for true {
 		time.Sleep(100000 * time.Millisecond)
 	}

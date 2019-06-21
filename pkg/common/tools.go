@@ -75,3 +75,12 @@ func GetPhysicalId(netcard string) string {
 	}
 	return physicalId
 }
+
+func StringsContains(array []string, val string) bool {
+	for i := 0; i < len(array); i++ {
+		if array[i] == val {
+			return true
+		}
+	}
+	return false
+}

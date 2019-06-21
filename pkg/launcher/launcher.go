@@ -52,5 +52,5 @@ func doSendHttp(ty string, data string) {
 
 // Send indicators-data to Kafka
 func doSendKafka(ty string, data string) {
-	doProducer(data)
+	doProducer(ty,data)
 }

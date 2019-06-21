@@ -14,3 +14,14 @@
  * limitations under the License.
  */
 package redis
+
+type Redis struct {
+	Id         string      `json:"physicalId"`
+	Type       string      `json:"type"`
+	RedisInfos []RedisInfo `json:"redisInfos"`
+}
+
+type RedisInfo struct {
+	Port       string               `json:"port"`
+	Properties map[string]string `json:"properties"`
+}
