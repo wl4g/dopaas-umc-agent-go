@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/constant"
@@ -199,8 +200,8 @@ func setDefaults() {
 			Zookeeper: ZookeeperIndicatorProperties{
 				Delay:      constant.DefaultIndicatorsDelay,
 				Servers:    constant.DefaultWatchZkServers,
-				Command:    constant.DefaultWatchZkServers,
-				Properties: constant.DefaultWatchZkServers,
+				Command:    constant.DefaultZkIndicatorsCommands,
+				Properties: constant.DefaultZkIndicatorsProperties,
 			},
 			Etcd: EtcdIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,
@@ -218,8 +219,15 @@ func setDefaults() {
 
 // Properties settings after initialization
 func afterPropertiesSet() {
+	// Got local hardware addr
 	LocalHardwareAddrId = common.GetHardwareAddr(GlobalConfig.Indicators.Netcard)
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
 		panic("net found ip,Please check the net conf")
+	}
+
+	// Mandatory overlay netcard
+	var netcard = os.Getenv("UMC_NETCARD")
+	if !common.IsEmpty(netcard) {
+		GlobalConfig.Indicators.Netcard = netcard
 	}
 }

@@ -24,3 +24,8 @@ func StringsContains(array []string, val string) bool {
 	}
 	return false
 }
+
+// Is empty
+func IsEmpty(str string) bool {
+	return str == "" || len(str) <= 0
+}
