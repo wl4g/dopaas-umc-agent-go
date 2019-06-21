@@ -20,6 +20,6 @@ import (
 	"testing"
 )
 
-func TestEmqCollector(t *testing.T) {
+func TestConsulCollector(t *testing.T) {
 	fmt.Printf("Testing %s collector starting ...", "consul")
 }
