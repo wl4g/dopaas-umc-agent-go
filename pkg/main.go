@@ -24,7 +24,6 @@ import (
 	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/physical"
-	"umc-agent/pkg/monitor/virtual"
 )
 
 var confPath string = constant.DefaultConfigPath
@@ -39,13 +38,16 @@ func init() {
 	// Init global config.
 	config.InitGlobalConfig(confPath)
 
+	//get physical id
+	physical.GetPhysicalIndicatorId()
+
 	// Init kafka launcher.(if necessary)
 	launcher.InitKafkaLauncherIfNecessary()
 }
 
 func main() {
 	go physical.BasicIndicatorsRunner()
-	go virtual.DockerIndicatorsRunner()
+	//go virtual.DockerIndicatorsRunner()
 	for true {
 		time.Sleep(100000 * time.Millisecond)
 	}

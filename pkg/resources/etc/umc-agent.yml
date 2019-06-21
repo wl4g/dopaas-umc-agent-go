@@ -19,7 +19,7 @@
 #
 launcher:
   http:
-    server-gateway: http://10.0.0.26:14046/umc/basic
+    server-gateway: http://10.0.0.26:14046/umc/basic2
   kafka:
     enabled: true # This enabled switch takes precedence over the HTTP launcher.
     bootstrap.servers: localhost:9092
@@ -39,13 +39,18 @@ indicators:
     range-port: 22,9092
   # Virtual indicators.
   virtual:
+    delay: 10000
   # Redis indicators.
   redis:
+    ports: 6379,6380,6081
   # Zookeeper indicators.
   zookeeper:
+    host: localhost:2181
   # Kafka indicators.
   kafka:
   # Etcd indicators.
   etcd:
   # Emq indicators.
   emq:
+  #consul indicators
+  consul:

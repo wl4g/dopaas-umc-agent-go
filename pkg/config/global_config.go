@@ -28,8 +28,8 @@ import (
 var GlobalConfig GlobalProperties
 
 type GlobalProperties struct {
-	Launcher   LauncherProperties
-	Indicators IndicatorsProperties
+	Launcher   LauncherProperties `yaml:"launcher"`
+	Indicators IndicatorsProperties `yaml:"indicators"`
 }
 
 // ---------------------
@@ -37,19 +37,19 @@ type GlobalProperties struct {
 // ---------------------
 
 type LauncherProperties struct {
-	Http  HttpLauncherProperties
-	Kafka KafkaLauncherProperties
+	Http  HttpLauncherProperties  `yaml:"http"`
+	Kafka KafkaLauncherProperties  `yaml:"kafka"`
 }
 
 type HttpLauncherProperties struct {
-	ServerGateway string `yaml:"launcher.http.server-gateway"`
+	ServerGateway string `yaml:"server-gateway"`
 }
 
 type KafkaLauncherProperties struct {
-	Enabled          bool   `yaml:"launcher.kafka.enabled"`
-	BootstrapServers string `yaml:"launcher.kafka.bootstrap.servers"`
-	Topic            string `yaml:"launcher.kafka.topic"`
-	Partitions       int32  `yaml:"launcher.kafka.partitions"`
+	Enabled          bool   `yaml:"enabled"`
+	BootstrapServers string `yaml:"bootstrap.servers"`
+	Topic            string `yaml:"topic"`
+	Partitions       int32  `yaml:"partitions"`
 }
 
 // ----------------------
@@ -58,49 +58,57 @@ type KafkaLauncherProperties struct {
 
 type IndicatorsProperties struct {
 	Netcard   string `yaml:"netcard"`
-	Physical  PhysicalIndicatorProperties
-	Virtual   VirtualIndicatorProperties
-	Redis     RedisIndicatorProperties
-	Zookeeper ZookeeperIndicatorProperties
-	Kafka     KafkaIndicatorProperties
-	Etcd      EtcdIndicatorProperties
-	Emq       EmqIndicatorProperties
+	Physical  PhysicalIndicatorProperties `yaml:"physical"`
+	Virtual   VirtualIndicatorProperties `yaml:"virtual"`
+	Redis     RedisIndicatorProperties `yaml:"redis"`
+	Zookeeper ZookeeperIndicatorProperties `yaml:"zookeeper"`
+	Kafka     KafkaIndicatorProperties `yaml:"kafka"`
+	Etcd      EtcdIndicatorProperties `yaml:"etcd"`
+	Emq       EmqIndicatorProperties `yaml:"emq"`
+	Consul	  ConsulIndicatorProperties `yaml:"consul"`
 }
 
 // Indicators physical properties.
 type PhysicalIndicatorProperties struct {
-	Delay     time.Duration `yaml:"indicators.physical.delay"`
-	RangePort string        `yaml:"indicators.physical.range-port"`
+	Delay     time.Duration `yaml:"delay"`
+	RangePort string        `yaml:"range-port"`
 }
 
 // Indicators virtual properties.
 type VirtualIndicatorProperties struct {
-	Delay time.Duration `yaml:"indicators.virtual.delay"`
+	Delay time.Duration `yaml:"delay"`
 }
 
 // Indicators redis properties.
 type RedisIndicatorProperties struct {
-	Delay time.Duration `yaml:"indicators.redis.delay"`
+	Delay time.Duration `yaml:"delay"`
+	Ports string `yaml:"ports"`
 }
 
 // Indicators zookeeper properties.
 type ZookeeperIndicatorProperties struct {
-	Delay time.Duration `yaml:"indicators.zookeeper.delay"`
+	Delay time.Duration `yaml:"delay"`
+	Host string `yaml:"host"`
 }
 
 // Indicators kafka properties.
 type KafkaIndicatorProperties struct {
-	Delay time.Duration `yaml:"indicators.kafka.delay"`
+	Delay time.Duration `yaml:"delay"`
 }
 
 // Indicators etcd properties.
 type EtcdIndicatorProperties struct {
-	Delay time.Duration `yaml:"indicators.etcd.delay"`
+	Delay time.Duration `yaml:"delay"`
 }
 
 // Indicators emq properties.
 type EmqIndicatorProperties struct {
-	Delay time.Duration `yaml:"indicators.emq.delay"`
+	Delay time.Duration `yaml:"delay"`
+}
+
+// Indicators emq properties.
+type ConsulIndicatorProperties struct {
+	Delay time.Duration `yaml:"delay"`
 }
 
 // Initialize global config properties.
@@ -155,6 +163,9 @@ func setDefaults() {
 				Delay: constant.DefaultIndicatorsDelay,
 			},
 			Emq: EmqIndicatorProperties{
+				Delay: constant.DefaultIndicatorsDelay,
+			},
+			Consul: ConsulIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,
 			},
 		},

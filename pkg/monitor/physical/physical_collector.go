@@ -96,7 +96,7 @@ func getNetworkStatsInfo() []share.NetworkStat {
 	return n
 }
 
-func init() {
+func GetPhysicalIndicatorId() {
 	// Init physical hardware identify
 	physicalIndicatorId = common.GetPhysicalId(config.GlobalConfig.Indicators.Netcard)
 }

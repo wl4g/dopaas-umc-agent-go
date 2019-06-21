@@ -24,7 +24,7 @@ import (
 	"umc-agent/pkg/logging"
 )
 
-var commandPath = "./pkg/resources/net.port.sh.txt"
+var commandPath = "./pkg/resources/cmd/net.port.sh.txt"
 var command string
 
 // Get network interfaces.

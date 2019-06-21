@@ -15,12 +15,9 @@
  */
 package virtual
 
-import (
-	"umc-agent/pkg/monitor/share"
-)
-
 type DockerStatInfo struct {
-	share.TotalStat
+	Id          string       `json:"physicalId"`
+	Type        string       `json:"type"`
 	DockerStats []DockerStat `json:"dockerInfos"`
 }
 
