@@ -26,20 +26,20 @@ import (
 	"umc-agent/pkg/monitor/physical"
 )
 
-var confPath string = constant.DefaultConfigPath
-
 func init() {
+	var confPath = constant.DefaultConfigPath
+
 	// Command config path
-	flag.StringVar(&confPath, "p", constant.DefaultConfigPath, "Config must is required!")
+	flag.StringVar(&confPath, "c", constant.DefaultConfigPath, "Config must is required!")
 	flag.Parse()
 	//flag.Usage()
-	logging.MainLogger.Info("Initialize config path", zap.String("confPath", confPath))
+	logging.MainLogger.Info("Initialize config file", zap.String("confPath", confPath))
 
 	// Init global config.
 	config.InitGlobalConfig(confPath)
 
-	//get physical id
-	physical.GetPhysicalIndicatorId()
+	// Init physical indicator identifyId
+	physical.InitPhysicalIndicatorId()
 
 	// Init kafka launcher.(if necessary)
 	launcher.InitKafkaLauncherIfNecessary()

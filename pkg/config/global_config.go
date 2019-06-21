@@ -28,7 +28,7 @@ import (
 var GlobalConfig GlobalProperties
 
 type GlobalProperties struct {
-	Launcher   LauncherProperties `yaml:"launcher"`
+	Launcher   LauncherProperties   `yaml:"launcher"`
 	Indicators IndicatorsProperties `yaml:"indicators"`
 }
 
@@ -38,7 +38,7 @@ type GlobalProperties struct {
 
 type LauncherProperties struct {
 	Http  HttpLauncherProperties  `yaml:"http"`
-	Kafka KafkaLauncherProperties  `yaml:"kafka"`
+	Kafka KafkaLauncherProperties `yaml:"kafka"`
 }
 
 type HttpLauncherProperties struct {
@@ -57,15 +57,15 @@ type KafkaLauncherProperties struct {
 // ----------------------
 
 type IndicatorsProperties struct {
-	Netcard   string `yaml:"netcard"`
-	Physical  PhysicalIndicatorProperties `yaml:"physical"`
-	Virtual   VirtualIndicatorProperties `yaml:"virtual"`
-	Redis     RedisIndicatorProperties `yaml:"redis"`
+	Netcard   string                       `yaml:"netcard"`
+	Physical  PhysicalIndicatorProperties  `yaml:"physical"`
+	Virtual   VirtualIndicatorProperties   `yaml:"virtual"`
+	Redis     RedisIndicatorProperties     `yaml:"redis"`
 	Zookeeper ZookeeperIndicatorProperties `yaml:"zookeeper"`
-	Kafka     KafkaIndicatorProperties `yaml:"kafka"`
-	Etcd      EtcdIndicatorProperties `yaml:"etcd"`
-	Emq       EmqIndicatorProperties `yaml:"emq"`
-	Consul	  ConsulIndicatorProperties `yaml:"consul"`
+	Kafka     KafkaIndicatorProperties     `yaml:"kafka"`
+	Etcd      EtcdIndicatorProperties      `yaml:"etcd"`
+	Emq       EmqIndicatorProperties       `yaml:"emq"`
+	Consul    ConsulIndicatorProperties    `yaml:"consul"`
 }
 
 // Indicators physical properties.
@@ -82,13 +82,13 @@ type VirtualIndicatorProperties struct {
 // Indicators redis properties.
 type RedisIndicatorProperties struct {
 	Delay time.Duration `yaml:"delay"`
-	Ports string `yaml:"ports"`
+	Ports string        `yaml:"ports"`
 }
 
 // Indicators zookeeper properties.
 type ZookeeperIndicatorProperties struct {
 	Delay time.Duration `yaml:"delay"`
-	Host string `yaml:"host"`
+	Host  string        `yaml:"host"`
 }
 
 // Indicators kafka properties.
@@ -106,7 +106,7 @@ type EmqIndicatorProperties struct {
 	Delay time.Duration `yaml:"delay"`
 }
 
-// Indicators emq properties.
+// Indicators consul properties.
 type ConsulIndicatorProperties struct {
 	Delay time.Duration `yaml:"delay"`
 }

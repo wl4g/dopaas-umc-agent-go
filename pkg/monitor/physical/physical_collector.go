@@ -30,6 +30,12 @@ import (
 
 var physicalIndicatorId = "UNKNOWN_PHYSICAL_INDICATOR_ID"
 
+// Inti physical indicatorId
+func InitPhysicalIndicatorId() {
+	// Physical hardware identify
+	physicalIndicatorId = common.GetPhysicalId(config.GlobalConfig.Indicators.Netcard)
+}
+
 // Physical indicators runner
 func BasicIndicatorsRunner() {
 	for true {
@@ -94,9 +100,4 @@ func getNetworkStatsInfo() []share.NetworkStat {
 		}
 	}
 	return n
-}
-
-func GetPhysicalIndicatorId() {
-	// Init physical hardware identify
-	physicalIndicatorId = common.GetPhysicalId(config.GlobalConfig.Indicators.Netcard)
 }
