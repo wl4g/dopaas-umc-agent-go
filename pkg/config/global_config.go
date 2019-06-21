@@ -219,15 +219,16 @@ func setDefaults() {
 
 // Properties settings after initialization
 func afterPropertiesSet() {
+	// Environmental variable priority
+	var netcard = os.Getenv("UMC_NETCARD")
+	if !common.IsEmpty(netcard) {
+		GlobalConfig.Indicators.Netcard = netcard
+	}
+
 	// Got local hardware addr
 	LocalHardwareAddrId = common.GetHardwareAddr(GlobalConfig.Indicators.Netcard)
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
 		panic("net found ip,Please check the net conf")
 	}
 
-	// Mandatory overlay netcard
-	var netcard = os.Getenv("UMC_NETCARD")
-	if !common.IsEmpty(netcard) {
-		GlobalConfig.Indicators.Netcard = netcard
-	}
 }
