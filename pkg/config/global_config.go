@@ -51,7 +51,6 @@ type PolicyProperties struct {
 // ---------------------
 // Launcher properties.
 // ---------------------
-
 type LauncherProperties struct {
 	Http  HttpLauncherProperties  `yaml:"http"`
 	Kafka KafkaLauncherProperties `yaml:"kafka"`
@@ -99,12 +98,18 @@ type VirtualIndicatorProperties struct {
 type RedisIndicatorProperties struct {
 	Delay time.Duration `yaml:"delay"`
 	Ports string        `yaml:"ports"`
+	Password string `yaml:"password"`
+	Properties string `yaml:"properties"`
+
 }
 
 // Indicators zookeeper properties.
 type ZookeeperIndicatorProperties struct {
 	Delay time.Duration `yaml:"delay"`
 	Host  string        `yaml:"host"`
+	Command string `yaml:"command"`
+	Properties string `yaml:"properties"`
+
 }
 
 // Indicators kafka properties.
@@ -180,12 +185,17 @@ func setDefaults() {
 			},
 			Redis: RedisIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,
+				Ports: constant.DefaultRedisPort,
+				Properties: constant.DeaultRedisProperties,
 			},
 			Kafka: KafkaIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,
 			},
 			Zookeeper: ZookeeperIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,
+				Host: constant.DefaultZookeeperHost,
+				Command: constant.DefaultZookeeperHost,
+				Properties: constant.DefaultZookeeperHost,
 			},
 			Etcd: EtcdIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,

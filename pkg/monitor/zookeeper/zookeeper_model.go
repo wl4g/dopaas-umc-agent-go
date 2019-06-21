@@ -14,3 +14,15 @@
  * limitations under the License.
  */
 package zookeeper
+
+type Zookeeper struct {
+	Id         string      `json:"physicalId"`
+	Type       string      `json:"type"`
+	Properties map[string]string `json:"properties"`
+}
+
+
+
+
+
+
