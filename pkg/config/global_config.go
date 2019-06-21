@@ -16,12 +16,11 @@
 package config
 
 import (
-	"go.uber.org/zap"
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"time"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/logging"
 )
 
 // ---------------------
@@ -138,12 +137,12 @@ func InitGlobalConfig(path string) {
 
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
-		logging.MainLogger.Info("yamlFile.Get err - ", zap.Error(err))
+		fmt.Printf("Read config '%s' error! %s", path, err)
 	}
 
 	err = yaml.Unmarshal(yamlFile, &GlobalConfig)
 	if err != nil {
-		logging.MainLogger.Error("Unmarshal error", zap.Error(err))
+		fmt.Printf("Unmarshal config '%s' error! %s", path, err)
 	}
 }
 
