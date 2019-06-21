@@ -24,12 +24,29 @@ import (
 	"umc-agent/pkg/logging"
 )
 
-// Global config properties.
-var GlobalConfig GlobalProperties
-
+// ---------------------
+// Global properties
+// ---------------------
 type GlobalProperties struct {
+	Logging    LoggingProperties    `yaml:"logging"`
 	Launcher   LauncherProperties   `yaml:"launcher"`
 	Indicators IndicatorsProperties `yaml:"indicators"`
+}
+
+// ---------------------
+// Logging properties
+// ---------------------
+type LoggingProperties struct {
+	FileName string           `yaml:"file"`
+	Level    string           `yaml:"level"`
+	Policy   PolicyProperties `yaml:"policy"`
+}
+
+// Logging archive policy
+type PolicyProperties struct {
+	RetentionDays int `yaml:"retention-days"`
+	MaxBackups    int `yaml:"max-backups"`
+	MaxSize       int `yaml:"max-size"`
 }
 
 // ---------------------
@@ -111,6 +128,9 @@ type ConsulIndicatorProperties struct {
 	Delay time.Duration `yaml:"delay"`
 }
 
+// Global configuration.
+var GlobalConfig GlobalProperties
+
 // Initialize global config properties.
 func InitGlobalConfig(path string) {
 	// Set defaults
@@ -130,6 +150,15 @@ func InitGlobalConfig(path string) {
 // Set defaults
 func setDefaults() {
 	globalConfig := &GlobalProperties{
+		Logging: LoggingProperties{
+			FileName: constant.DefaultLogFilename,
+			Level:    constant.DefaultLogLevel,
+			Policy: PolicyProperties{
+				RetentionDays: constant.DefaultLogRetentionDays,
+				MaxBackups:    constant.DefaultLogMaxBackups,
+				MaxSize:       constant.DefaultLogMaxSize,
+			},
+		},
 		Launcher: LauncherProperties{
 			Http: HttpLauncherProperties{
 				ServerGateway: constant.DefaultHttpServerGateway,

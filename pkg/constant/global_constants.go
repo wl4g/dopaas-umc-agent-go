@@ -30,10 +30,19 @@ var DefaultConfigPath = "/etc/umc-agent.yml"
 // Log constants.
 //
 
-var DefaultLogBaseDir = "./log/"
-var DefaultLogMainFilename = DefaultLogBaseDir + "main.log"
-var DefaultLogHttpFilename = DefaultLogBaseDir + "http.log"
-var DefaultLogGatewayFilename = DefaultLogBaseDir + "gateway.log"
+var DefaultLogFilename = "./log/umc-agent.log"
+
+// Default log level
+var DefaultLogLevel = "INFO"
+
+// Default log retention days.
+var DefaultLogRetentionDays = 7
+
+// Default log max backup numbers.
+var DefaultLogMaxBackups = 30
+
+// Default log max size(MB).
+var DefaultLogMaxSize = 128
 
 //
 // Launcher constants.

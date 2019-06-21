@@ -27,6 +27,17 @@ launcher:
     #partitions: 10
 
 #
+# Logger configuration.
+#
+logging:
+  file: ./log/umc-agent.log
+  level: INFO
+  policy:
+    retention-days: 7 # Day
+    max-backups: 30 # Numbers
+    max-size: 128 # MB
+
+#
 # Resource health indicators monitor configuration.
 #
 indicators:
