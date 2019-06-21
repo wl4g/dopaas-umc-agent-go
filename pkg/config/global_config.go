@@ -96,20 +96,18 @@ type VirtualIndicatorProperties struct {
 
 // Indicators redis properties.
 type RedisIndicatorProperties struct {
-	Delay time.Duration `yaml:"delay"`
-	Ports string        `yaml:"ports"`
-	Password string `yaml:"password"`
-	Properties string `yaml:"properties"`
-
+	Delay      time.Duration `yaml:"delay"`
+	Ports      string        `yaml:"ports"`
+	Password   string        `yaml:"password"`
+	Properties string        `yaml:"properties"`
 }
 
 // Indicators zookeeper properties.
 type ZookeeperIndicatorProperties struct {
-	Delay time.Duration `yaml:"delay"`
-	Host  string        `yaml:"host"`
-	Command string `yaml:"command"`
-	Properties string `yaml:"properties"`
-
+	Delay      time.Duration `yaml:"delay"`
+	Host       string        `yaml:"host"`
+	Command    string        `yaml:"command"`
+	Properties string        `yaml:"properties"`
 }
 
 // Indicators kafka properties.
@@ -178,24 +176,24 @@ func setDefaults() {
 			Netcard: constant.DefaultNetcard,
 			Physical: PhysicalIndicatorProperties{
 				Delay:     constant.DefaultIndicatorsDelay,
-				RangePort: constant.DefaultNetIndicatorPortRange,
+				RangePort: constant.DefaultNetIndicatorsPortRange,
 			},
 			Virtual: VirtualIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,
 			},
 			Redis: RedisIndicatorProperties{
-				Delay: constant.DefaultIndicatorsDelay,
-				Ports: constant.DefaultRedisPort,
-				Properties: constant.DeaultRedisProperties,
+				Delay:      constant.DefaultIndicatorsDelay,
+				Ports:      constant.DefaultWatchRedisIndicatorsPorts,
+				Properties: constant.DefaultWatchRedisIndicatorsProperties,
 			},
 			Kafka: KafkaIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,
 			},
 			Zookeeper: ZookeeperIndicatorProperties{
-				Delay: constant.DefaultIndicatorsDelay,
-				Host: constant.DefaultZookeeperHost,
-				Command: constant.DefaultZookeeperHost,
-				Properties: constant.DefaultZookeeperHost,
+				Delay:      constant.DefaultIndicatorsDelay,
+				Host:       constant.DefaultWatchZkServers,
+				Command:    constant.DefaultWatchZkServers,
+				Properties: constant.DefaultWatchZkServers,
 			},
 			Etcd: EtcdIndicatorProperties{
 				Delay: constant.DefaultIndicatorsDelay,

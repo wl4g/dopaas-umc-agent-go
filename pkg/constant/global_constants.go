@@ -19,16 +19,16 @@ import (
 	"time"
 )
 
-//
+// -------------------------------
 // Basic constants.
-//
+// -------------------------------
 
 // Default profile path.
 var DefaultConfigPath = "/etc/umc-agent.yml"
 
-//
+// -------------------------------
 // Log constants.
-//
+// -------------------------------
 
 var DefaultLogFilename = "./log/umc-agent.log"
 
@@ -44,9 +44,9 @@ var DefaultLogMaxBackups = 30
 // Default log max size(MB).
 var DefaultLogMaxSize = 128
 
-//
+// -------------------------------
 // Launcher constants.
-//
+// -------------------------------
 
 // Default http server gateway
 var DefaultHttpServerGateway = "http://localhost:14046/umc/basic"
@@ -60,9 +60,9 @@ var DefaultLauncherKafkaTopic = "__devops_umc_agent_metric_"
 // Default launcher kafka partitions.
 var DefaultLauncherKafkaPartitions int32 = 10
 
-//
-// Indicators constants.
-//
+// -------------------------------
+// Indicators basic constants.
+// -------------------------------
 
 // Default netcard name.
 var DefaultNetcard = "eth0"
@@ -71,19 +71,27 @@ var DefaultNetcard = "eth0"
 var DefaultIndicatorsDelay time.Duration = 60000
 
 // Default network indicator ports range.
-var DefaultNetIndicatorPortRange = "22,6380"
+var DefaultNetIndicatorsPortRange = "22,6380"
 
-//default redis port
-var DefaultRedisPort = "6379,6380"
+// -------------------------------
+// Redis indicators constants.
+// -------------------------------
 
-//default redis gather Proterties
-var DeaultRedisProperties = "connected_clients,used_memory,used_memory_peak,used_memory_overhead,used_memory_dataset,used_memory_dataset_perc,aof_current_size,aof_buffer_length,total_connections_received,total_commands_processed,instantaneous_ops_per_sec,instantaneous_input_kbps,instantaneous_output_kbps,repl_backlog_size,repl_backlog_histlen,used_cpu_sys,used_cpu_user,used_cpu_sys_children,used_cpu_user_children,cluster_state,cluster_slots_assigned,cluster_slots_ok,cluster_slots_pfail,cluster_slots_fail,cluster_known_nodes,cluster_size,cluster_current_epoch,cluster_my_epoch"
+// Default watch redis ports.
+var DefaultWatchRedisIndicatorsPorts = "6379,6380"
 
-//default zookeeper host
-var DefaultZookeeperHost = "localhost:2181"
+// Default watch redis indicators properties.
+var DefaultWatchRedisIndicatorsProperties = "connected_clients,used_memory,used_memory_peak,used_memory_overhead,used_memory_dataset,used_memory_dataset_perc,aof_current_size,aof_buffer_length,total_connections_received,total_commands_processed,instantaneous_ops_per_sec,instantaneous_input_kbps,instantaneous_output_kbps,repl_backlog_size,repl_backlog_histlen,used_cpu_sys,used_cpu_user,used_cpu_sys_children,used_cpu_user_children,cluster_state,cluster_slots_assigned,cluster_slots_ok,cluster_slots_pfail,cluster_slots_fail,cluster_known_nodes,cluster_size,cluster_current_epoch,cluster_my_epoch"
 
-//default zookeeper command
-var DefaultZookeeperCommand = "mntr"
+// -------------------------------
+// Zk indicators constants.
+// -------------------------------
 
-var DefaultZookeeperProperties = "zk_avg_latency,zk_max_latency,zk_min_latency,zk_packets_received,zk_packets_sent,zk_num_alive_connections,zk_outstanding_requests,zk_server_state,zk_znode_count,zk_watch_count,zk_ephemerals_count,zk_approximate_data_size,zk_open_file_descriptor_count,zk_max_file_descriptor_count,zk_fsync_threshold_exceed_count"
+// Default watch zk servers.
+var DefaultWatchZkServers = "localhost:2181"
 
+// Default watch zk commands(e.g. mntr,conf).
+var DefaultZkIndicatorsCommands = "mntr"
+
+// Default watch redis indicators properties.
+var DefaultZkIndicatorsProperties = "zk_avg_latency,zk_max_latency,zk_min_latency,zk_packets_received,zk_packets_sent,zk_num_alive_connections,zk_outstanding_requests,zk_server_state,zk_znode_count,zk_watch_count,zk_ephemerals_count,zk_approximate_data_size,zk_open_file_descriptor_count,zk_max_file_descriptor_count,zk_fsync_threshold_exceed_count"
