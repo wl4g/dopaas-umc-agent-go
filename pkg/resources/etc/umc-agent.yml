@@ -32,6 +32,7 @@ launcher:
 logging:
   file: ./log/umc-agent.log
   level: INFO
+  date-format: 06-01-02 15:04:05 # ISO8601 => 2006-01-02 15:04:05
   policy:
     retention-days: 7 # Day
     max-backups: 30 # Numbers
