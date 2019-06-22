@@ -18,6 +18,7 @@ package main
 import (
 	"flag"
 	"go.uber.org/zap"
+	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
 	"umc-agent/pkg/launcher"
@@ -46,8 +47,16 @@ func init() {
 }
 
 func main() {
-	go physical.IndicatorsRunner()
-	go virtual.IndicatorsRunner()
-	go redis.IndicatorsRunner()
-	go zookeeper.IndicatorsRunner()
+	wg := &sync.WaitGroup{}
+	startingIndicatorRunners(wg)
+	wg.Wait()
+}
+
+// Starting indicator runners all
+func startingIndicatorRunners(wg *sync.WaitGroup) {
+	wg.Add(1)
+	go physical.IndicatorRunner()
+	go virtual.IndicatorRunner()
+	go redis.IndicatorRunner()
+	go zookeeper.IndicatorRunner()
 }

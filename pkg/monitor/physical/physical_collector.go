@@ -30,7 +30,7 @@ import (
 )
 
 // Physical indicators runner
-func IndicatorsRunner() {
+func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Physical.Enabled {
 		logging.MainLogger.Warn("No enabled physical metrics runner!")
 		return

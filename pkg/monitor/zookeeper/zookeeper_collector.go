@@ -26,7 +26,7 @@ import (
 	"umc-agent/pkg/logging"
 )
 
-func IndicatorsRunner() {
+func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Virtual.Enabled {
 		logging.MainLogger.Warn("No enabled zookeeper metrics runner!")
 		return
