@@ -46,13 +46,13 @@ func InitKafkaLauncherIfNecessary() {
 	}
 }
 
-func doProducer(key string,text string) {
+func doProducer(key string, text string) {
 	//构建发送的消息，
 	msg := &sarama.ProducerMessage{
 		Topic:     config.GlobalConfig.Launcher.Kafka.Topic,
 		Value:     sarama.ByteEncoder(text),
 		Partition: int32(config.GlobalConfig.Launcher.Kafka.Partitions),
-		Key:     sarama.StringEncoder(key),
+		Key:       sarama.StringEncoder(key),
 	}
 
 	partition, offset, err := kafkaProducer.SendMessage(msg)

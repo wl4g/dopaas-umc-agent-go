@@ -16,7 +16,6 @@
 package zookeeper
 
 import (
-	"fmt"
 	"go.uber.org/zap"
 	"net"
 	"strings"
@@ -28,18 +27,24 @@ import (
 )
 
 func IndicatorsRunner() {
+	if !config.GlobalConfig.Indicators.Virtual.Enabled {
+		logging.MainLogger.Warn("No enabled zookeeper metrics runner!")
+		return
+	}
+	logging.MainLogger.Info("Starting zookeeper indicators runner ...")
+
 	// Loop monitor
 	for true {
-		zookeeper := getZookeeperStats()
-		launcher.DoSendSubmit(zookeeper.Type, zookeeper)
+		result := getZookeeperStats()
+		result.Meta = config.CreateMeta("zookeeper")
+
+		launcher.DoSendSubmit(result.Meta.Type, result)
 		time.Sleep(config.GlobalConfig.Indicators.Zookeeper.Delay * time.Millisecond)
 	}
 }
 
 func getZookeeperStats() Zookeeper {
-	var zookeeper Zookeeper
-	zookeeper.Id = config.LocalHardwareAddrId
-	zookeeper.Type = "zookeeper"
+	var result Zookeeper
 
 	comm := strings.Split(config.GlobalConfig.Indicators.Zookeeper.Command, ",")
 	props := strings.Split(config.GlobalConfig.Indicators.Zookeeper.Properties, ",")
@@ -50,8 +55,8 @@ func getZookeeperStats() Zookeeper {
 		infoSum = infoSum + info
 	}
 	infos := wrap(infoSum, props)
-	zookeeper.Properties = infos
-	return zookeeper
+	result.Properties = infos
+	return result
 
 }
 
@@ -70,7 +75,7 @@ func getZkInfo(command string) (string, error) {
 	// Clean trim space
 	cmd = strings.TrimSpace(cmd)
 
-	// Console input, for test
+	// for test: Console input
 	//reader := bufio.NewReader(os.Stdin)
 
 	// Write commands
@@ -81,7 +86,7 @@ func getZkInfo(command string) (string, error) {
 	cnt, err := conn.Read(buf)
 
 	if err != nil {
-		fmt.Printf("客户端读取数据失败 %s\n", err)
+		logging.MainLogger.Error("Got zk metric failed!", zap.Error(err))
 		if conn != nil {
 			conn.Close()
 		}
@@ -108,10 +113,8 @@ func wrap(info string, property []string) map[string]string {
 		if !common.StringsContains(property, s1) {
 			continue
 		}
-		//fmt.Println(s1)
 		s2 := i[1]
 		s2 = strings.TrimSpace(s2)
-		//fmt.Println(s2)
 		mapInfo[s1] = s2
 	}
 	return mapInfo

@@ -25,28 +25,33 @@ import (
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/launcher"
+	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/share"
 )
 
 // Physical indicators runner
 func IndicatorsRunner() {
+	if !config.GlobalConfig.Indicators.Physical.Enabled {
+		logging.MainLogger.Warn("No enabled physical metrics runner!")
+		return
+	}
+	logging.MainLogger.Info("Starting physical indicators runner ...")
+
 	// Loop monitor
 	for true {
-		var stat share.TotalStat
-
-		stat.Id = config.LocalHardwareAddrId
-		stat.Type = "physical"
+		var result share.TotalStat
+		result.Meta = config.CreateMeta("physical")
 
 		p, _ := cpu.Percent(0, false)
-		stat.Cpu = p
+		result.Cpu = p
 
 		v, _ := mem.VirtualMemory()
-		stat.Mem = v
+		result.Mem = v
 
-		stat.DiskStats = getDiskStatsInfo()
-		stat.NetStats = getNetworkStatsInfo()
+		result.DiskStats = getDiskStatsInfo()
+		result.NetStats = getNetworkStatsInfo()
 
-		launcher.DoSendSubmit("physical", stat)
+		launcher.DoSendSubmit("physical", result)
 		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
 	}
 }
@@ -68,7 +73,7 @@ func getDiskStatsInfo() []share.DiskStat {
 
 // Network stats info
 func getNetworkStatsInfo() []share.NetworkStat {
-	ports := strings.Split(config.GlobalConfig.Indicators.Physical.RangePort, ",")
+	ports := strings.Split(config.GlobalConfig.Indicators.Physical.NetPorts, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()

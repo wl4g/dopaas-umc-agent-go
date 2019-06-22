@@ -21,21 +21,28 @@ import (
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/launcher"
+	"umc-agent/pkg/logging"
 )
 
 func IndicatorsRunner() {
+	if !config.GlobalConfig.Indicators.Virtual.Enabled {
+		logging.MainLogger.Warn("No enabled redis metrics runner!")
+		return
+	}
+	logging.MainLogger.Info("Starting redis indicators runner ...")
+
 	// Loop monitor
 	for true {
-		redis := getRedisStats()
-		launcher.DoSendSubmit(redis.Type, redis)
+		result := getRedisStats()
+		result.Meta = config.CreateMeta("redis")
+
+		launcher.DoSendSubmit(result.Meta.Type, result)
 		time.Sleep(config.GlobalConfig.Indicators.Redis.Delay * time.Millisecond)
 	}
 }
 
 func getRedisStats() Redis {
 	var redis Redis
-	redis.Id = config.LocalHardwareAddrId
-	redis.Type = "redis"
 
 	portText := config.GlobalConfig.Indicators.Redis.Ports
 	portTextArr := strings.Split(portText, ",")

@@ -28,14 +28,20 @@ import (
 
 // Docker indicators runner
 func IndicatorsRunner() {
+	if !config.GlobalConfig.Indicators.Virtual.Enabled {
+		logging.MainLogger.Warn("No enabled docker metrics runner!")
+		return
+	}
+	logging.MainLogger.Info("Starting docker indicators runner ...")
+
 	// Loop monitor
 	for true {
-		dockerStats := getDockerStats()
-		logging.MainLogger.Info(common.ToJSONString(dockerStats))
 		var result DockerStatInfo
-		result.Id = config.LocalHardwareAddrId
-		result.Type = "docker"
-		result.DockerStats = dockerStats
+		result.Meta = config.CreateMeta("docker")
+
+		stats := getDockerStats()
+		logging.MainLogger.Info(common.ToJSONString(stats))
+		result.DockerStats = stats
 
 		launcher.DoSendSubmit("docker", result)
 		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)

@@ -64,6 +64,9 @@ var DefaultLauncherKafkaPartitions int32 = 10
 // Indicators basic constants.
 // -------------------------------
 
+// Default namespace.
+var DefaultNamespace = "defaultCloud"
+
 // Default netcard name.
 var DefaultNetcard = "eth0"
 
@@ -71,24 +74,27 @@ var DefaultNetcard = "eth0"
 var DefaultIndicatorsDelay time.Duration = 60000
 
 // Default network indicator ports range.
-var DefaultNetIndicatorsPortRange = "22,6380"
+var DefaultNetIndicatorsNetPorts = "22,8080"
 
 // -------------------------------
 // Redis indicators constants.
 // -------------------------------
 
 // Default watch redis ports.
-var DefaultWatchRedisIndicatorsPorts = "6379,6380"
+var DefaultRedisIndicatorsPorts = "6379,6380"
+
+// Default watch redis ports.
+var DefaultRedisIndicatorsPassword = "redis"
 
 // Default watch redis indicators properties.
-var DefaultWatchRedisIndicatorsProperties = "connected_clients,used_memory,used_memory_peak,used_memory_overhead,used_memory_dataset,used_memory_dataset_perc,aof_current_size,aof_buffer_length,total_connections_received,total_commands_processed,instantaneous_ops_per_sec,instantaneous_input_kbps,instantaneous_output_kbps,repl_backlog_size,repl_backlog_histlen,used_cpu_sys,used_cpu_user,used_cpu_sys_children,used_cpu_user_children,cluster_state,cluster_slots_assigned,cluster_slots_ok,cluster_slots_pfail,cluster_slots_fail,cluster_known_nodes,cluster_size,cluster_current_epoch,cluster_my_epoch"
+var DefaultRedisIndicatorsProperties = "connected_clients,used_memory,used_memory_peak,used_memory_overhead,used_memory_dataset,used_memory_dataset_perc,aof_current_size,aof_buffer_length,total_connections_received,total_commands_processed,instantaneous_ops_per_sec,instantaneous_input_kbps,instantaneous_output_kbps,repl_backlog_size,repl_backlog_histlen,used_cpu_sys,used_cpu_user,used_cpu_sys_children,used_cpu_user_children,cluster_state,cluster_slots_assigned,cluster_slots_ok,cluster_slots_pfail,cluster_slots_fail,cluster_known_nodes,cluster_size,cluster_current_epoch,cluster_my_epoch"
 
 // -------------------------------
 // Zk indicators constants.
 // -------------------------------
 
 // Default watch zk servers.
-var DefaultWatchZkServers = "localhost:2181"
+var DefaultZkIndicatorsServers = "localhost:2181"
 
 // Default watch zk commands(e.g. mntr,conf).
 var DefaultZkIndicatorsCommands = "mntr"

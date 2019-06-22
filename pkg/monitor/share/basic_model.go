@@ -21,8 +21,7 @@ import (
 )
 
 type TotalStat struct {
-	Id        string                 `json:"physicalId"`
-	Type      string                 `json:"type"`
+	Meta      MetaInfo               `json:"meta"`
 	Mem       *mem.VirtualMemoryStat `json:"memInfo"`
 	Cpu       []float64              `json:"cpu"`
 	DiskStats []DiskStat             `json:"diskInfos"`
@@ -45,4 +44,10 @@ type NetworkStat struct {
 	Close     int `json:"close"`
 	Listen    int `json:"listen"`
 	Closing   int `json:"closing"`
+}
+
+type MetaInfo struct {
+	Id        string `json:"physicalId"`
+	Type      string `json:"type"`
+	Namespace string `json:"namespace"`
 }

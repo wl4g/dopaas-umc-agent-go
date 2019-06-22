@@ -15,14 +15,9 @@
  */
 package zookeeper
 
+import "umc-agent/pkg/monitor/share"
+
 type Zookeeper struct {
-	Id         string      `json:"physicalId"`
-	Type       string      `json:"type"`
+	Meta       share.MetaInfo    `json:"meta"`
 	Properties map[string]string `json:"properties"`
 }
-
-
-
-
-
-

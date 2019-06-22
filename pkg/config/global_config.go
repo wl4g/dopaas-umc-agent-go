@@ -23,6 +23,7 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/constant"
+	"umc-agent/pkg/monitor/share"
 )
 
 // ---------------------
@@ -74,6 +75,7 @@ type KafkaLauncherProperties struct {
 // ----------------------
 
 type IndicatorsProperties struct {
+	Namespace string                       `yaml:"namespace"`
 	Netcard   string                       `yaml:"netcard"`
 	Physical  PhysicalIndicatorProperties  `yaml:"physical"`
 	Virtual   VirtualIndicatorProperties   `yaml:"virtual"`
@@ -87,17 +89,20 @@ type IndicatorsProperties struct {
 
 // Indicators physical properties.
 type PhysicalIndicatorProperties struct {
-	Delay     time.Duration `yaml:"delay"`
-	RangePort string        `yaml:"range-port"`
+	Enabled  bool          `yaml:"enabled"`
+	Delay    time.Duration `yaml:"delay"`
+	NetPorts string        `yaml:"range-port"`
 }
 
 // Indicators virtual properties.
 type VirtualIndicatorProperties struct {
-	Delay time.Duration `yaml:"delay"`
+	Enabled bool          `yaml:"enabled"`
+	Delay   time.Duration `yaml:"delay"`
 }
 
 // Indicators redis properties.
 type RedisIndicatorProperties struct {
+	Enabled    bool          `yaml:"enabled"`
 	Delay      time.Duration `yaml:"delay"`
 	Ports      string        `yaml:"ports"`
 	Password   string        `yaml:"password"`
@@ -106,6 +111,7 @@ type RedisIndicatorProperties struct {
 
 // Indicators zookeeper properties.
 type ZookeeperIndicatorProperties struct {
+	Enabled    bool          `yaml:"enabled"`
 	Delay      time.Duration `yaml:"delay"`
 	Servers    string        `yaml:"servers"`
 	Command    string        `yaml:"command"`
@@ -114,22 +120,26 @@ type ZookeeperIndicatorProperties struct {
 
 // Indicators kafka properties.
 type KafkaIndicatorProperties struct {
-	Delay time.Duration `yaml:"delay"`
+	Enabled bool          `yaml:"enabled"`
+	Delay   time.Duration `yaml:"delay"`
 }
 
 // Indicators etcd properties.
 type EtcdIndicatorProperties struct {
-	Delay time.Duration `yaml:"delay"`
+	Enabled bool          `yaml:"enabled"`
+	Delay   time.Duration `yaml:"delay"`
 }
 
 // Indicators emq properties.
 type EmqIndicatorProperties struct {
-	Delay time.Duration `yaml:"delay"`
+	Enabled bool          `yaml:"enabled"`
+	Delay   time.Duration `yaml:"delay"`
 }
 
 // Indicators consul properties.
 type ConsulIndicatorProperties struct {
-	Delay time.Duration `yaml:"delay"`
+	Enabled bool          `yaml:"enabled"`
+	Delay   time.Duration `yaml:"delay"`
 }
 
 // Global configuration.
@@ -181,36 +191,46 @@ func setDefaults() {
 			},
 		},
 		Indicators: IndicatorsProperties{
-			Netcard: constant.DefaultNetcard,
+			Namespace: constant.DefaultNamespace,
+			Netcard:   constant.DefaultNetcard,
 			Physical: PhysicalIndicatorProperties{
-				Delay:     constant.DefaultIndicatorsDelay,
-				RangePort: constant.DefaultNetIndicatorsPortRange,
+				Enabled:  true,
+				Delay:    constant.DefaultIndicatorsDelay,
+				NetPorts: constant.DefaultNetIndicatorsNetPorts,
 			},
 			Virtual: VirtualIndicatorProperties{
-				Delay: constant.DefaultIndicatorsDelay,
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Redis: RedisIndicatorProperties{
+				Enabled:    false,
 				Delay:      constant.DefaultIndicatorsDelay,
-				Ports:      constant.DefaultWatchRedisIndicatorsPorts,
-				Properties: constant.DefaultWatchRedisIndicatorsProperties,
+				Ports:      constant.DefaultRedisIndicatorsPorts,
+				Password:   constant.DefaultRedisIndicatorsPassword,
+				Properties: constant.DefaultRedisIndicatorsProperties,
 			},
 			Kafka: KafkaIndicatorProperties{
-				Delay: constant.DefaultIndicatorsDelay,
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Zookeeper: ZookeeperIndicatorProperties{
+				Enabled:    false,
 				Delay:      constant.DefaultIndicatorsDelay,
-				Servers:    constant.DefaultWatchZkServers,
+				Servers:    constant.DefaultZkIndicatorsServers,
 				Command:    constant.DefaultZkIndicatorsCommands,
 				Properties: constant.DefaultZkIndicatorsProperties,
 			},
 			Etcd: EtcdIndicatorProperties{
-				Delay: constant.DefaultIndicatorsDelay,
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Emq: EmqIndicatorProperties{
-				Delay: constant.DefaultIndicatorsDelay,
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Consul: ConsulIndicatorProperties{
-				Delay: constant.DefaultIndicatorsDelay,
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
 			},
 		},
 	}
@@ -220,7 +240,7 @@ func setDefaults() {
 // Properties settings after initialization
 func afterPropertiesSet() {
 	// Environmental variable priority
-	var netcard = os.Getenv("UMC_NETCARD")
+	var netcard = os.Getenv("indicators.netcard")
 	if !common.IsEmpty(netcard) {
 		GlobalConfig.Indicators.Netcard = netcard
 	}
@@ -231,4 +251,14 @@ func afterPropertiesSet() {
 		panic("net found ip,Please check the net conf")
 	}
 
+}
+
+// Create meta info
+func CreateMeta(metaType string) share.MetaInfo {
+	meta := share.MetaInfo{
+		Id:        LocalHardwareAddrId,
+		Type:      metaType,
+		Namespace: GlobalConfig.Indicators.Namespace,
+	}
+	return meta
 }

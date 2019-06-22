@@ -18,7 +18,6 @@ package main
 import (
 	"flag"
 	"go.uber.org/zap"
-	"time"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
 	"umc-agent/pkg/launcher"
@@ -51,8 +50,4 @@ func main() {
 	go virtual.IndicatorsRunner()
 	go redis.IndicatorsRunner()
 	go zookeeper.IndicatorsRunner()
-
-	for true {
-		time.Sleep(100000 * time.Millisecond)
-	}
 }

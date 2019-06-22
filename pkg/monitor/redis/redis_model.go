@@ -15,10 +15,13 @@
  */
 package redis
 
+import (
+	"umc-agent/pkg/monitor/share"
+)
+
 type Redis struct {
-	Id         string `json:"physicalId"`
-	Type       string `json:"type"`
-	RedisInfos []Info `json:"redisInfos"`
+	Meta       share.MetaInfo `json:"meta"`
+	RedisInfos []Info         `json:"redisInfos"`
 }
 
 type Info struct {

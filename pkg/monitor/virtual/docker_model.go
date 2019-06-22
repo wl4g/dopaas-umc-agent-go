@@ -15,10 +15,11 @@
  */
 package virtual
 
+import "umc-agent/pkg/monitor/share"
+
 type DockerStatInfo struct {
-	Id          string       `json:"physicalId"`
-	Type        string       `json:"type"`
-	DockerStats []DockerStat `json:"dockerInfos"`
+	Meta        share.MetaInfo `json:"meta"`
+	DockerStats []DockerStat   `json:"dockerInfos"`
 }
 
 type DockerStat struct {
