@@ -104,7 +104,7 @@ type VirtualIndicatorProperties struct {
 type RedisIndicatorProperties struct {
 	Enabled    bool          `yaml:"enabled"`
 	Delay      time.Duration `yaml:"delay"`
-	Ports      string        `yaml:"ports"`
+	Servers    string        `yaml:"servers"`
 	Password   string        `yaml:"password"`
 	Properties string        `yaml:"properties"`
 }
@@ -205,7 +205,7 @@ func setDefaults() {
 			Redis: RedisIndicatorProperties{
 				Enabled:    false,
 				Delay:      constant.DefaultIndicatorsDelay,
-				Ports:      constant.DefaultRedisIndicatorsPorts,
+				Servers:    constant.DefaultRedisIndicatorsServers,
 				Password:   constant.DefaultRedisIndicatorsPassword,
 				Properties: constant.DefaultRedisIndicatorsProperties,
 			},

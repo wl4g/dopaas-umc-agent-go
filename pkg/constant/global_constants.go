@@ -80,8 +80,8 @@ var DefaultNetIndicatorsNetPorts = "22,8080"
 // Redis indicators constants.
 // -------------------------------
 
-// Default watch redis ports.
-var DefaultRedisIndicatorsPorts = "6379,6380"
+// Default watch redis servers.
+var DefaultRedisIndicatorsServers = "localhost:6379,localhost:6380"
 
 // Default watch redis ports.
 var DefaultRedisIndicatorsPassword = "redis"

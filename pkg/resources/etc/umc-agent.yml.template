@@ -60,7 +60,8 @@ indicators:
   redis:
     #enabled: false
     #delay: 60000
-    #ports: 6379,6380 # Monitor local redis instances(ports).
+    # Monitor local redis instances(ports).
+    #servers: localhost:6379,localhost:6380
     #password: redis
     #properties:
       connected_clients,

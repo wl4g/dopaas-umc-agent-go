@@ -16,6 +16,7 @@
 package redis
 
 import (
+	"fmt"
 	"strings"
 	"time"
 	"umc-agent/pkg/common"
@@ -44,32 +45,32 @@ func IndicatorRunner() {
 func getRedisStats() Redis {
 	var redis Redis
 
-	portText := config.GlobalConfig.Indicators.Redis.Ports
-	portTextArr := strings.Split(portText, ",")
+	servers := config.GlobalConfig.Indicators.Redis.Servers
+	serversArr := strings.Split(servers, ",")
 
 	propsText := config.GlobalConfig.Indicators.Redis.Properties
 	propsTextArr := strings.Split(propsText, ",")
 
-	for _, port := range portTextArr {
-		re := getRedisInfo(port)
+	for _, addr := range serversArr {
+		re := getRedisInfo(strings.Split(addr, ":"))
 		props := wrap(re, propsTextArr)
 		var redisInfo Info
-		redisInfo.Port = port
+		redisInfo.Port = addr
 		redisInfo.Properties = props
 		redis.RedisInfos = append(redis.RedisInfos, redisInfo)
 	}
 	return redis
 }
 
-func getRedisInfo(port string) string {
+func getRedisInfo(parts []string) string {
 	redisPwd := config.GlobalConfig.Indicators.Redis.Password
-	//example: redis-cli -p 6380  -a 'zzx!@#$%' cluster info
-	var comm1 string = "redis-cli -p " + port + "  -a '" + redisPwd + "' cluster info"
-	//example: redis-cli -p 6380  -a 'zzx!@#$%' info all
-	var comm2 string = "redis-cli -p " + port + "  -a '" + redisPwd + "' info all"
-	re1, _ := common.ExecShell(comm1)
-	re2, _ := common.ExecShell(comm2)
-	return re1 + "\n" + re2
+	// e.g: redis-cli -h localhost -p 6380 -a '123456' cluster info
+	// e.g: redis-cli -h localhost -p 6380 -a '123456' info all
+	var cmd1 = fmt.Sprintf("redis-cli -h %s -p %s -a %s cluster info", parts[0], parts[1], redisPwd)
+	var cmd2 = fmt.Sprintf("redis-cli -h %s -p %s -a %s info all", parts[0], parts[1], redisPwd)
+	ret1, _ := common.ExecShell(cmd1)
+	ret2, _ := common.ExecShell(cmd2)
+	return ret1 + "\n" + ret2
 }
 
 func wrap(info string, property []string) map[string]string {
