@@ -21,12 +21,12 @@ import (
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/physical"
 	"umc-agent/pkg/monitor/redis"
 	"umc-agent/pkg/monitor/virtual"
 	"umc-agent/pkg/monitor/zookeeper"
+	"umc-agent/pkg/transport"
 )
 
 func init() {
@@ -43,7 +43,7 @@ func init() {
 	config.InitGlobalConfig(confPath)
 
 	// Init kafka launcher.(if necessary)
-	launcher.InitKafkaLauncherIfNecessary()
+	transport.InitKafkaLauncherIfNecessary()
 }
 
 func main() {

@@ -22,8 +22,8 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/logging"
+	"umc-agent/pkg/transport"
 )
 
 // Docker indicators runner
@@ -43,7 +43,7 @@ func IndicatorRunner() {
 		logging.MainLogger.Info(common.ToJSONString(stats))
 		result.DockerStats = stats
 
-		launcher.DoSendSubmit("docker", result)
+		transport.DoSendSubmit("docker", result)
 		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
 	}
 }

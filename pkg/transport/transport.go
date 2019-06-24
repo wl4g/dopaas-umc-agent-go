@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package launcher
+package transport
 
 import (
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 )
@@ -36,21 +32,11 @@ func DoSendSubmit(ty string, v interface{}) {
 	}
 }
 
-// Send indicators-data to http gateway
-func doSendHttp(ty string, data string) {
-	request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+ty, strings.NewReader(data))
-	request.Header.Set("Content-Type", "application/json")
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		fmt.Printf("post data error:%v\n", err)
-	} else {
-		fmt.Println("post a data successful.")
-		respBody, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("response data:%v\n", string(respBody))
-	}
-}
-
 // Send indicators-data to Kafka
 func doSendKafka(ty string, data string) {
 	doProducer(ty, data)
+}
+
+type Launcher interface {
+	doSend(ty string, data string)
 }
