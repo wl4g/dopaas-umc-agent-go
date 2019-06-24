@@ -19,10 +19,10 @@
 #
 launcher:
   http:
-    #server-gateway: http://127.0.0.1:14046/umc/receiver
+    server-gateway: http://10.0.0.26:14046/umc/basic2
   kafka:
-    #enabled: true # This enabled switch takes precedence over the HTTP launcher.
-    #bootstrap.servers: localhost:9092
+    enabled: false # This enabled switch takes precedence over the HTTP launcher.
+    bootstrap.servers: localhost:9092
     #topic: __devops_umc_agent_metric_
     #partitions: 10
 
@@ -30,58 +30,89 @@ launcher:
 # Logger configuration.
 #
 logging:
-  #file: ./log/umc-agent.log
-  #level: INFO
-  #date-format: 06-01-02 15:04:05 # ISO8601 => 2006-01-02 15:04:05
-  #policy:
-    #retention-days: 7 # Day
-    #max-backups: 30 # Numbers
-    #max-size: 128 # MB
+  file: ./log/umc-agent.log
+  level: INFO
+  date-format: 06-01-02 15:04:05 # ISO8601 => 2006-01-02 15:04:05
+  policy:
+    retention-days: 7 # Day
+    max-backups: 30 # Numbers
+    max-size: 128 # MB
 
 #
 # Resource health indicators monitor configuration.
 #
 indicators:
-  # Namespaces that support multiple tenants.
-  namespace: safecloudCloudTest
   # Network card name.
   #netcard: 无线网络连接 2
   netcard: en0
   # Physical indicators.
   physical:
-    enabled: true
     # Delay(ms)
     delay: 10000
     range-port: 22,9092
   # Virtual indicators.
   virtual:
-    enabled: true
-    delay: 60000
+    delay: 10000
   # Redis indicators.
   redis:
-    enabled: true
     delay: 10000
-    # Monitor local redis instances(ports).
-    servers: safecloud-test:6379,safecloud-test:6380,safecloud-test:6081
-    password: redis
+    ports: 6379,6380,6081
+    password: zzx!@#$%
+    properties:
+      connected_clients,
+      used_memory,
+      used_memory_peak,
+      used_memory_overhead,
+      used_memory_dataset,
+      used_memory_dataset_perc,
+      aof_current_size,
+      aof_buffer_length,
+      total_connections_received,
+      total_commands_processed,
+      instantaneous_ops_per_sec,
+      instantaneous_input_kbps,
+      instantaneous_output_kbps,
+      repl_backlog_size,
+      repl_backlog_histlen,
+      used_cpu_sys,
+      used_cpu_user,
+      used_cpu_sys_children,
+      used_cpu_user_children,
+      cluster_state,
+      cluster_slots_assigned,
+      cluster_slots_ok,
+      cluster_slots_pfail,
+      cluster_slots_fail,
+      cluster_known_nodes,
+      cluster_size,
+      cluster_current_epoch,
+      cluster_my_epoch
   # Zookeeper indicators.
   zookeeper:
-    enabled: true
     delay: 10000
     servers: localhost:2181
+    commands: mntr,conf
+    properties:
+      zk_avg_latency,
+      zk_max_latency,
+      zk_min_latency,
+      zk_packets_received,
+      zk_packets_sent,
+      zk_num_alive_connections,
+      zk_outstanding_requests,
+      zk_server_state,
+      zk_znode_count,
+      zk_watch_count,
+      zk_ephemerals_count,
+      zk_approximate_data_size,
+      zk_open_file_descriptor_count,
+      zk_max_file_descriptor_count,
+      zk_fsync_threshold_exceed_count
   # Kafka indicators.
   kafka:
-    enabled: true
-    #delay: 10000
   # Etcd indicators.
   etcd:
-    enabled: true
-    #delay: 10000
   # Emq indicators.
   emq:
-    enabled: true
-    #delay: 10000
   #consul indicators
   consul:
-    enabled: true
-    #delay: 10000
