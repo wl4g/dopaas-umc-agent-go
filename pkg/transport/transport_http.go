@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package common
+package transport
 
 import (
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"umc-agent/pkg/config"
 )
 
-// To JSON string.
-func ToJSONString(v interface{}) string {
-	s, err := json.Marshal(v)
+// Send indicators-data to http gateway
+func doSendHttp(ty string, data string) {
+	request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+ty, strings.NewReader(data))
+	request.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
-		fmt.Printf("Marshal data error! %s", err)
+		fmt.Printf("post data error:%v\n", err)
+	} else {
+		fmt.Println("post a data successful.")
+		respBody, _ := ioutil.ReadAll(resp.Body)
+		fmt.Printf("response data:%v\n", string(respBody))
 	}
-	return string(s)
 }

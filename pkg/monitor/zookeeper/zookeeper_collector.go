@@ -22,8 +22,8 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/logging"
+	"umc-agent/pkg/transport"
 )
 
 func IndicatorRunner() {
@@ -38,7 +38,7 @@ func IndicatorRunner() {
 		result := getZookeeperStats()
 		result.Meta = config.CreateMeta("zookeeper")
 
-		launcher.DoSendSubmit(result.Meta.Type, result)
+		transport.DoSendSubmit(result.Meta.Type, result)
 		time.Sleep(config.GlobalConfig.Indicators.Zookeeper.Delay * time.Millisecond)
 	}
 }

@@ -24,9 +24,9 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/launcher"
 	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/share"
+	"umc-agent/pkg/transport"
 )
 
 // Physical indicators runner
@@ -51,7 +51,7 @@ func IndicatorRunner() {
 		result.DiskStats = getDiskStatsInfo()
 		result.NetStats = getNetworkStatsInfo()
 
-		launcher.DoSendSubmit("physical", result)
+		transport.DoSendSubmit("physical", result)
 		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
 	}
 }
