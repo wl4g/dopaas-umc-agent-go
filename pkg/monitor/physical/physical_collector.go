@@ -52,7 +52,7 @@ func IndicatorRunner() {
 		result.NetStats = getNetworkStatsInfo()
 
 		transport.DoSendSubmit("physical", result)
-		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicators.Docker.Delay * time.Millisecond)
 	}
 }
 

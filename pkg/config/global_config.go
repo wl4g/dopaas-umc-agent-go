@@ -20,7 +20,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/constant"
 	"umc-agent/pkg/monitor/share"
@@ -33,113 +32,6 @@ type GlobalProperties struct {
 	Logging    LoggingProperties    `yaml:"logging"`
 	Launcher   LauncherProperties   `yaml:"launcher"`
 	Indicators IndicatorsProperties `yaml:"indicators"`
-}
-
-// ---------------------
-// Logging properties
-// ---------------------
-type LoggingProperties struct {
-	FileName string           `yaml:"file"`
-	Level    string           `yaml:"level"`
-	Policy   PolicyProperties `yaml:"policy"`
-}
-
-// Logging archive policy
-type PolicyProperties struct {
-	RetentionDays int `yaml:"retention-days"`
-	MaxBackups    int `yaml:"max-backups"`
-	MaxSize       int `yaml:"max-size"`
-}
-
-// ---------------------
-// Launcher properties.
-// ---------------------
-type LauncherProperties struct {
-	Http  HttpLauncherProperties  `yaml:"http"`
-	Kafka KafkaLauncherProperties `yaml:"kafka"`
-}
-
-type HttpLauncherProperties struct {
-	ServerGateway string `yaml:"server-gateway"`
-}
-
-type KafkaLauncherProperties struct {
-	Enabled          bool   `yaml:"enabled"`
-	BootstrapServers string `yaml:"bootstrap.servers"`
-	Topic            string `yaml:"topic"`
-	Partitions       int32  `yaml:"partitions"`
-}
-
-// ----------------------
-// Indicators properties.
-// ----------------------
-
-type IndicatorsProperties struct {
-	Namespace string                       `yaml:"namespace"`
-	Netcard   string                       `yaml:"netcard"`
-	Physical  PhysicalIndicatorProperties  `yaml:"physical"`
-	Virtual   VirtualIndicatorProperties   `yaml:"docker"`
-	Redis     RedisIndicatorProperties     `yaml:"redis"`
-	Zookeeper ZookeeperIndicatorProperties `yaml:"zookeeper"`
-	Kafka     KafkaIndicatorProperties     `yaml:"kafka"`
-	Etcd      EtcdIndicatorProperties      `yaml:"etcd"`
-	Emq       EmqIndicatorProperties       `yaml:"emq"`
-	Consul    ConsulIndicatorProperties    `yaml:"consul"`
-}
-
-// Indicators physical properties.
-type PhysicalIndicatorProperties struct {
-	Enabled  bool          `yaml:"enabled"`
-	Delay    time.Duration `yaml:"delay"`
-	NetPorts string        `yaml:"range-port"`
-}
-
-// Indicators docker properties.
-type VirtualIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
-}
-
-// Indicators redis properties.
-type RedisIndicatorProperties struct {
-	Enabled    bool          `yaml:"enabled"`
-	Delay      time.Duration `yaml:"delay"`
-	Servers    string        `yaml:"servers"`
-	Password   string        `yaml:"password"`
-	Properties string        `yaml:"properties"`
-}
-
-// Indicators zookeeper properties.
-type ZookeeperIndicatorProperties struct {
-	Enabled    bool          `yaml:"enabled"`
-	Delay      time.Duration `yaml:"delay"`
-	Servers    string        `yaml:"servers"`
-	Command    string        `yaml:"command"`
-	Properties string        `yaml:"properties"`
-}
-
-// Indicators kafka properties.
-type KafkaIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
-}
-
-// Indicators etcd properties.
-type EtcdIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
-}
-
-// Indicators emq properties.
-type EmqIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
-}
-
-// Indicators consul properties.
-type ConsulIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
 }
 
 // Global configuration.
@@ -198,18 +90,11 @@ func setDefaults() {
 				Delay:    constant.DefaultIndicatorsDelay,
 				NetPorts: constant.DefaultNetIndicatorsNetPorts,
 			},
-			Virtual: VirtualIndicatorProperties{
+			Docker: DockerIndicatorProperties{
 				Enabled: false,
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
-			Redis: RedisIndicatorProperties{
-				Enabled:    false,
-				Delay:      constant.DefaultIndicatorsDelay,
-				Servers:    constant.DefaultRedisIndicatorsServers,
-				Password:   constant.DefaultRedisIndicatorsPassword,
-				Properties: constant.DefaultRedisIndicatorsProperties,
-			},
-			Kafka: KafkaIndicatorProperties{
+			Mesos: MesosIndicatorProperties{
 				Enabled: false,
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
@@ -224,11 +109,58 @@ func setDefaults() {
 				Enabled: false,
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
+			Consul: ConsulIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			Kafka: KafkaIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
 			Emq: EmqIndicatorProperties{
 				Enabled: false,
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
-			Consul: ConsulIndicatorProperties{
+			RabbitMQ: RabbitMQIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			RocketMQ: RocketMQIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			Redis: RedisIndicatorProperties{
+				Enabled:    false,
+				Delay:      constant.DefaultIndicatorsDelay,
+				Servers:    constant.DefaultRedisIndicatorsServers,
+				Password:   constant.DefaultRedisIndicatorsPassword,
+				Properties: constant.DefaultRedisIndicatorsProperties,
+			},
+			Memcached: MemcachedIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			ElasticSearch: ElasticSearchIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			Mongodb: MongodbIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			MySQL: MySQLIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			PostgreSQL: PostgreSQLIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			OpenTSDB: OpenTSDBIndicatorProperties{
+				Enabled: false,
+				Delay:   constant.DefaultIndicatorsDelay,
+			},
+			Cassandra: CassandraIndicatorProperties{
 				Enabled: false,
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
@@ -250,7 +182,6 @@ func afterPropertiesSet() {
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
 		panic("net found ip,Please check the net conf")
 	}
-
 }
 
 // Create meta info

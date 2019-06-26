@@ -26,7 +26,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Virtual.Enabled {
+	if !config.GlobalConfig.Indicators.Docker.Enabled {
 		logging.MainLogger.Warn("No enabled redis metrics runner!")
 		return
 	}

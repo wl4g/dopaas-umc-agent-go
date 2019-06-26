@@ -28,7 +28,7 @@ import (
 
 // Docker indicators runner
 func DockerIndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Virtual.Enabled {
+	if !config.GlobalConfig.Indicators.Docker.Enabled {
 		logging.MainLogger.Warn("No enabled docker metrics runner!")
 		return
 	}
@@ -44,7 +44,7 @@ func DockerIndicatorRunner() {
 		result.DockerStats = stats
 
 		transport.DoSendSubmit("docker", result)
-		time.Sleep(config.GlobalConfig.Indicators.Virtual.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicators.Docker.Delay * time.Millisecond)
 	}
 }
 
