@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package virtual
+package docker
 
 import (
 	"encoding/json"
@@ -27,7 +27,7 @@ import (
 )
 
 // Docker indicators runner
-func IndicatorRunner() {
+func DockerIndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Virtual.Enabled {
 		logging.MainLogger.Warn("No enabled docker metrics runner!")
 		return

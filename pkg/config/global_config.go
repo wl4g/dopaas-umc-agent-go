@@ -78,7 +78,7 @@ type IndicatorsProperties struct {
 	Namespace string                       `yaml:"namespace"`
 	Netcard   string                       `yaml:"netcard"`
 	Physical  PhysicalIndicatorProperties  `yaml:"physical"`
-	Virtual   VirtualIndicatorProperties   `yaml:"virtual"`
+	Virtual   VirtualIndicatorProperties   `yaml:"docker"`
 	Redis     RedisIndicatorProperties     `yaml:"redis"`
 	Zookeeper ZookeeperIndicatorProperties `yaml:"zookeeper"`
 	Kafka     KafkaIndicatorProperties     `yaml:"kafka"`
@@ -94,7 +94,7 @@ type PhysicalIndicatorProperties struct {
 	NetPorts string        `yaml:"range-port"`
 }
 
-// Indicators virtual properties.
+// Indicators docker properties.
 type VirtualIndicatorProperties struct {
 	Enabled bool          `yaml:"enabled"`
 	Delay   time.Duration `yaml:"delay"`

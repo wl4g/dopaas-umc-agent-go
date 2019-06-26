@@ -22,9 +22,9 @@ import (
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
 	"umc-agent/pkg/logging"
+	"umc-agent/pkg/monitor/docker"
 	"umc-agent/pkg/monitor/physical"
 	"umc-agent/pkg/monitor/redis"
-	"umc-agent/pkg/monitor/virtual"
 	"umc-agent/pkg/monitor/zookeeper"
 	"umc-agent/pkg/transport"
 )
@@ -56,7 +56,7 @@ func main() {
 func startingIndicatorRunners(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go physical.IndicatorRunner()
-	go virtual.IndicatorRunner()
+	go docker.DockerIndicatorRunner()
 	go redis.IndicatorRunner()
 	go zookeeper.IndicatorRunner()
 }

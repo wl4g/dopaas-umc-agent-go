@@ -13,13 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package virtual
-
-import (
-	"fmt"
-	"testing"
-)
-
-func TestDockerCollector(t *testing.T) {
-	fmt.Printf("Testing %s collector starting ...", "docker")
-}
+package mesos

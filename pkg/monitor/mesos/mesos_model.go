@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package virtual
-
-import "umc-agent/pkg/monitor/share"
-
-type DockerStatInfo struct {
-	Meta        share.MetaInfo `json:"meta"`
-	DockerStats []DockerStat   `json:"dockerInfos"`
-}
-
-type DockerStat struct {
-	ContainerId string `json:"containerId"`
-	Name        string `json:"name"`
-	CpuPerc     string `json:"cpuPerc"`
-	MemUsage    string `json:"memUsage"`
-	MemPerc     string `json:"memPerc"`
-	NetIO       string `json:"netIO"`
-	BlockIO     string `json:"blockIO"`
-	PIDs        string `json:"PIDs"`
-}
+package mesos
