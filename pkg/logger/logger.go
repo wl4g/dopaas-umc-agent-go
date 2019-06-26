@@ -21,6 +21,8 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"time"
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/constant"
 )
 
 //
@@ -31,29 +33,29 @@ import (
 var Main *zap.Logger
 var Receive *zap.Logger
 
-//func init() {
-//	var logItems = config.GlobalConfig.Logging.LogItems
-//
-//	// Init main logger.
-//	var mainLog = logItems[constant.DefaultLogMain]
-//	Main = newZapLogger(
-//		mainLog.FileName,
-//		parseLogLevel(mainLog.Level),
-//		mainLog.Policy.MaxSize,
-//		mainLog.Policy.MaxBackups,
-//		mainLog.Policy.RetentionDays,
-//		true, constant.DefaultLogMain)
-//
-//	// Init receive logger.
-//	var receiveLog = logItems[constant.DefaultLogReceive]
-//	Receive = newZapLogger(
-//		receiveLog.FileName,
-//		parseLogLevel(receiveLog.Level),
-//		receiveLog.Policy.MaxSize,
-//		receiveLog.Policy.MaxBackups,
-//		receiveLog.Policy.RetentionDays,
-//		true, constant.DefaultLogReceive)
-//}
+func init() {
+	var logItems = config.GlobalConfig.Logging.LogItems
+
+	// Init main logger.
+	var mainLog = logItems[constant.DefaultLogMain]
+	Main = newZapLogger(
+		mainLog.FileName,
+		parseLogLevel(mainLog.Level),
+		mainLog.Policy.MaxSize,
+		mainLog.Policy.MaxBackups,
+		mainLog.Policy.RetentionDays,
+		true, constant.DefaultLogMain)
+
+	// Init receive logger.
+	var receiveLog = logItems[constant.DefaultLogReceive]
+	Receive = newZapLogger(
+		receiveLog.FileName,
+		parseLogLevel(receiveLog.Level),
+		receiveLog.Policy.MaxSize,
+		receiveLog.Policy.MaxBackups,
+		receiveLog.Policy.RetentionDays,
+		true, constant.DefaultLogReceive)
+}
 
 //
 // [Create ZAP logger objects]

@@ -17,6 +17,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
@@ -34,8 +35,7 @@ func init() {
 	flag.StringVar(&confPath, "c", constant.DefaultConfigPath, "Config must is required!")
 	flag.Parse()
 	//flag.Usage()
-
-	//logger.Main.Info("Initialize config file", zap.String("confPath", confPath))
+	fmt.Printf("Initialize config path for - '%s'\n", confPath)
 
 	// Init global config.
 	config.InitGlobalConfig(confPath)

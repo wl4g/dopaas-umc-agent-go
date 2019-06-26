@@ -13,24 +13,24 @@
 # limitations under the License.
 #
 
-#
-# Agent monitors production sending data configuration, supports HTTP and Kafka server
-# receiving gateway, defaults to http. post sending.
-#
+#### ==================================================
+#### Agent monitors production sending data configuration, supports HTTP and Kafka server
+#### receiving gateway, defaults to http. post sending.
+#### ==================================================
+
 launcher:
   http:
-    server-gateway: http://10.0.0.26:14046/umc/basic2
+    server-gateway: http://127.0.0.1:14046/umc/receiver
   kafka:
-    enabled: false # This enabled switch takes precedence over the HTTP launcher.
-    bootstrap.servers: 127.0.0.1:9092
-    #metric-topic: __umc_agent_metric_
-    #receive-topic: __umc_agent_metric_receive
-    #ack: 1
-    #timeout: 10000
+    enabled: true # This enabled switch takes precedence over the HTTP launcher.
+    bootstrap.servers: localhost:9092
+    ack: 1
+    timeout: 60000
 
-#
-# Logger configuration.
-#
+### ==================================================
+### Logger configuration.
+### ==================================================
+
 logging:
   log-items:
     main:
@@ -40,81 +40,75 @@ logging:
       file: ./log/umc-agent-receive.log
       level: INFO
 
-#
-# Resource health indicators monitor configuration.
-#
+### ==================================================
+### Resource health indicators monitor configuration.
+### ==================================================
+
 indicators:
-  # Network card name.
-  #netcard: 无线网络连接 2
-  netcard: en0
-  # Physical indicators.
+  namespace: defaultCloud # Namespaces that support multiple tenants.
+  netcard: en0 # Bind net-card name.
+### ------ Infrastructure indicators ------
   physical:
-    # Delay(ms)
-    delay: 10000
+    enabled: true
+    delay: 10000 # Delay(ms)
     range-port: 22,9092
-  # Virtual indicators.
-  virtual:
+### --------- Virtual indicators ----------
+  docker:
+    enabled: true
     delay: 10000
-  # Redis indicators.
-  redis:
-    delay: 10000
-    ports: 6379,6380,6081
-    password: zzx!@#$%
-    properties:
-      connected_clients,
-      used_memory,
-      used_memory_peak,
-      used_memory_overhead,
-      used_memory_dataset,
-      used_memory_dataset_perc,
-      aof_current_size,
-      aof_buffer_length,
-      total_connections_received,
-      total_commands_processed,
-      instantaneous_ops_per_sec,
-      instantaneous_input_kbps,
-      instantaneous_output_kbps,
-      repl_backlog_size,
-      repl_backlog_histlen,
-      used_cpu_sys,
-      used_cpu_user,
-      used_cpu_sys_children,
-      used_cpu_user_children,
-      cluster_state,
-      cluster_slots_assigned,
-      cluster_slots_ok,
-      cluster_slots_pfail,
-      cluster_slots_fail,
-      cluster_known_nodes,
-      cluster_size,
-      cluster_current_epoch,
-      cluster_my_epoch
-  # Zookeeper indicators.
+  mesos:
+    enabled: false
+    delay: 60000
+### --------- Discovery indicators --------
   zookeeper:
+    enabled: true
     delay: 10000
     servers: localhost:2181
-    commands: mntr,conf
-    properties:
-      zk_avg_latency,
-      zk_max_latency,
-      zk_min_latency,
-      zk_packets_received,
-      zk_packets_sent,
-      zk_num_alive_connections,
-      zk_outstanding_requests,
-      zk_server_state,
-      zk_znode_count,
-      zk_watch_count,
-      zk_ephemerals_count,
-      zk_approximate_data_size,
-      zk_open_file_descriptor_count,
-      zk_max_file_descriptor_count,
-      zk_fsync_threshold_exceed_count
-  # Kafka indicators.
-  kafka:
-  # Etcd indicators.
+    commands: mntr # zookeeper indicators commands(e.g. mntr,conf)
   etcd:
-  # Emq indicators.
-  emq:
-  #consul indicators
+    enabled: false
+    delay: 60000
   consul:
+    enabled: false
+    delay: 60000
+### --------- MQ indicators ---------------
+  kafka:
+    enabled: true
+    delay: 10000
+  emq:
+    enabled: false
+    delay: 60000
+  rabbitmq:
+    enabled: false
+    delay: 60000
+  rocketmq:
+    enabled: false
+    delay: 60000
+### --------- Cache indicators ------------
+  redis:
+    enabled: true
+    delay: 10000
+    servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
+    password: zzx!@#$%
+  memcached:
+    enabled: false
+    delay: 60000
+### --------- DB indicators ---------------
+  elasticsearch:
+    enabled: false
+    delay: 60000
+  mongodb:
+    enabled: false
+    delay: 60000
+  mysql:
+    enabled: false
+    delay: 60000
+  postgresql:
+    enabled: false
+    delay: 60000
+  opentsdb:
+    enabled: false
+    delay: 60000
+  cassandra:
+    enabled: false
+    delay: 60000
