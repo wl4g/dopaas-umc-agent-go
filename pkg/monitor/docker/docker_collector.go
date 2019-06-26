@@ -22,17 +22,17 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/logging"
+	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
 )
 
 // Docker indicators runner
 func DockerIndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Docker.Enabled {
-		logging.MainLogger.Warn("No enabled docker metrics runner!")
+		logger.Main.Warn("No enabled docker metrics runner!")
 		return
 	}
-	logging.MainLogger.Info("Starting docker indicators runner ...")
+	logger.Main.Info("Starting docker indicators runner ...")
 
 	// Loop monitor
 	for true {
@@ -40,7 +40,7 @@ func DockerIndicatorRunner() {
 		result.Meta = config.CreateMeta("docker")
 
 		stats := getDockerStats()
-		logging.MainLogger.Info(common.ToJSONString(stats))
+		logger.Main.Info(common.ToJSONString(stats))
 		result.DockerStats = stats
 
 		transport.DoSendSubmit("docker", result)
@@ -51,7 +51,7 @@ func DockerIndicatorRunner() {
 // Docker stats info
 func getDockerStats() []DockerStat {
 	var cmd = "docker stats --no-stream --format \"{\\\"containerId\\\":\\\"{{.ID}}\\\",\\\"name\\\":\\\"{{.Name}}\\\",\\\"cpuPerc\\\":\\\"{{.CPUPerc}}\\\",\\\"memUsage\\\":\\\"{{.MemUsage}}\\\",\\\"memPerc\\\":\\\"{{.MemPerc}}\\\",\\\"netIO\\\":\\\"{{.NetIO}}\\\",\\\"blockIO\\\":\\\"{{.BlockIO}}\\\",\\\"PIDs\\\":\\\"{{.PIDs}}\\\"}\""
-	logging.MainLogger.Info("Execution docker stat", zap.String("cmd", cmd))
+	logger.Main.Info("Execution docker stat", zap.String("cmd", cmd))
 
 	s, _ := common.ExecShell(cmd)
 	var dockerStats []DockerStat

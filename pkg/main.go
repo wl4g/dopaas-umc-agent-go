@@ -17,11 +17,9 @@ package main
 
 import (
 	"flag"
-	"go.uber.org/zap"
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/logging"
 	"umc-agent/pkg/monitor/docker"
 	"umc-agent/pkg/monitor/physical"
 	"umc-agent/pkg/monitor/redis"
@@ -37,7 +35,7 @@ func init() {
 	flag.Parse()
 	//flag.Usage()
 
-	logging.MainLogger.Info("Initialize config file", zap.String("confPath", confPath))
+	//logger.Main.Info("Initialize config file", zap.String("confPath", confPath))
 
 	// Init global config.
 	config.InitGlobalConfig(confPath)

@@ -24,7 +24,7 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/logging"
+	"umc-agent/pkg/logger"
 	"umc-agent/pkg/monitor/share"
 	"umc-agent/pkg/transport"
 )
@@ -32,10 +32,10 @@ import (
 // Physical indicators runner
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Physical.Enabled {
-		logging.MainLogger.Warn("No enabled physical metrics runner!")
+		logger.Main.Warn("No enabled physical metrics runner!")
 		return
 	}
-	logging.MainLogger.Info("Starting physical indicators runner ...")
+	logger.Main.Info("Starting physical indicators runner ...")
 
 	// Loop monitor
 	for true {

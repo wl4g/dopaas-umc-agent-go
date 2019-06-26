@@ -42,33 +42,50 @@ var LocalHardwareAddrId = ""
 
 // Init global config properties.
 func InitGlobalConfig(path string) {
-	// Set defaults
-	setDefaults()
+	// Create default config.
+	GlobalConfig := createDefault()
 
-	yamlFile, err := ioutil.ReadFile(path)
+	conf, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Read config '%s' error! %s", path, err)
+		panic(err)
+		return
 	}
 
-	err = yaml.Unmarshal(yamlFile, &GlobalConfig)
+	err = yaml.Unmarshal(conf, GlobalConfig)
 	if err != nil {
 		fmt.Printf("Unmarshal config '%s' error! %s", path, err)
+		panic(err)
+		return
 	}
 
 	// Post properties.
 	afterPropertiesSet()
 }
 
-// Set defaults
-func setDefaults() {
+// Create default config.
+func createDefault() *GlobalProperties {
 	globalConfig := &GlobalProperties{
 		Logging: LoggingProperties{
-			FileName: constant.DefaultLogFilename,
-			Level:    constant.DefaultLogLevel,
-			Policy: PolicyProperties{
-				RetentionDays: constant.DefaultLogRetentionDays,
-				MaxBackups:    constant.DefaultLogMaxBackups,
-				MaxSize:       constant.DefaultLogMaxSize,
+			LogItems: map[string]LogItemProperties{
+				constant.DefaultLogMain: {
+					FileName: constant.DefaultLogDir + constant.DefaultLogMain + ".log",
+					Level:    constant.DefaultLogLevel,
+					Policy: PolicyProperties{
+						RetentionDays: constant.DefaultLogRetentionDays,
+						MaxBackups:    constant.DefaultLogMaxBackups,
+						MaxSize:       constant.DefaultLogMaxSize,
+					},
+				},
+				constant.DefaultLogReceive: {
+					FileName: constant.DefaultLogDir + constant.DefaultLogReceive + ".log",
+					Level:    constant.DefaultLogLevel,
+					Policy: PolicyProperties{
+						RetentionDays: constant.DefaultLogRetentionDays,
+						MaxBackups:    constant.DefaultLogMaxBackups,
+						MaxSize:       constant.DefaultLogMaxSize,
+					},
+				},
 			},
 		},
 		Launcher: LauncherProperties{
@@ -78,8 +95,10 @@ func setDefaults() {
 			Kafka: KafkaLauncherProperties{
 				Enabled:          false,
 				BootstrapServers: constant.DefaultLauncherKafkaServers,
-				Topic:            constant.DefaultLauncherKafkaTopic,
-				Partitions:       constant.DefaultLauncherKafkaPartitions,
+				MetricTopic:      constant.DefaultLauncherKafkaMetricTopic,
+				ReceiveTopic:     constant.DefaultLauncherKafkaReceiveTopic,
+				Ack:              constant.DefaultLauncherKafkaAck,
+				Timeout:          constant.DefaultLauncherKafkaTimeout,
 			},
 		},
 		Indicators: IndicatorsProperties{
@@ -166,7 +185,8 @@ func setDefaults() {
 			},
 		},
 	}
-	GlobalConfig = *globalConfig
+
+	return globalConfig
 }
 
 // Properties settings after initialization

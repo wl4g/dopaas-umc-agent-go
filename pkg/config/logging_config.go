@@ -19,13 +19,19 @@ package config
 // Logging properties
 // ---------------------
 
+// Multi log properties.
 type LoggingProperties struct {
+	LogItems map[string]LogItemProperties `yaml:"log-items"`
+}
+
+// LogItem properties.
+type LogItemProperties struct {
 	FileName string           `yaml:"file"`
 	Level    string           `yaml:"level"`
 	Policy   PolicyProperties `yaml:"policy"`
 }
 
-// Logging archive policy
+// Logging archive policy.
 type PolicyProperties struct {
 	RetentionDays int `yaml:"retention-days"`
 	MaxBackups    int `yaml:"max-backups"`

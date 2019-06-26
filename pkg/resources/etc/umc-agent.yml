@@ -22,21 +22,23 @@ launcher:
     server-gateway: http://10.0.0.26:14046/umc/basic2
   kafka:
     enabled: false # This enabled switch takes precedence over the HTTP launcher.
-    bootstrap.servers: localhost:9092
-    #topic: __devops_umc_agent_metric_
-    #partitions: 10
+    bootstrap.servers: 127.0.0.1:9092
+    #metric-topic: __umc_agent_metric_
+    #receive-topic: __umc_agent_metric_receive
+    #ack: 1
+    #timeout: 10000
 
 #
 # Logger configuration.
 #
 logging:
-  file: ./log/umc-agent.log
-  level: INFO
-  date-format: 06-01-02 15:04:05 # ISO8601 => 2006-01-02 15:04:05
-  policy:
-    retention-days: 7 # Day
-    max-backups: 30 # Numbers
-    max-size: 128 # MB
+  log-items:
+    main:
+      file: ./log/umc-agent.log
+      level: INFO
+    receive:
+      file: ./log/umc-agent-receive.log
+      level: INFO
 
 #
 # Resource health indicators monitor configuration.

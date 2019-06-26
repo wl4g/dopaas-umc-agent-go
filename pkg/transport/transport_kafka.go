@@ -18,50 +18,129 @@ package transport
 import (
 	"github.com/Shopify/sarama"
 	"go.uber.org/zap"
+	"strings"
+	"sync"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/logging"
+	"umc-agent/pkg/logger"
+)
+
+var (
+	wg sync.WaitGroup
 )
 
 var kafkaProducer sarama.SyncProducer
+var kafkaConsumer sarama.Consumer
 
 // Init kafka producer launcher(if necessary)
 func InitKafkaLauncherIfNecessary() {
-	if config.GlobalConfig.Launcher.Kafka.Enabled == true { // If kafka producer enabled?
-		producerConfig := sarama.NewConfig()
-		// 等待服务器所有副本都保存成功后的响应
-		producerConfig.Producer.RequiredAcks = sarama.WaitForAll
+	var kafkaProperties = config.GlobalConfig.Launcher.Kafka
 
-		// 随机的分区类型：返回一个分区器，该分区器每次选择一个随机分区
-		producerConfig.Producer.Partitioner = sarama.NewRandomPartitioner
+	// Check kafka producer enabled?
+	if !kafkaProperties.Enabled {
+		logger.Main.Warn("No enabled kafka launcher!")
+		return
+	}
+	logger.Main.Info("Kafka launcher Starting...")
 
-		// 是否等待成功和失败后的响应
-		producerConfig.Producer.Return.Successes = true
+	// Create producer
+	createKafkaProducer(kafkaProperties)
 
-		// 使用给定代理地址和配置创建一个同步生产者
-		var err error
-		kafkaProducer, err = sarama.NewSyncProducer([]string{config.GlobalConfig.Launcher.Kafka.BootstrapServers}, producerConfig)
-		if err != nil {
-			panic(err)
-		}
+	// Create consumer
+	createKafkaConsumer(kafkaProperties)
+}
+
+// create kafkaProducer
+func createKafkaProducer(kafkaProperties config.KafkaLauncherProperties) {
+	// Configuration
+	kafkaConfig := sarama.NewConfig()
+	kafkaConfig.Producer.RequiredAcks = sarama.RequiredAcks(kafkaProperties.Ack)
+	kafkaConfig.Producer.Partitioner = sarama.NewRandomPartitioner
+	kafkaConfig.Producer.Timeout = kafkaProperties.Timeout
+	kafkaConfig.Producer.Return.Successes = true
+
+	// Create syncProducer
+	var err error
+	kafkaProducer, err = sarama.NewSyncProducer(strings.Split(kafkaProperties.BootstrapServers, ","), kafkaConfig)
+	if err != nil {
+		panic(err)
 	}
 }
 
-func doProducer(key string, text string) {
-	//构建发送的消息，
+// Create kafkaConsumer, See: https://github.com/Shopify/sarama/blob/master/examples/consumergroup/main.go
+func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
+	// Configuration
+	kafkaConfig := sarama.NewConfig()
+	// Grouping cannot be specified here, otherwise shared subscriptions will be used,
+	// and the configuration of server-side downloads will not be consumed by all agents.
+	//kafkaConfig.Consumer.Group = ""
+	kafkaConfig.Consumer.Return.Errors = true
+
+	// Create consumer
+	var err error
+	kafkaConsumer, err = sarama.NewConsumer(strings.Split(kafkaProperties.BootstrapServers, ","), kafkaConfig)
+	if err != nil {
+		logger.Receive.Error("Failed to start consumer: %s", zap.Error(err))
+		return
+	}
+	defer kafkaConsumer.Close()
+
+	// Partitions all
+	partitions, err := kafkaConsumer.Partitions(kafkaProperties.ReceiveTopic)
+	if err != nil {
+		logger.Receive.Error("Failed to get the list of partitions: ", zap.Error(err))
+		return
+	}
+
+	for partition := range partitions {
+		pc, err := kafkaConsumer.ConsumePartition(kafkaProperties.ReceiveTopic, int32(partition), sarama.OffsetNewest)
+		if err != nil {
+			logger.Receive.Error("Failed to start consumer",
+				zap.Int("partition", partition),
+				zap.Error(err))
+			return
+		}
+		//defer pc.AsyncClose()
+		wg.Add(1)
+
+		go func(sarama.PartitionConsumer) {
+			defer wg.Done()
+			for msg := range pc.Messages() {
+				var key = string(msg.Key)
+				var data = string(msg.Value)
+
+				logger.Receive.Info("Receive consumer message",
+					zap.Int32("partition", msg.Partition),
+					zap.Int64("offset", msg.Offset),
+					zap.String("key", key),
+					zap.String("data", data))
+			}
+		}(pc)
+	}
+	wg.Wait()
+
+	logger.Receive.Info("Finished kafka consumer")
+}
+
+// Do production
+func doProducerSend(key string, data string) {
+	if !config.GlobalConfig.Launcher.Kafka.Enabled {
+		panic("No enabled kafka launcher!")
+		return
+	}
 	msg := &sarama.ProducerMessage{
-		Topic:     config.GlobalConfig.Launcher.Kafka.Topic,
-		Value:     sarama.ByteEncoder(text),
-		Partition: int32(config.GlobalConfig.Launcher.Kafka.Partitions),
-		Key:       sarama.StringEncoder(key),
+		Topic: config.GlobalConfig.Launcher.Kafka.MetricTopic,
+		Value: sarama.ByteEncoder(data),
 	}
 
 	partition, offset, err := kafkaProducer.SendMessage(msg)
-
 	if err != nil {
-		logging.MainLogger.Error("Send message Fail", zap.Error(err))
+		logger.Main.Error("Sent failed", zap.Error(err))
+	} else {
+		logger.Main.Info("Sent completed",
+			zap.String("key", key),
+			zap.Int32("partition", partition),
+			zap.Int64("offset", offset),
+			zap.String("data", data))
 	}
 
-	logging.MainLogger.Info("Send message Success - ",
-		zap.Int32("Partition", partition),
-		zap.Int64("offset", offset))
 }

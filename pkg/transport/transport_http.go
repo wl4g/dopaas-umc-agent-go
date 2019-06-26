@@ -16,23 +16,27 @@
 package transport
 
 import (
-	"fmt"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
 )
 
-// Send indicators-data to http gateway
-func doSendHttp(ty string, data string) {
-	request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+ty, strings.NewReader(data))
+// Send indicators to http gateway
+func doPostSend(key string, data string) {
+	request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+key, strings.NewReader(data))
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
-		fmt.Printf("post data error:%v\n", err)
+		logger.Main.Error("Post failed", zap.Error(err))
 	} else {
-		fmt.Println("post a data successful.")
-		respBody, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("response data:%v\n", string(respBody))
+		ret, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			logger.Main.Error("Failed to get response body", zap.Error(err))
+		} else {
+			logger.Main.Info("Receive response message", zap.String("data", string(ret)))
+		}
 	}
 }

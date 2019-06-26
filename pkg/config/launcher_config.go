@@ -15,6 +15,8 @@
  */
 package config
 
+import "time"
+
 // ---------------------
 // Launcher properties.
 // ---------------------
@@ -29,8 +31,10 @@ type HttpLauncherProperties struct {
 }
 
 type KafkaLauncherProperties struct {
-	Enabled          bool   `yaml:"enabled"`
-	BootstrapServers string `yaml:"bootstrap.servers"`
-	Topic            string `yaml:"topic"`
-	Partitions       int32  `yaml:"partitions"`
+	Enabled          bool          `yaml:"enabled"`
+	BootstrapServers string        `yaml:"bootstrap.servers"`
+	Ack              int16         `yaml:"ack"`
+	Timeout          time.Duration `yaml:"timeout"`
+	MetricTopic      string        `yaml:"metric-topic"`
+	ReceiveTopic     string        `yaml:"receive-topic"`
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package logging
+package logger
 
 import (
 	"go.uber.org/zap"
@@ -21,42 +21,54 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"time"
-	"umc-agent/pkg/config"
 )
 
 //
 // Initialize zap
 //
 
-var MainLogger *zap.Logger
-var GatewayLogger *zap.Logger
-var HttpLogger *zap.Logger
+// See: pkg/logging_config.go
+var Main *zap.Logger
+var Receive *zap.Logger
 
-func init() {
-	// Init logger.
-	MainLogger = newZapLogger(
-		config.GlobalConfig.Logging.FileName,
-		parseLogLevel(config.GlobalConfig.Logging.Level),
-		config.GlobalConfig.Logging.Policy.MaxSize,
-		config.GlobalConfig.Logging.Policy.MaxBackups,
-		config.GlobalConfig.Logging.Policy.RetentionDays,
-		true, "UmcAgent")
-}
+//func init() {
+//	var logItems = config.GlobalConfig.Logging.LogItems
+//
+//	// Init main logger.
+//	var mainLog = logItems[constant.DefaultLogMain]
+//	Main = newZapLogger(
+//		mainLog.FileName,
+//		parseLogLevel(mainLog.Level),
+//		mainLog.Policy.MaxSize,
+//		mainLog.Policy.MaxBackups,
+//		mainLog.Policy.RetentionDays,
+//		true, constant.DefaultLogMain)
+//
+//	// Init receive logger.
+//	var receiveLog = logItems[constant.DefaultLogReceive]
+//	Receive = newZapLogger(
+//		receiveLog.FileName,
+//		parseLogLevel(receiveLog.Level),
+//		receiveLog.Policy.MaxSize,
+//		receiveLog.Policy.MaxBackups,
+//		receiveLog.Policy.RetentionDays,
+//		true, constant.DefaultLogReceive)
+//}
 
 //
-// [Create ZAP logging objects]
+// [Create ZAP logger objects]
 //
-// filePath - logging file path
-// level - logging level
-// maxSize - Maximum size unit saved per logging file: M
-// maxBackups - How many backups can logging files be saved at most
+// filePath - logger file path
+// level - logger level
+// maxSize - Maximum size unit saved per logger file: M
+// maxBackups - How many backups can logger files be saved at most
 // maxAge - How many days can a file be saved at most?
 // compress - Compression or not
 // serviceName - service name
 //
-func newZapLogger(filePath string, level zapcore.Level, maxSize int, maxBackups int, maxAge int, compress bool, serviceName string) *zap.Logger {
+func newZapLogger(filePath string, level zapcore.Level, maxSize int, maxBackups int, maxAge int, compress bool, service string) *zap.Logger {
 	zapcoreObj := createZapCore(filePath, level, maxSize, maxBackups, maxAge, compress)
-	return zap.New(zapcoreObj, zap.AddCaller(), zap.Development(), zap.Fields(zap.String("serviceName", serviceName)))
+	return zap.New(zapcoreObj, zap.AddCaller(), zap.Development(), zap.Fields(zap.String("service", service)))
 }
 
 //

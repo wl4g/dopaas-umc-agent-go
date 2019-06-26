@@ -20,23 +20,28 @@ import (
 	"umc-agent/pkg/config"
 )
 
-// 提交数据
-func DoSendSubmit(ty string, v interface{}) {
+// Send submit
+func DoSendSubmit(key string, v interface{}) {
 	data := common.ToJSONString(v)
 
 	// Kafka launcher takes precedence over HTTP launcher.
-	if config.GlobalConfig.Launcher.Kafka.Enabled == true {
-		doSendKafka(ty, data)
+	if config.GlobalConfig.Launcher.Kafka.Enabled {
+		doSendKafka(key, data)
 	} else {
-		doSendHttp(ty, data)
+		doPostSend(key, data)
 	}
 }
 
-// Send indicators-data to Kafka
+// Send indicators to Kafka
 func doSendKafka(ty string, data string) {
-	doProducer(ty, data)
+	doProducerSend(ty, data)
 }
 
-type Launcher interface {
-	doSend(ty string, data string)
+// Transport define.
+type Transport interface {
+	// Do send message.
+	doSend(key string, data string)
+
+	// Receive response message(e.g. refresh config).
+	receive(data string)
 }

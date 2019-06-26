@@ -20,7 +20,14 @@ const (
 	// Log constants.
 	// -------------------------------
 
-	DefaultLogFilename = "./log/umc-agent.log"
+	// Default log service 'main'.
+	DefaultLogMain = "main"
+
+	// Default log service 'receive'.
+	DefaultLogReceive = "receive"
+
+	// Default log directory.
+	DefaultLogDir = "./log/"
 
 	// Default log level
 	DefaultLogLevel = "INFO"

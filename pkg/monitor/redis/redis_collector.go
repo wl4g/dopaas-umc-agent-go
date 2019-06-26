@@ -21,16 +21,16 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/logging"
+	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
 )
 
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Docker.Enabled {
-		logging.MainLogger.Warn("No enabled redis metrics runner!")
+		logger.Main.Warn("No enabled redis metrics runner!")
 		return
 	}
-	logging.MainLogger.Info("Starting redis indicators runner ...")
+	logger.Main.Info("Starting redis indicators runner ...")
 
 	// Loop monitor
 	for true {

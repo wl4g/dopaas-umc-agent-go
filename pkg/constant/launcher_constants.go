@@ -15,6 +15,8 @@
  */
 package constant
 
+import "time"
+
 const (
 	// -------------------------------
 	// Launcher constants.
@@ -26,9 +28,15 @@ const (
 	// Default launcher kafka bootstrap servers.
 	DefaultLauncherKafkaServers = "localhost:9092"
 
-	// Default launcher kafka topic.
-	DefaultLauncherKafkaTopic = "__devops_umc_agent_metric_"
+	// Default launcher kafka metric topic.
+	DefaultLauncherKafkaMetricTopic = "__umc_agent_metric_"
 
-	// Default launcher kafka partitions.
-	DefaultLauncherKafkaPartitions int32 = 10
+	// Default launcher kafka receive topic.
+	DefaultLauncherKafkaReceiveTopic = "__umc_agent_metric_receive"
+
+	// Default launcher kafka producer ack.
+	DefaultLauncherKafkaAck = 1
+
+	// Default launcher kafka producer timeout.
+	DefaultLauncherKafkaTimeout = 10 * time.Second
 )

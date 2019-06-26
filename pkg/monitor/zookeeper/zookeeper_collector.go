@@ -22,16 +22,16 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/logging"
+	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
 )
 
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Docker.Enabled {
-		logging.MainLogger.Warn("No enabled zookeeper metrics runner!")
+		logger.Main.Warn("No enabled zookeeper metrics runner!")
 		return
 	}
-	logging.MainLogger.Info("Starting zookeeper indicators runner ...")
+	logger.Main.Info("Starting zookeeper indicators runner ...")
 
 	// Loop monitor
 	for true {
@@ -62,11 +62,11 @@ func getZookeeperStats() Zookeeper {
 
 func getZkInfo(command string) (string, error) {
 	servers := config.GlobalConfig.Indicators.Zookeeper.Servers
-	logging.MainLogger.Info("Execution zookeeper stat", zap.String("servers", servers))
+	logger.Main.Info("Execution zookeeper stat", zap.String("servers", servers))
 
 	conn, err := net.Dial("tcp", servers)
 	if err != nil {
-		logging.MainLogger.Error("Execution connect zookeeper failed",
+		logger.Main.Error("Execution connect zookeeper failed",
 			zap.String("servers", servers), zap.Error(err))
 		return "", err
 	}
@@ -86,7 +86,7 @@ func getZkInfo(command string) (string, error) {
 	cnt, err := conn.Read(buf)
 
 	if err != nil {
-		logging.MainLogger.Error("Got zk metric failed!", zap.Error(err))
+		logger.Main.Error("Got zk metric failed!", zap.Error(err))
 		if conn != nil {
 			conn.Close()
 		}
@@ -95,7 +95,7 @@ func getZkInfo(command string) (string, error) {
 	respStat := string(buf[0:cnt])
 	conn.Close()
 
-	logging.MainLogger.Debug("Zookeeper server response", zap.String("respStat", respStat))
+	logger.Main.Debug("Zookeeper server response", zap.String("respStat", respStat))
 	return respStat, nil
 }
 
