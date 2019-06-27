@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package constant
-
+package metric
 
 const (
-
 	Topic = "topic"
 
 	GroupId = "groupid"
@@ -46,28 +44,13 @@ const (
 
 	KafkaTopicPartitionsMetric = "kafka_topic_partitions"
 
-	KafkaConsumergroupMembers = "kafka_consumergroup_members"
+	KafkaConsumerGroupMembers = "kafka_consumergroup_members"
 
-	KafkaConsumergroupCurrentOffset = "kafka_consumergroup_current_offset"
+	KafkaConsumerGroupCurrentOffset = "kafka_consumergroup_current_offset"
 
-	KafkaConsumergroupLag = "kafka_consumergroup_lag"
+	KafkaConsumerGroupLag = "kafka_consumergroup_lag"
 
-	KafkaConsumergroupCurrentOffsetSum = "kafka_consumergroup_current_offset_sum"
+	KafkaConsumerGroupCurrentOffsetSum = "kafka_consumergroup_current_offset_sum"
 
-	KafkaConsumergroupLagSum = "kafka_consumergroup_lag_sum"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	KafkaConsumerGroupLagSum = "kafka_consumergroup_lag_sum"
 )

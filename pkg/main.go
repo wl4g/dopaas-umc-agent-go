@@ -32,7 +32,7 @@ import (
 	"umc-agent/pkg/monitor/memcached"
 	"umc-agent/pkg/monitor/mesos"
 	"umc-agent/pkg/monitor/mongodb"
-	"umc-agent/pkg/monitor/mysqld"
+	"umc-agent/pkg/monitor/mysql"
 	"umc-agent/pkg/monitor/opentsdb"
 	"umc-agent/pkg/monitor/physical"
 	"umc-agent/pkg/monitor/postgresql"
@@ -63,17 +63,12 @@ func init() {
 	logger.InitZapLogger()
 
 	// Init kafka launcher.(if necessary)
-	transport.InitKafkaLauncherIfNecessary()
+	transport.InitKafkaTransportIfNecessary()
 }
 
 func main() {
-	//startCollectorRunners(wg)
-	//wg.Wait()
-
-	/*info := share.BuildStatsInfo("mymetric",1).AppendTag("key1","123").AppendTag("abc","456")
-	fmt.Println(common.ToJSONString(info))*/
-
-	kafka.IndicatorRunner()
+	startCollectorRunners(wg)
+	wg.Wait()
 }
 
 // Starting indicator runners all
@@ -97,7 +92,7 @@ func startCollectorRunners(wg *sync.WaitGroup) {
 
 	go elasticsearch.IndicatorRunner()
 	go mongodb.IndicatorRunner()
-	go mysqld.IndicatorRunner()
+	go mysql.IndicatorRunner()
 	go postgresql.IndicatorRunner()
 	go opentsdb.IndicatorRunner()
 	go cassandra.IndicatorRunner()

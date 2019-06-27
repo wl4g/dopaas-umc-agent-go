@@ -25,7 +25,7 @@ func DoSendSubmit(key string, v interface{}) {
 	data := common.ToJSONString(v)
 
 	// Kafka launcher takes precedence over HTTP launcher.
-	if config.GlobalConfig.Launcher.Kafka.Enabled {
+	if config.GlobalConfig.Transport.Kafka.Enabled {
 		doSendKafka(key, data)
 	} else {
 		doPostSend(key, data)

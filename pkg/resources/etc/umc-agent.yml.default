@@ -18,7 +18,7 @@
 #### receiving gateway, defaults to http. post sending.
 #### ==================================================
 
-#launcher:
+#transport:
 #  http:
 #    server-gateway: http://127.0.0.1:14046/umc/receiver
 #  kafka:

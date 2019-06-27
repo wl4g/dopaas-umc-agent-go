@@ -26,8 +26,8 @@ import (
 
 // Send indicators to http gateway
 func doPostSend(key string, data string) {
-	if !config.GlobalConfig.Launcher.Kafka.Enabled {
-		request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+key, strings.NewReader(data))
+	if !config.GlobalConfig.Transport.Kafka.Enabled {
+		request, _ := http.NewRequest("POST", config.GlobalConfig.Transport.Http.ServerGateway+"/"+key, strings.NewReader(data))
 		request.Header.Set("Content-Type", "application/json")
 
 		// Do execution

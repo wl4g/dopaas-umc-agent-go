@@ -29,7 +29,7 @@ import (
 // ---------------------
 type GlobalProperties struct {
 	Logging    LoggingProperties    `yaml:"logging"`
-	Launcher   LauncherProperties   `yaml:"launcher"`
+	Transport  TransportProperties  `yaml:"transport"`
 	Indicators IndicatorsProperties `yaml:"indicators"`
 }
 
@@ -87,17 +87,17 @@ func createDefault() *GlobalProperties {
 				},
 			},
 		},
-		Launcher: LauncherProperties{
-			Http: HttpLauncherProperties{
+		Transport: TransportProperties{
+			Http: HttpTransportProperties{
 				ServerGateway: constant.DefaultHttpServerGateway,
 			},
-			Kafka: KafkaLauncherProperties{
+			Kafka: KafkaTransportProperties{
 				Enabled:          false,
-				BootstrapServers: constant.DefaultLauncherKafkaServers,
-				MetricTopic:      constant.DefaultLauncherKafkaMetricTopic,
-				ReceiveTopic:     constant.DefaultLauncherKafkaReceiveTopic,
-				Ack:              constant.DefaultLauncherKafkaAck,
-				Timeout:          constant.DefaultLauncherKafkaTimeout,
+				BootstrapServers: constant.DefaultTransportKafkaServers,
+				MetricTopic:      constant.DefaultTransportKafkaMetricTopic,
+				ReceiveTopic:     constant.DefaultTransportKafkaReceiveTopic,
+				Ack:              constant.DefaultTransportKafkaAck,
+				Timeout:          constant.DefaultTransportKafkaTimeout,
 			},
 		},
 		Indicators: IndicatorsProperties{

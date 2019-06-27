@@ -32,8 +32,8 @@ var kafkaProducer sarama.SyncProducer
 var kafkaConsumer sarama.Consumer
 
 // Init kafka producer launcher(if necessary)
-func InitKafkaLauncherIfNecessary() {
-	var kafkaProperties = config.GlobalConfig.Launcher.Kafka
+func InitKafkaTransportIfNecessary() {
+	var kafkaProperties = config.GlobalConfig.Transport.Kafka
 
 	// Check kafka producer enabled?
 	if !kafkaProperties.Enabled {
@@ -49,7 +49,7 @@ func InitKafkaLauncherIfNecessary() {
 }
 
 // create kafkaProducer
-func createKafkaProducer(kafkaProperties config.KafkaLauncherProperties) {
+func createKafkaProducer(kafkaProperties config.KafkaTransportProperties) {
 	logger.Main.Info("Kafka transport kafkaProducer starting...")
 
 	// Configuration
@@ -68,7 +68,7 @@ func createKafkaProducer(kafkaProperties config.KafkaLauncherProperties) {
 }
 
 // Create kafkaConsumer, See: https://github.com/Shopify/sarama/blob/master/examples/consumergroup/main.go
-func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
+func createKafkaConsumer(kafkaProperties config.KafkaTransportProperties) {
 	logger.Main.Info("Kafka transport kafkaConsumer starting...")
 
 	// Configuration
@@ -126,12 +126,12 @@ func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
 
 // Do production
 func doProducerSend(key string, data string) {
-	if !config.GlobalConfig.Launcher.Kafka.Enabled {
+	if !config.GlobalConfig.Transport.Kafka.Enabled {
 		panic("No enabled kafka launcher!")
 		return
 	}
 	msg := &sarama.ProducerMessage{
-		Topic: config.GlobalConfig.Launcher.Kafka.MetricTopic,
+		Topic: config.GlobalConfig.Transport.Kafka.MetricTopic,
 		Value: sarama.ByteEncoder(data),
 	}
 

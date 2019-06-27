@@ -18,19 +18,19 @@ package config
 import "time"
 
 // ---------------------
-// Launcher properties.
+// Transport properties.
 // ---------------------
 
-type LauncherProperties struct {
-	Http  HttpLauncherProperties  `yaml:"http"`
-	Kafka KafkaLauncherProperties `yaml:"kafka"`
+type TransportProperties struct {
+	Http  HttpTransportProperties  `yaml:"http"`
+	Kafka KafkaTransportProperties `yaml:"kafka"`
 }
 
-type HttpLauncherProperties struct {
+type HttpTransportProperties struct {
 	ServerGateway string `yaml:"server-gateway"`
 }
 
-type KafkaLauncherProperties struct {
+type KafkaTransportProperties struct {
 	Enabled          bool          `yaml:"enabled"`
 	BootstrapServers string        `yaml:"bootstrap.servers"`
 	Ack              int16         `yaml:"ack"`

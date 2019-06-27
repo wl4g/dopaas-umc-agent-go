@@ -17,32 +17,30 @@ package share
 
 import "umc-agent/pkg/config"
 
-type StatInfos struct {
-	StatInfos []StatInfo `json:"statInfos"`
-	Timestamp int64      `json:"timestamp"`
+type MetricInfo struct {
+	StatMetrics []StatMetric `json:"statMetrics"`
+	Timestamp   int64        `json:"timestamp"`
 }
 
-type StatInfo struct {
-	Metric    string            `json:"metric"`
-	Tags      map[string]string `json:"tags"`
-	Value     float64           `json:"value"`
+type StatMetric struct {
+	Metric string            `json:"metric"`
+	Tags   map[string]string `json:"tags"`
+	Value  float64           `json:"value"`
 }
 
-func BuildStatInfo(metric string, value float64) StatInfo {
-	var statsInfo StatInfo
+// Create stat information.
+func NewStatMetric(metric string, value float64) StatMetric {
+	var statsInfo StatMetric
 	statsInfo.Tags = make(map[string]string)
-	statsInfo.Tags["instance"] = config.LocalHardwareAddrId
 
-	statsInfo.Metric = config.GlobalConfig.Indicators.Namespace+"_"+metric
+	statsInfo.Tags["instance"] = config.LocalHardwareAddrId
+	statsInfo.Metric = config.GlobalConfig.Indicators.Namespace + "_" + metric
 	statsInfo.Value = value
 	return statsInfo
 }
 
-func (statInfo StatInfo) AppendTag (key string,value string) StatInfo {
+// Tags appender.
+func (statInfo StatMetric) AppendTag(key string, value string) StatMetric {
 	statInfo.Tags[key] = value
 	return statInfo
 }
-
-
-
-

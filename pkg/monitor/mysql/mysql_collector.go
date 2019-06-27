@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package mysqld
+package mysql
 
 import (
-	"fmt"
-	"testing"
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
 )
 
-func TestEmqCollector(t *testing.T) {
-	fmt.Printf("Testing %s collector starting ...", "mysqld")
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.MySQL.Enabled {
+		logger.Main.Warn("No enabled mysql metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting mysql indicators runner ...")
+
 }

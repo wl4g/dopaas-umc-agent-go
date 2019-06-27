@@ -19,24 +19,24 @@ import "time"
 
 const (
 	// -------------------------------
-	// Launcher constants.
+	// Transport constants.
 	// -------------------------------
 
 	// Default http server gateway
 	DefaultHttpServerGateway = "http://localhost:14046/umc/basic"
 
-	// Default launcher kafka bootstrap servers.
-	DefaultLauncherKafkaServers = "localhost:9092"
+	// Default transport kafka bootstrap servers.
+	DefaultTransportKafkaServers = "localhost:9092"
 
-	// Default launcher kafka metric topic.
-	DefaultLauncherKafkaMetricTopic = "__umc_agent_metric_"
+	// Default transport kafka metric topic.
+	DefaultTransportKafkaMetricTopic = "__umc_agent_metric_"
 
-	// Default launcher kafka receive topic.
-	DefaultLauncherKafkaReceiveTopic = "__umc_agent_metric_receive"
+	// Default transport kafka receive topic.
+	DefaultTransportKafkaReceiveTopic = "__umc_agent_metric_receive"
 
-	// Default launcher kafka producer ack.
-	DefaultLauncherKafkaAck = 1
+	// Default transport kafka producer ack.
+	DefaultTransportKafkaAck = 1
 
-	// Default launcher kafka producer timeout.
-	DefaultLauncherKafkaTimeout = 10 * time.Second
+	// Default transport kafka producer timeout.
+	DefaultTransportKafkaTimeout = 10 * time.Second
 )
