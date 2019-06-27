@@ -43,7 +43,7 @@ var LocalHardwareAddrId = ""
 // Init global config properties.
 func InitGlobalConfig(path string) {
 	// Create default config.
-	GlobalConfig := createDefault()
+	GlobalConfig = *createDefault()
 
 	conf, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -52,7 +52,7 @@ func InitGlobalConfig(path string) {
 		return
 	}
 
-	err = yaml.Unmarshal(conf, GlobalConfig)
+	err = yaml.Unmarshal(conf, &GlobalConfig)
 	if err != nil {
 		fmt.Printf("Unmarshal config '%s' error! %s", path, err)
 		panic(err)
@@ -60,7 +60,7 @@ func InitGlobalConfig(path string) {
 	}
 
 	// Post properties.
-	afterPropertiesSet()
+	afterPropertiesSet(&GlobalConfig)
 }
 
 // Create default config.
@@ -185,20 +185,19 @@ func createDefault() *GlobalProperties {
 			},
 		},
 	}
-
 	return globalConfig
 }
 
 // Properties settings after initialization
-func afterPropertiesSet() {
+func afterPropertiesSet(globalConfig *GlobalProperties) {
 	// Environmental variable priority
 	var netcard = os.Getenv("indicators.netcard")
 	if !common.IsEmpty(netcard) {
-		GlobalConfig.Indicators.Netcard = netcard
+		globalConfig.Indicators.Netcard = netcard
 	}
 
 	// Got local hardware addr
-	LocalHardwareAddrId = common.GetHardwareAddr(GlobalConfig.Indicators.Netcard)
+	LocalHardwareAddrId = common.GetHardwareAddr(globalConfig.Indicators.Netcard)
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
 		panic("net found ip,Please check the net conf")
 	}

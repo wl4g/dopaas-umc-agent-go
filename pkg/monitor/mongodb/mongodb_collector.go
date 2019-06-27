@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package mongodb
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.Mongodb.Enabled {
+		logger.Main.Warn("No enabled mongodb metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting mongodb indicators runner ...")
+
+}

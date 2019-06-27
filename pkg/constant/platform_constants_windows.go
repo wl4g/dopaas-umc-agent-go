@@ -13,18 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package etcd
+package constant
 
-import (
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/logger"
+const (
+	// Default network indicators commands config path.
+	DefaultNetStatCmdConfigPath = "./pkg/resources/cmd/net.port.stat.bat"
 )
-
-func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Etcd.Enabled {
-		logger.Main.Warn("No enabled etcd metrics runner!")
-		return
-	}
-	logger.Main.Info("Starting etcd indicators runner ...")
-
-}

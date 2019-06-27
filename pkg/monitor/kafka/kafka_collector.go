@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package kafka
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.Kafka.Enabled {
+		logger.Main.Warn("No enabled kafka metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting kafka indicators runner ...")
+
+}

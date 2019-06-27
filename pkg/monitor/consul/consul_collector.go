@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package consul
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.Consul.Enabled {
+		logger.Main.Warn("No enabled consul metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting consul indicators runner ...")
+
+}

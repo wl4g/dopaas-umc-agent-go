@@ -27,7 +27,7 @@ import (
 )
 
 // Docker indicators runner
-func DockerIndicatorRunner() {
+func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Docker.Enabled {
 		logger.Main.Warn("No enabled docker metrics runner!")
 		return

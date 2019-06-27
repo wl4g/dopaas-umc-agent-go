@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package cassandra
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.Cassandra.Enabled {
+		logger.Main.Warn("No enabled cassandra metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting cassandra indicators runner ...")
+
+}

@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package mesos
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.Mesos.Enabled {
+		logger.Main.Warn("No enabled mesos metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting mesos indicators runner ...")
+
+}

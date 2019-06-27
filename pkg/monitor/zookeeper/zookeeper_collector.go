@@ -27,7 +27,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Docker.Enabled {
+	if !config.GlobalConfig.Indicators.Zookeeper.Enabled {
 		logger.Main.Warn("No enabled zookeeper metrics runner!")
 		return
 	}

@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package emq
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.Emq.Enabled {
+		logger.Main.Warn("No enabled emq metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting emq indicators runner ...")
+
+}

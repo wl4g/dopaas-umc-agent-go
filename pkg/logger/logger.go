@@ -30,15 +30,61 @@ import (
 //
 
 // See: pkg/logging_config.go
-var Main *zap.Logger
-var Receive *zap.Logger
+var Main *zapLoggerWrapper
+var Receive *zapLoggerWrapper
 
-func init() {
+// -------------------------
+// Zap logger wrapper.
+// -------------------------
+
+// Customize logger wrapper.
+type zapLoggerWrapper struct {
+	*zap.Logger
+	zapcore.Level
+}
+
+// Add method to zapLogger wrapper.
+func (log zapLoggerWrapper) IsDebug() bool {
+	return log.Level <= zapcore.DebugLevel
+}
+
+func (log zapLoggerWrapper) IsInfo() bool {
+	return log.Level <= zapcore.InfoLevel
+}
+
+func (log zapLoggerWrapper) IsWarn() bool {
+	return log.Level <= zapcore.WarnLevel
+}
+
+func (log zapLoggerWrapper) IsError() bool {
+	return log.Level <= zapcore.ErrorLevel
+}
+
+func (log zapLoggerWrapper) IsFatal() bool {
+	return log.Level <= zapcore.FatalLevel
+}
+
+//
+// Create zapLogger wrapper.
+//
+func newZapLoggerWrapper(filePath string, level zapcore.Level, maxSize int, maxBackups int, maxAge int, compress bool, service string) *zapLoggerWrapper {
+	return &zapLoggerWrapper{
+		newZapLogger(filePath, level,
+			maxSize, maxBackups, maxAge, compress, service),
+		level,
+	}
+}
+
+// -------------------------
+// Zap logger creation.
+// -------------------------
+
+func InitZapLogger() {
 	var logItems = config.GlobalConfig.Logging.LogItems
 
 	// Init main logger.
 	var mainLog = logItems[constant.DefaultLogMain]
-	Main = newZapLogger(
+	Main = newZapLoggerWrapper(
 		mainLog.FileName,
 		parseLogLevel(mainLog.Level),
 		mainLog.Policy.MaxSize,
@@ -48,7 +94,7 @@ func init() {
 
 	// Init receive logger.
 	var receiveLog = logItems[constant.DefaultLogReceive]
-	Receive = newZapLogger(
+	Receive = newZapLoggerWrapper(
 		receiveLog.FileName,
 		parseLogLevel(receiveLog.Level),
 		receiveLog.Policy.MaxSize,
@@ -112,7 +158,7 @@ func createZapCore(filePath string, level zapcore.Level, maxSize int, maxBackups
 	)
 }
 
-// Parse zap-log level
+// Parse zap-zapLog level
 func parseLogLevel(text string) zapcore.Level {
 	switch string(text) {
 	case "debug", "DEBUG":

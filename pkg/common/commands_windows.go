@@ -32,7 +32,7 @@ func ExecShell(s string) (string, error) {
 	//Run执行c包含的命令，并阻塞直到完成。  这里stdout被取出，cmd.Wait()无法正确获取stdin,stdout,stderr，则阻塞在那了
 	err := cmd.Run()
 	if err != nil {
-		fmt.Printf("Execution bat command error! %s", err)
+		fmt.Printf("Execution bat netPortStatCmdBuffer error! %s", err)
 	}
 
 	return out.String(), err

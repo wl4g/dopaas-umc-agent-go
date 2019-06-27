@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package postgresql
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.PostgreSQL.Enabled {
+		logger.Main.Warn("No enabled postgresql metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting postgresql indicators runner ...")
+
+}

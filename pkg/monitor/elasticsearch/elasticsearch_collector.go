@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package elasticsearch
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.ElasticSearch.Enabled {
+		logger.Main.Warn("No enabled elasticsearch metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting elasticsearch indicators runner ...")
+
+}

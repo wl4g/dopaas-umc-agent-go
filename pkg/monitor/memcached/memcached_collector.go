@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package memcached
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.Memcached.Enabled {
+		logger.Main.Warn("No enabled memcached metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting memcached indicators runner ...")
+
+}

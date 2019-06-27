@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package rabbitmq
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.RabbitMQ.Enabled {
+		logger.Main.Warn("No enabled rabbitmq metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting rabbitmq indicators runner ...")
+
+}

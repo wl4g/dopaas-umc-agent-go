@@ -37,20 +37,21 @@ func InitKafkaLauncherIfNecessary() {
 
 	// Check kafka producer enabled?
 	if !kafkaProperties.Enabled {
-		logger.Main.Warn("No enabled kafka launcher!")
+		logger.Main.Warn("No enabled transport kafkaProducer!")
 		return
 	}
-	logger.Main.Info("Kafka launcher Starting...")
 
 	// Create producer
 	createKafkaProducer(kafkaProperties)
 
-	// Create consumer
-	createKafkaConsumer(kafkaProperties)
+	// Create async consumer
+	go createKafkaConsumer(kafkaProperties)
 }
 
 // create kafkaProducer
 func createKafkaProducer(kafkaProperties config.KafkaLauncherProperties) {
+	logger.Main.Info("Kafka transport kafkaProducer starting...")
+
 	// Configuration
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Producer.RequiredAcks = sarama.RequiredAcks(kafkaProperties.Ack)
@@ -68,6 +69,8 @@ func createKafkaProducer(kafkaProperties config.KafkaLauncherProperties) {
 
 // Create kafkaConsumer, See: https://github.com/Shopify/sarama/blob/master/examples/consumergroup/main.go
 func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
+	logger.Main.Info("Kafka transport kafkaConsumer starting...")
+
 	// Configuration
 	kafkaConfig := sarama.NewConfig()
 	// Grouping cannot be specified here, otherwise shared subscriptions will be used,
@@ -118,7 +121,7 @@ func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
 	}
 	wg.Wait()
 
-	logger.Receive.Info("Finished kafka consumer")
+	logger.Receive.Info("Finished kafka consumer!")
 }
 
 // Do production
@@ -136,11 +139,20 @@ func doProducerSend(key string, data string) {
 	if err != nil {
 		logger.Main.Error("Sent failed", zap.Error(err))
 	} else {
-		logger.Main.Info("Sent completed",
-			zap.String("key", key),
-			zap.Int32("partition", partition),
-			zap.Int64("offset", offset),
-			zap.String("data", data))
+		// Print details
+		if logger.Main.IsDebug() {
+			logger.Main.Debug("Sent completed",
+				zap.String("key", key),
+				zap.Int32("partition", partition),
+				zap.Int64("offset", offset),
+				zap.String("data", data))
+		} else if logger.Main.IsInfo() {
+			// Print simple
+			logger.Main.Info("Sent completed",
+				zap.String("key", key),
+				zap.Int32("partition", partition),
+				zap.Int64("offset", offset))
+		}
 	}
 
 }

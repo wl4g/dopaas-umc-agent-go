@@ -19,18 +19,18 @@ import (
 	"github.com/shirou/gopsutil/net"
 	"regexp"
 	"strings"
+	"umc-agent/pkg/constant"
 )
 
-var commandPath = "./pkg/resources/cmd/net.port.sh.txt"
-var command string
+var (
+	// Network commands buffer.
+	netPortStatCmdBuffer = ReadFileToString(constant.DefaultNetStatCmdConfigPath)
+)
 
 // Get network interfaces.
 // e.g. var sumCommand = "ss -n sport == 22|awk '{sumup += $3};{sumdo += $4};END {print sumup,sumdo}'"
 func GetNetworkInterfaces(port string) string {
-	if command == "" {
-		command = ReadFileToString(commandPath)
-	}
-	cmd := strings.Replace(command, "#{port}", port, -1)
+	cmd := strings.Replace(netPortStatCmdBuffer, "#{port}", port, -1)
 	s, _ := ExecShell(cmd)
 
 	//fmt.Printf("Execution completed for - '%s'", s)

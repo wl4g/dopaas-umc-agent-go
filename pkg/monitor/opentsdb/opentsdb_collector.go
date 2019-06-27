@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package opentsdb
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.OpenTSDB.Enabled {
+		logger.Main.Warn("No enabled openTSDB metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting openTSDB indicators runner ...")
+
+}

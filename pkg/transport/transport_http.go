@@ -26,17 +26,22 @@ import (
 
 // Send indicators to http gateway
 func doPostSend(key string, data string) {
-	request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+key, strings.NewReader(data))
-	request.Header.Set("Content-Type", "application/json")
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		logger.Main.Error("Post failed", zap.Error(err))
-	} else {
-		ret, err := ioutil.ReadAll(resp.Body)
+	if !config.GlobalConfig.Launcher.Kafka.Enabled {
+		request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+key, strings.NewReader(data))
+		request.Header.Set("Content-Type", "application/json")
+
+		// Do execution
+		resp, err := http.DefaultClient.Do(request)
 		if err != nil {
-			logger.Main.Error("Failed to get response body", zap.Error(err))
+			logger.Main.Error("Post failed", zap.Error(err))
 		} else {
-			logger.Main.Info("Receive response message", zap.String("data", string(ret)))
+			ret, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				logger.Main.Error("Failed to get response body", zap.Error(err))
+			} else {
+				logger.Main.Info("Receive response message", zap.String("data", string(ret)))
+			}
 		}
 	}
+
 }

@@ -20,6 +20,6 @@ const (
 	// Basic constants.
 	// -------------------------------
 
-	// Default profile path.
+	// Default config path.
 	DefaultConfigPath = "/etc/umc-agent.yml"
 )

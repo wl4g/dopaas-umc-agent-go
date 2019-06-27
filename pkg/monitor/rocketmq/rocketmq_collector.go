@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package rocketmq
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.RocketMQ.Enabled {
+		logger.Main.Warn("No enabled rocketmq metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting rocketmq indicators runner ...")
+
+}

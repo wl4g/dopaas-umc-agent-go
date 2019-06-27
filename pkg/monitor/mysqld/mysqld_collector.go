@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package mysqld
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicators.MySQL.Enabled {
+		logger.Main.Warn("No enabled mysql metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting mysql indicators runner ...")
+
+}
