@@ -1,0 +1,114 @@
+# Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+#### ==================================================
+#### Agent monitors production sending data configuration, supports HTTP and Kafka server
+#### receiving gateway, defaults to http. post sending.
+#### ==================================================
+
+launcher:
+  http:
+    server-gateway: http://127.0.0.1:14046/umc/receiver
+  kafka:
+    enabled: true # This enabled switch takes precedence over the HTTP launcher.
+    bootstrap.servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
+    ack: 1
+    timeout: 60000
+
+### ==================================================
+### Logger configuration.
+### ==================================================
+
+logging:
+  log-items:
+    main:
+      file: ./log/umc-agent.log
+      level: INFO
+    receive:
+      file: ./log/umc-agent-receive.log
+      level: INFO
+
+### ==================================================
+### Resource health indicators monitor configuration.
+### ==================================================
+
+indicators:
+  namespace: defaultCloud # Namespaces that support multiple tenants.
+  netcard: en0 # Bind net-card name.
+### ------ Infrastructure indicators ------
+  physical:
+    enabled: true
+    delay: 10000 # Delay(ms)
+    range-port: 22,9092
+### --------- Virtual indicators ----------
+  docker:
+    enabled: true
+    delay: 10000
+  mesos:
+    enabled: false
+    delay: 60000
+### --------- Discovery indicators --------
+  zookeeper:
+    enabled: true
+    delay: 10000
+    servers: localhost:2181
+    commands: mntr # zookeeper indicators commands(e.g. mntr,conf)
+  etcd:
+    enabled: false
+    delay: 60000
+  consul:
+    enabled: false
+    delay: 60000
+### --------- MQ indicators ---------------
+  kafka:
+    enabled: true
+    delay: 10000
+  emq:
+    enabled: false
+    delay: 60000
+  rabbitmq:
+    enabled: false
+    delay: 60000
+  rocketmq:
+    enabled: false
+    delay: 60000
+### --------- Cache indicators ------------
+  redis:
+    enabled: true
+    delay: 10000
+    servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
+    password: zzx!@#$%
+  memcached:
+    enabled: false
+    delay: 60000
+### --------- DB indicators ---------------
+  elasticsearch:
+    enabled: false
+    delay: 60000
+  mongodb:
+    enabled: false
+    delay: 60000
+  mysql:
+    enabled: false
+    delay: 60000
+  postgresql:
+    enabled: false
+    delay: 60000
+  opentsdb:
+    enabled: false
+    delay: 60000
+  cassandra:
+    enabled: false
+    delay: 60000
