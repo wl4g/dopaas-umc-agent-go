@@ -17,5 +17,5 @@ package constant
 
 const (
 	// Default network indicators commands config path.
-	DefaultNetStatCmdConfigPath = "./pkg/resources/cmd/net.port.stat.bat"
+	DefaultNetStatCmdConfigPath = "./pkg/resources/cmd/net_port_stat.bat.windows"
 )

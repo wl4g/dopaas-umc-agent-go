@@ -17,5 +17,5 @@ package constant
 
 const (
 	// Default network indicators commands config path.
-	DefaultNetIndicatorsConfigPath = "./pkg/resources/cmd/net.port.stat.sh"
+	DefaultNetStatCmdConfigPath = "./pkg/resources/cmd/net_port_stat.sh.darwin"
 )
