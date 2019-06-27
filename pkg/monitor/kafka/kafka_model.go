@@ -14,3 +14,24 @@
  * limitations under the License.
  */
 package kafka
+
+
+type kafkaOpts struct {
+	uri                      []string
+	useSASL                  bool
+	useSASLHandshake         bool
+	saslUsername             string
+	saslPassword             string
+	useTLS                   bool
+	tlsCAFile                string
+	tlsCertFile              string
+	tlsKeyFile               string
+	tlsInsecureSkipTLSVerify bool
+	kafkaVersion             string
+	useZooKeeperLag          bool
+	uriZookeeper             []string
+	labels                   string
+	metadataRefreshInterval  string
+}
+
+

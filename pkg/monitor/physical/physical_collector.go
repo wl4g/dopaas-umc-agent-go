@@ -40,7 +40,7 @@ func IndicatorRunner() {
 	// Loop monitor
 	for true {
 		var result share.TotalStat
-		result.Meta = config.CreateMeta("physical")
+		result.Meta = share.CreateMeta("physical")
 
 		p, _ := cpu.Percent(0, false)
 		result.Cpu = p

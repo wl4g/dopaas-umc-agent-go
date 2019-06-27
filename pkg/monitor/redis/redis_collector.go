@@ -22,6 +22,7 @@ import (
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/logger"
+	"umc-agent/pkg/monitor/share"
 	"umc-agent/pkg/transport"
 )
 
@@ -35,7 +36,7 @@ func IndicatorRunner() {
 	// Loop monitor
 	for true {
 		result := getRedisStats()
-		result.Meta = config.CreateMeta("redis")
+		result.Meta = share.CreateMeta("redis")
 
 		transport.DoSendSubmit(result.Meta.Type, result)
 		time.Sleep(config.GlobalConfig.Indicators.Redis.Delay * time.Millisecond)

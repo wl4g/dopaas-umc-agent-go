@@ -18,6 +18,7 @@ package share
 import (
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
+	"umc-agent/pkg/config"
 )
 
 type TotalStat struct {
@@ -50,4 +51,15 @@ type MetaInfo struct {
 	Id        string `json:"physicalId"`
 	Type      string `json:"type"`
 	Namespace string `json:"namespace"`
+}
+
+
+// Create meta info
+func CreateMeta(metaType string) MetaInfo {
+	meta := MetaInfo{
+		Id:        config.LocalHardwareAddrId,
+		Type:      metaType,
+		Namespace: config.GlobalConfig.Indicators.Namespace,
+	}
+	return meta
 }

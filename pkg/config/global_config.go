@@ -22,7 +22,6 @@ import (
 	"os"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/monitor/share"
 )
 
 // ---------------------
@@ -201,14 +200,4 @@ func afterPropertiesSet(globalConfig *GlobalProperties) {
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
 		panic("net found ip,Please check the net conf")
 	}
-}
-
-// Create meta info
-func CreateMeta(metaType string) share.MetaInfo {
-	meta := share.MetaInfo{
-		Id:        LocalHardwareAddrId,
-		Type:      metaType,
-		Namespace: GlobalConfig.Indicators.Namespace,
-	}
-	return meta
 }

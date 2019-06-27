@@ -67,8 +67,13 @@ func init() {
 }
 
 func main() {
-	startCollectorRunners(wg)
-	wg.Wait()
+	//startCollectorRunners(wg)
+	//wg.Wait()
+
+	/*info := share.BuildStatsInfo("mymetric",1).AppendTag("key1","123").AppendTag("abc","456")
+	fmt.Println(common.ToJSONString(info))*/
+
+	kafka.IndicatorRunner()
 }
 
 // Starting indicator runners all
