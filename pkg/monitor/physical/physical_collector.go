@@ -25,7 +25,7 @@ import (
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/logger"
-	"umc-agent/pkg/monitor/share"
+	"umc-agent/pkg/monitor"
 	"umc-agent/pkg/transport"
 )
 
@@ -39,8 +39,8 @@ func IndicatorRunner() {
 
 	// Loop monitor
 	for true {
-		var result share.TotalStat
-		result.Meta = share.CreateMeta("physical")
+		var result monitor.TotalStat
+		result.Meta = monitor.CreateMeta("physical")
 
 		p, _ := cpu.Percent(0, false)
 		result.Cpu = p
@@ -57,11 +57,11 @@ func IndicatorRunner() {
 }
 
 // Disks stats info
-func getDiskStatsInfo() []share.DiskStat {
+func getDiskStatsInfo() []monitor.DiskStat {
 	partitionStats, _ := disk.Partitions(false)
-	var disks []share.DiskStat
+	var disks []monitor.DiskStat
 	for _, value := range partitionStats {
-		var disk1 share.DiskStat
+		var disk1 monitor.DiskStat
 		mountpoint := value.Mountpoint
 		usageStat, _ := disk.Usage(mountpoint)
 		disk1.PartitionStat = value
@@ -72,18 +72,18 @@ func getDiskStatsInfo() []share.DiskStat {
 }
 
 // Network stats info
-func getNetworkStatsInfo() []share.NetworkStat {
+func getNetworkStatsInfo() []monitor.NetworkStat {
 	ports := strings.Split(config.GlobalConfig.Indicators.Physical.NetPorts, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()
 	//fmt.Println(te)
-	var n []share.NetworkStat
+	var n []monitor.NetworkStat
 	for _, p := range ports {
 		re := common.GetNetworkInterfaces(p)
 		res := strings.Split(re, " ")
 		if len(res) == 9 {
-			var netinfo share.NetworkStat
+			var netinfo monitor.NetworkStat
 			netinfo.Port, _ = strconv.Atoi(p)
 			netinfo.Up, _ = strconv.Atoi(res[0])
 			netinfo.Down, _ = strconv.Atoi(res[1])

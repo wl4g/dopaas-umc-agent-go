@@ -96,8 +96,9 @@ type ConsulIndicatorProperties struct {
 
 // Indicators kafka properties.
 type KafkaIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled    bool          `yaml:"enabled"`
+	Delay      time.Duration `yaml:"delay"`
+	Properties string        `yaml:"properties"`
 }
 
 // Indicators emq properties.

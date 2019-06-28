@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package share
+package monitor
 
 import (
 	"github.com/shirou/gopsutil/disk"
@@ -52,7 +52,6 @@ type MetaInfo struct {
 	Type      string `json:"type"`
 	Namespace string `json:"namespace"`
 }
-
 
 // Create meta info
 func CreateMeta(metaType string) MetaInfo {

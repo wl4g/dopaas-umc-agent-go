@@ -23,7 +23,7 @@ import (
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/logger"
-	"umc-agent/pkg/monitor/share"
+	"umc-agent/pkg/monitor"
 	"umc-agent/pkg/transport"
 )
 
@@ -38,7 +38,7 @@ func IndicatorRunner() {
 	// Loop monitor
 	for true {
 		var result DockerStatInfo
-		result.Meta = share.CreateMeta("docker")
+		result.Meta = monitor.CreateMeta("docker")
 
 		stats := getDockerStats()
 		logger.Main.Info(common.ToJSONString(stats))

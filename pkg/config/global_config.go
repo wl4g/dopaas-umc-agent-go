@@ -17,6 +17,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/json-iterator/go"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -33,11 +34,16 @@ type GlobalProperties struct {
 	Indicators IndicatorsProperties `yaml:"indicators"`
 }
 
-// Global configuration.
-var GlobalConfig GlobalProperties
+var (
+	// Global config.
+	GlobalConfig GlobalProperties
 
-// Local hardware addr ID.
-var LocalHardwareAddrId = ""
+	// Global config buffer.
+	_globalConfigBuffer []byte
+
+	// Local hardware addr ID.
+	LocalHardwareAddrId = ""
+)
 
 // Init global config properties.
 func InitGlobalConfig(path string) {
@@ -132,8 +138,9 @@ func createDefault() *GlobalProperties {
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Kafka: KafkaIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:    false,
+				Delay:      constant.DefaultIndicatorsDelay,
+				Properties: constant.DefaultKafkaIndicatorsProperties,
 			},
 			Emq: EmqIndicatorProperties{
 				Enabled: false,
@@ -189,15 +196,25 @@ func createDefault() *GlobalProperties {
 
 // Properties settings after initialization
 func afterPropertiesSet(globalConfig *GlobalProperties) {
-	// Environmental variable priority
+	// Environment variable priority.
 	var netcard = os.Getenv("indicators.netcard")
 	if !common.IsEmpty(netcard) {
 		globalConfig.Indicators.Netcard = netcard
 	}
 
-	// Got local hardware addr
+	// Local hardware addr.
 	LocalHardwareAddrId = common.GetHardwareAddr(globalConfig.Indicators.Netcard)
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
-		panic("net found ip,Please check the net conf")
+		panic("Failed to find network hardware info, please check the net config!")
 	}
+
+	// To config json buffer(see: #GetConfig()).
+	var buffer, _ = jsoniter.MarshalToString(GlobalConfig)
+	_globalConfigBuffer = []byte(buffer)
+}
+
+// Get config value.
+func GetConfig(path ...interface{}) jsoniter.Any {
+	var value = jsoniter.Get(_globalConfigBuffer, path...)
+	return value
 }

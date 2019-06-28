@@ -62,6 +62,9 @@ func init() {
 	// Init zap logger.
 	logger.InitZapLogger()
 
+	// Testing if necessary.
+	testingIfNecessary()
+
 	// Init kafka launcher.(if necessary)
 	transport.InitKafkaTransportIfNecessary()
 }
@@ -96,4 +99,14 @@ func startCollectorRunners(wg *sync.WaitGroup) {
 	go postgresql.IndicatorRunner()
 	go opentsdb.IndicatorRunner()
 	go cassandra.IndicatorRunner()
+}
+
+// Testing
+func testingIfNecessary() {
+	//var aggregate = monitor.NewMetricAggregate("Kafka")
+	//aggregate.NewMetric("kafka_partition_current_offset", 10.12).ATag("topic", "testTopic1").ATag("partition", "1")
+	//
+	//fmt.Print(aggregate.ToJsonString())
+	//
+	//os.Exit(0)
 }

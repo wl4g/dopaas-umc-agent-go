@@ -60,6 +60,8 @@ const (
 	// ----------- MQ -------------
 
 	// Kafka indicators constants.
+	// Default watch redis indicators properties.
+	DefaultKafkaIndicatorsProperties = "kafka_topic_partition_oldest_offset,kafka_brokers,kafka_partition_current_offset"
 
 	// EMQ indicators constants.
 

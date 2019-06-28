@@ -15,11 +15,13 @@
  */
 package docker
 
-import "umc-agent/pkg/monitor/share"
+import (
+	"umc-agent/pkg/monitor"
+)
 
 type DockerStatInfo struct {
-	Meta        share.MetaInfo `json:"meta"`
-	DockerStats []DockerStat   `json:"dockerInfos"`
+	Meta        monitor.MetaInfo `json:"meta"`
+	DockerStats []DockerStat     `json:"dockerInfos"`
 }
 
 type DockerStat struct {

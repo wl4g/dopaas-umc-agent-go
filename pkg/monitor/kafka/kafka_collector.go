@@ -1,31 +1,29 @@
 /**
- * Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
  */
 package kafka
 
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
 	"github.com/Shopify/sarama"
 	"strconv"
 	"sync"
-	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant/metric"
-	"umc-agent/pkg/monitor/share"
+	"umc-agent/pkg/monitor"
 	"umc-agent/pkg/transport"
 
 	//"github.com/krallistic/kazoo-go"
@@ -47,23 +45,22 @@ func IndicatorRunner() {
 	}
 	logger.Main.Info("Starting kafka indicators runner ...")
 
-	//for true{
-	//	result := getKafkaStats()
-	//	transport.DoSendSubmit(constant.KafkaMeta, result)
-	//	time.Sleep(config.GlobalConfig.Indicators.Zookeeper.Delay * time.Millisecond)
-	//}
+	for true {
+		// New metric aggregator
+		kafkaAggregator := monitor.NewMetricAggregate("Kafka")
 
-	//TODO for Test
-	result := getKafkaStats()
-	fmt.Println(common.ToJSONString(result))
-	transport.DoSendSubmit(metric.KafkaMeta, result)
+		// Do collect brokers metrics.
+		doKafkaMetricCollect(kafkaAggregator)
 
-	//shareInfos := getKafkaStats()
-	//
+		// Send to servers.
+		transport.DoSendSubmit(metric.KafkaMeta, &kafkaAggregator)
 
+		// Sleep.
+		time.Sleep(config.GlobalConfig.Indicators.Kafka.Delay)
+	}
 }
 
-func clientConfig() sarama.Client {
+func newConnectClient() sarama.Client {
 	//TODO read config
 	opts := kafkaOpts{}
 	opts.uri = append(opts.uri, "localhost:9092")
@@ -73,7 +70,7 @@ func clientConfig() sarama.Client {
 	opts.tlsInsecureSkipTLSVerify = false
 	opts.kafkaVersion = sarama.V1_0_0_0.String()
 	opts.useZooKeeperLag = false
-	opts.uriZookeeper = append(opts.uriZookeeper, "localhost:2181")
+	//opts.uriZookeeper = append(opts.uriZookeeper, "localhost:2181")
 	opts.metadataRefreshInterval = "30s"
 
 	//build config start
@@ -135,24 +132,23 @@ func clientConfig() sarama.Client {
 	return client
 }
 
-func getKafkaStats() share.MetricInfo {
-	//get client
-	client := clientConfig()
-	//mu
+func doKafkaMetricCollect(kafkaAggregator *monitor.MetricAggregate) {
+	// Connect servers.
+	client := newConnectClient()
+
 	var mu sync.Mutex
-	//statinfos
-	var statinfos share.MetricInfo
 	now := time.Now().UnixNano() / 1e6
-	statinfos.Timestamp = now
+	kafkaAggregator.Timestamp = now
 
 	//brokers count
-	kafkaBrokers := share.NewStatMetric(metric.KafkaBrokersMetric, float64(len(client.Brokers())))
-	statinfos.StatMetrics = append(statinfos.StatMetrics, kafkaBrokers)
+	kafkaAggregator.NewMetric(metric.KafkaBrokersMetric, float64(len(client.Brokers())))
 
 	//Refresh Metadata
 	client.RefreshMetadata()
+
 	//get topics
 	topics, err := client.Topics()
+
 	//wg
 	var wg = sync.WaitGroup{}
 	offset := make(map[string]map[int32]int64)
@@ -165,9 +161,9 @@ func getKafkaStats() share.MetricInfo {
 			logger.Main.Error("Cannot get partitions of topic ", zap.String("topic", topic), zap.Error(err))
 			panic(err)
 		}
+
 		//Partitions count
-		kafkaTopicPartitions := share.NewStatMetric(metric.KafkaTopicPartitionsMetric, float64(len(partitions))).AppendTag(metric.Topic, topic)
-		statinfos.StatMetrics = append(statinfos.StatMetrics, kafkaTopicPartitions)
+		kafkaAggregator.NewMetric(metric.KafkaTopicPartitionsMetric, float64(len(partitions))).ATag(metric.Topic, topic)
 
 		mu.Lock()
 		offset[topic] = make(map[int32]int64, len(partitions))
@@ -180,8 +176,8 @@ func getKafkaStats() share.MetricInfo {
 					zap.String("topic", topic),
 					zap.Error(err))
 			} else {
-				topicPartitionLeader := share.NewStatMetric(metric.KafkaTopicPartitionLeaderMetric, float64(broker.ID())).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicPartitionLeader)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionLeaderMetric,
+					float64(broker.ID())).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			}
 			currentOffset, err := client.GetOffset(topic, partition, sarama.OffsetNewest)
 			if err != nil {
@@ -193,8 +189,8 @@ func getKafkaStats() share.MetricInfo {
 				mu.Lock()
 				offset[topic][partition] = currentOffset
 				mu.Unlock()
-				topicCurrentOffset := share.NewStatMetric(metric.KafkaTopicPartitionCurrentOffsetMetric, float64(currentOffset)).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicCurrentOffset)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionCurrentOffsetMetric,
+					float64(currentOffset)).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			}
 
 			oldestOffset, err := client.GetOffset(topic, partition, sarama.OffsetOldest)
@@ -204,8 +200,8 @@ func getKafkaStats() share.MetricInfo {
 					zap.String("topic", topic),
 					zap.Error(err))
 			} else {
-				topicOldestOffset := share.NewStatMetric(metric.KafkaTopicPartitionOldestOffsetMetric, float64(oldestOffset)).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicOldestOffset)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionOldestOffsetMetric,
+					float64(oldestOffset)).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			}
 
 			replicas, err := client.Replicas(topic, partition)
@@ -215,8 +211,8 @@ func getKafkaStats() share.MetricInfo {
 					zap.String("topic", topic),
 					zap.Error(err))
 			} else {
-				topicPartitionReplicas := share.NewStatMetric(metric.KafkaTopicPartitionReplicasMetric, float64(len(replicas))).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicPartitionReplicas)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionReplicasMetric,
+					float64(len(replicas))).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			}
 
 			inSyncReplicas, err := client.InSyncReplicas(topic, partition)
@@ -226,24 +222,24 @@ func getKafkaStats() share.MetricInfo {
 					zap.String("topic", topic),
 					zap.Error(err))
 			} else {
-				topicPartitionInSyncReplicas := share.NewStatMetric(metric.KafkaTopicPartitionInSyncReplicaMetric, float64(len(inSyncReplicas))).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicPartitionInSyncReplicas)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionInSyncReplicaMetric,
+					float64(len(inSyncReplicas))).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			}
 
 			if broker != nil && replicas != nil && len(replicas) > 0 && broker.ID() == replicas[0] {
-				topicPartitionUsesPreferredReplica := share.NewStatMetric(metric.KafkaTopicPartitionLeaderIsPreferredMetric, float64(1)).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicPartitionUsesPreferredReplica)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionLeaderIsPreferredMetric,
+					float64(1)).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			} else {
-				topicPartitionUsesPreferredReplica := share.NewStatMetric(metric.KafkaTopicPartitionLeaderIsPreferredMetric, float64(0)).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicPartitionUsesPreferredReplica)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionLeaderIsPreferredMetric,
+					float64(0)).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			}
 
 			if replicas != nil && inSyncReplicas != nil && len(inSyncReplicas) < len(replicas) {
-				topicUnderReplicatedPartition := share.NewStatMetric(metric.KafkaTopicPartitionUnderReplicatedPartitionMetric, float64(1)).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicUnderReplicatedPartition)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionUnderReplicatedPartitionMetric,
+					float64(1)).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			} else {
-				topicUnderReplicatedPartition := share.NewStatMetric(metric.KafkaTopicPartitionUnderReplicatedPartitionMetric, float64(0)).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-				statinfos.StatMetrics = append(statinfos.StatMetrics, topicUnderReplicatedPartition)
+				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionUnderReplicatedPartitionMetric,
+					float64(0)).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 			}
 		}
 	}
@@ -284,8 +280,7 @@ func getKafkaStats() share.MetricInfo {
 					offsetFetchRequest.AddPartition(topic, partition)
 				}
 			}
-			consumergroupMembers := share.NewStatMetric(metric.KafkaConsumerGroupMembers, float64(len(group.Members))).AppendTag(metric.GroupId, group.GroupId)
-			statinfos.StatMetrics = append(statinfos.StatMetrics, consumergroupMembers)
+			kafkaAggregator.NewMetric(metric.KafkaConsumerGroupMembers, float64(len(group.Members))).ATag(metric.GroupId, group.GroupId)
 
 			if offsetFetchResponse, err := broker.FetchOffset(&offsetFetchRequest); err != nil {
 				logger.Main.Error("Cannot get offset of group",
@@ -315,8 +310,8 @@ func getKafkaStats() share.MetricInfo {
 							}
 							currentOffset := offsetFetchResponseBlock.Offset
 							currentOffsetSum += currentOffset
-							consumergroupCurrentOffset := share.NewStatMetric(metric.KafkaConsumerGroupCurrentOffset, float64(currentOffset)).AppendTag(metric.GroupId, group.GroupId).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-							statinfos.StatMetrics = append(statinfos.StatMetrics, consumergroupCurrentOffset)
+
+							kafkaAggregator.NewMetric(metric.KafkaConsumerGroupCurrentOffset, float64(currentOffset)).ATag(metric.GroupId, group.GroupId).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 
 							mu.Lock()
 							if offset, ok := offset[topic][partition]; ok {
@@ -329,8 +324,7 @@ func getKafkaStats() share.MetricInfo {
 									lag = offset - offsetFetchResponseBlock.Offset
 									lagSum += lag
 								}
-								consumergroupLag := share.NewStatMetric(metric.KafkaConsumerGroupLag, float64(lag)).AppendTag(metric.GroupId, group.GroupId).AppendTag(metric.Topic, topic).AppendTag(metric.Partition, strconv.FormatInt(int64(partition), 10))
-								statinfos.StatMetrics = append(statinfos.StatMetrics, consumergroupLag)
+								kafkaAggregator.NewMetric(metric.KafkaConsumerGroupLag, float64(lag)).ATag(metric.GroupId, group.GroupId).ATag(metric.Topic, topic).ATag(metric.Partition, strconv.FormatInt(int64(partition), 10))
 							} else {
 								logger.Main.Error("No offset of topic",
 									zap.Int32("partition", partition),
@@ -339,11 +333,10 @@ func getKafkaStats() share.MetricInfo {
 							}
 							mu.Unlock()
 						}
-						consumergroupCurrentOffsetSum := share.NewStatMetric(metric.KafkaConsumerGroupCurrentOffsetSum, float64(currentOffsetSum)).AppendTag(metric.GroupId, group.GroupId).AppendTag(metric.Topic, topic)
-						statinfos.StatMetrics = append(statinfos.StatMetrics, consumergroupCurrentOffsetSum)
 
-						consumergroupLagSum := share.NewStatMetric(metric.KafkaConsumerGroupLagSum, float64(lagSum)).AppendTag(metric.GroupId, group.GroupId).AppendTag(metric.Topic, topic)
-						statinfos.StatMetrics = append(statinfos.StatMetrics, consumergroupLagSum)
+						kafkaAggregator.NewMetric(metric.KafkaConsumerGroupCurrentOffsetSum, float64(currentOffsetSum)).ATag(metric.GroupId, group.GroupId).ATag(metric.Topic, topic)
+
+						kafkaAggregator.NewMetric(metric.KafkaConsumerGroupLagSum, float64(lagSum)).ATag(metric.GroupId, group.GroupId).ATag(metric.Topic, topic)
 					}
 				}
 			}
@@ -359,7 +352,7 @@ func getKafkaStats() share.MetricInfo {
 	} else {
 		logger.Main.Error("No valid broker, cannot get consumer group metrics")
 	}
-	return statinfos
+
 }
 
 // CanReadCertAndKey returns true if the certificate and key files already exists,

@@ -16,12 +16,12 @@
 package redis
 
 import (
-	"umc-agent/pkg/monitor/share"
+	"umc-agent/pkg/monitor"
 )
 
 type Redis struct {
-	Meta       share.MetaInfo `json:"meta"`
-	RedisInfos []Info         `json:"redisInfos"`
+	Meta       monitor.MetaInfo `json:"meta"`
+	RedisInfos []Info           `json:"redisInfos"`
 }
 
 type Info struct {
