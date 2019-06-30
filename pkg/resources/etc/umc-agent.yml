@@ -23,7 +23,7 @@ transport:
     server-gateway: http://127.0.0.1:14046/umc/receiver
   kafka:
     enabled: true # This enabled switch takes precedence over the HTTP launcher.
-    bootstrap.servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
+    servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
     ack: 1
     timeout: 60000
 
@@ -44,8 +44,8 @@ logging:
 ### Resource health indicators monitor configuration.
 ### ==================================================
 
-indicators:
-  namespace: defaultCloud # Namespaces that support multiple tenants.
+indicator:
+  namespace: default # Namespaces that support multiple tenants.
   netcard: en0 # Bind net-card name.
 ### ------ Infrastructure indicators ------
   physical:

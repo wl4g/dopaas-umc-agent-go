@@ -18,28 +18,30 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
+	indicators2 "umc-agent/pkg/indicators"
+	"umc-agent/pkg/indicators/cassandra"
+	"umc-agent/pkg/indicators/consul"
+	"umc-agent/pkg/indicators/docker"
+	"umc-agent/pkg/indicators/elasticsearch"
+	"umc-agent/pkg/indicators/emq"
+	"umc-agent/pkg/indicators/etcd"
+	"umc-agent/pkg/indicators/kafka"
+	"umc-agent/pkg/indicators/memcached"
+	"umc-agent/pkg/indicators/mesos"
+	"umc-agent/pkg/indicators/mongodb"
+	"umc-agent/pkg/indicators/mysql"
+	"umc-agent/pkg/indicators/opentsdb"
+	"umc-agent/pkg/indicators/physical"
+	"umc-agent/pkg/indicators/postgresql"
+	"umc-agent/pkg/indicators/rabbitmq"
+	"umc-agent/pkg/indicators/redis"
+	"umc-agent/pkg/indicators/rocketmq"
+	"umc-agent/pkg/indicators/zookeeper"
 	"umc-agent/pkg/logger"
-	"umc-agent/pkg/monitor/cassandra"
-	"umc-agent/pkg/monitor/consul"
-	"umc-agent/pkg/monitor/docker"
-	"umc-agent/pkg/monitor/elasticsearch"
-	"umc-agent/pkg/monitor/emq"
-	"umc-agent/pkg/monitor/etcd"
-	"umc-agent/pkg/monitor/kafka"
-	"umc-agent/pkg/monitor/memcached"
-	"umc-agent/pkg/monitor/mesos"
-	"umc-agent/pkg/monitor/mongodb"
-	"umc-agent/pkg/monitor/mysql"
-	"umc-agent/pkg/monitor/opentsdb"
-	"umc-agent/pkg/monitor/physical"
-	"umc-agent/pkg/monitor/postgresql"
-	"umc-agent/pkg/monitor/rabbitmq"
-	"umc-agent/pkg/monitor/redis"
-	"umc-agent/pkg/monitor/rocketmq"
-	"umc-agent/pkg/monitor/zookeeper"
 	"umc-agent/pkg/transport"
 )
 
@@ -103,10 +105,12 @@ func startCollectorRunners(wg *sync.WaitGroup) {
 
 // Testing
 func testingIfNecessary() {
-	//var aggregate = monitor.NewMetricAggregate("Kafka")
-	//aggregate.NewMetric("kafka_partition_current_offset", 10.12).ATag("topic", "testTopic1").ATag("partition", "1")
-	//
-	//fmt.Print(aggregate.ToJsonString())
-	//
-	//os.Exit(0)
+	var aggregator = indicators2.NewMetricAggregator("Kafka")
+	aggregator.NewMetric("kafka_partition_current_offset", 10.12).ATag("topic", "testTopic1").ATag("partition", "1")
+
+	fmt.Println(aggregator.ToJSONString())
+	fmt.Println(aggregator.String())
+	fmt.Println(aggregator.ToProtoBufArray())
+
+	os.Exit(0)
 }

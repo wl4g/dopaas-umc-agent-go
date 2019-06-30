@@ -25,13 +25,19 @@ import (
 	"umc-agent/pkg/constant"
 )
 
+const (
+	// Used for metric filtering checks.
+	// See: ./pkg/indicators/metric_builder.go#NewMetric()
+	IndicatorsFiledName = "Indicators"
+)
+
 // ---------------------
 // Global properties
 // ---------------------
 type GlobalProperties struct {
-	Logging    LoggingProperties    `yaml:"logging"`
-	Transport  TransportProperties  `yaml:"transport"`
-	Indicators IndicatorsProperties `yaml:"indicators"`
+	Logging    LoggingProperties   `yaml:"logging"`
+	Transport  TransportProperties `yaml:"transport"`
+	Indicators IndicatorProperties `yaml:"indicators"`
 }
 
 var (
@@ -98,15 +104,15 @@ func createDefault() *GlobalProperties {
 				ServerGateway: constant.DefaultHttpServerGateway,
 			},
 			Kafka: KafkaTransportProperties{
-				Enabled:          false,
-				BootstrapServers: constant.DefaultTransportKafkaServers,
-				MetricTopic:      constant.DefaultTransportKafkaMetricTopic,
-				ReceiveTopic:     constant.DefaultTransportKafkaReceiveTopic,
-				Ack:              constant.DefaultTransportKafkaAck,
-				Timeout:          constant.DefaultTransportKafkaTimeout,
+				Enabled:      false,
+				Servers:      constant.DefaultTransportKafkaServers,
+				MetricTopic:  constant.DefaultTransportKafkaMetricTopic,
+				ReceiveTopic: constant.DefaultTransportKafkaReceiveTopic,
+				Ack:          constant.DefaultTransportKafkaAck,
+				Timeout:      constant.DefaultTransportKafkaTimeout,
 			},
 		},
-		Indicators: IndicatorsProperties{
+		Indicators: IndicatorProperties{
 			Namespace: constant.DefaultNamespace,
 			Netcard:   constant.DefaultNetcard,
 			Physical: PhysicalIndicatorProperties{
@@ -123,11 +129,11 @@ func createDefault() *GlobalProperties {
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Zookeeper: ZookeeperIndicatorProperties{
-				Enabled:    false,
-				Delay:      constant.DefaultIndicatorsDelay,
-				Servers:    constant.DefaultZkIndicatorsServers,
-				Command:    constant.DefaultZkIndicatorsCommands,
-				Properties: constant.DefaultZkIndicatorsProperties,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				Servers:       constant.DefaultZkIndicatorsServers,
+				Command:       constant.DefaultZkIndicatorsCommands,
+				MetricFilters: constant.DefaultZkIndicatorsMetricFilters,
 			},
 			Etcd: EtcdIndicatorProperties{
 				Enabled: false,
@@ -138,9 +144,9 @@ func createDefault() *GlobalProperties {
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Kafka: KafkaIndicatorProperties{
-				Enabled:    false,
-				Delay:      constant.DefaultIndicatorsDelay,
-				Properties: constant.DefaultKafkaIndicatorsProperties,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricFilters: constant.DefaultKafkaIndicatorsMetricFilters,
 			},
 			Emq: EmqIndicatorProperties{
 				Enabled: false,
@@ -194,7 +200,7 @@ func createDefault() *GlobalProperties {
 	return globalConfig
 }
 
-// Properties settings after initialization
+// MetricFilters settings after initialization
 func afterPropertiesSet(globalConfig *GlobalProperties) {
 	// Environment variable priority.
 	var netcard = os.Getenv("indicators.netcard")

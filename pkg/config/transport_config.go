@@ -31,10 +31,10 @@ type HttpTransportProperties struct {
 }
 
 type KafkaTransportProperties struct {
-	Enabled          bool          `yaml:"enabled"`
-	BootstrapServers string        `yaml:"bootstrap.servers"`
-	Ack              int16         `yaml:"ack"`
-	Timeout          time.Duration `yaml:"timeout"`
-	MetricTopic      string        `yaml:"metric-topic"`
-	ReceiveTopic     string        `yaml:"receive-topic"`
+	Enabled      bool          `yaml:"enabled"`
+	Servers      string        `yaml:"servers"`
+	Ack          int16         `yaml:"ack"`
+	Timeout      time.Duration `yaml:"timeout"`
+	MetricTopic  string        `yaml:"metric-topic"`
+	ReceiveTopic string        `yaml:"receive-topic"`
 }

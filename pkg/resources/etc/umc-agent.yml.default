@@ -1,29 +1,29 @@
-# Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+## Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 #### ==================================================
 #### Agent monitors production sending data configuration, supports HTTP and Kafka server
 #### receiving gateway, defaults to http. post sending.
 #### ==================================================
-
+#
 #transport:
 #  http:
 #    server-gateway: http://127.0.0.1:14046/umc/receiver
 #  kafka:
 #    enabled: true # This enabled switch takes precedence over the HTTP launcher.
-#    bootstrap.servers: localhost:9092
+#    servers: localhost:9092
 #    metric-topic: __umc_agent_metric_
 #    receive-topic: __umc_agent_metric_receive
 #    ack: 1
@@ -56,8 +56,8 @@
 #### Resource health indicators monitor configuration.
 #### ==================================================
 #
-#indicators:
-#  namespace: defaultCloud # Namespaces that support multiple tenants.
+#indicator:
+#  namespace: default # Namespaces that support multiple tenants.
 #  netcard: eth0 # Bind net-card name.
 #### ------ Infrastructure indicators ------
 #  physical:
@@ -77,7 +77,7 @@
 #    delay: 60000
 #    servers: localhost:2181
 #    commands: mntr # zookeeper indicators commands(e.g. mntr,conf)
-#    properties:
+#    metric-filters:
 #      zk_avg_latency,
 #      zk_max_latency,
 #      zk_min_latency,
@@ -118,7 +118,7 @@
 #    delay: 60000
 #    servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
 #    password: 123456
-#    properties:
+#    metric-filters:
 #      connected_clients,
 #      used_memory,
 #      used_memory_peak,

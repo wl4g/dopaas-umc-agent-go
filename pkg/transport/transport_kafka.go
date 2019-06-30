@@ -61,7 +61,7 @@ func createKafkaProducer(kafkaProperties config.KafkaTransportProperties) {
 
 	// Create syncProducer
 	var err error
-	kafkaProducer, err = sarama.NewSyncProducer(strings.Split(kafkaProperties.BootstrapServers, ","), kafkaConfig)
+	kafkaProducer, err = sarama.NewSyncProducer(strings.Split(kafkaProperties.Servers, ","), kafkaConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +80,7 @@ func createKafkaConsumer(kafkaProperties config.KafkaTransportProperties) {
 
 	// Create consumer
 	var err error
-	kafkaConsumer, err = sarama.NewConsumer(strings.Split(kafkaProperties.BootstrapServers, ","), kafkaConfig)
+	kafkaConsumer, err = sarama.NewConsumer(strings.Split(kafkaProperties.Servers, ","), kafkaConfig)
 	if err != nil {
 		logger.Receive.Error("Failed to start consumer: %s", zap.Error(err))
 		return

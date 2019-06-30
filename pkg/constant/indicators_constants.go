@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	// ------ Basic share indicators -----
+	// ------ Basic indicators -----
 
 	// Default namespace.
 	DefaultNamespace = "defaultCloud"
@@ -50,8 +50,8 @@ const (
 	// Default watch zk commands(e.g. mntr,conf).
 	DefaultZkIndicatorsCommands = "mntr"
 
-	// Default watch redis indicators properties.
-	DefaultZkIndicatorsProperties = "zk_avg_latency,zk_max_latency,zk_min_latency,zk_packets_received,zk_packets_sent,zk_num_alive_connections,zk_outstanding_requests,zk_server_state,zk_znode_count,zk_watch_count,zk_ephemerals_count,zk_approximate_data_size,zk_open_file_descriptor_count,zk_max_file_descriptor_count,zk_fsync_threshold_exceed_count"
+	// Default watch zk indicators metric filters.
+	DefaultZkIndicatorsMetricFilters = "zk_avg_latency,zk_max_latency,zk_min_latency,zk_packets_received,zk_packets_sent,zk_num_alive_connections,zk_outstanding_requests,zk_server_state,zk_znode_count,zk_watch_count,zk_ephemerals_count,zk_approximate_data_size,zk_open_file_descriptor_count,zk_max_file_descriptor_count,zk_fsync_threshold_exceed_count"
 
 	// Etcd indicators constants.
 
@@ -60,8 +60,8 @@ const (
 	// ----------- MQ -------------
 
 	// Kafka indicators constants.
-	// Default watch redis indicators properties.
-	DefaultKafkaIndicatorsProperties = "kafka_topic_partition_oldest_offset,kafka_brokers,kafka_partition_current_offset"
+	// Default watch redis indicators metric filters.
+	DefaultKafkaIndicatorsMetricFilters = "kafka_topic_partition_oldest_offset,kafka_brokers,kafka_partition_current_offset"
 
 	// EMQ indicators constants.
 
