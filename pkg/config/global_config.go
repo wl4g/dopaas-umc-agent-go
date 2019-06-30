@@ -165,7 +165,7 @@ func createDefault() *GlobalProperties {
 				Delay:      constant.DefaultIndicatorsDelay,
 				Servers:    constant.DefaultRedisIndicatorsServers,
 				Password:   constant.DefaultRedisIndicatorsPassword,
-				Properties: constant.DefaultRedisIndicatorsProperties,
+				Properties: constant.DefaultRedisIndicatorsMetricFilters,
 			},
 			Memcached: MemcachedIndicatorProperties{
 				Enabled: false,
