@@ -21,6 +21,8 @@ import (
 	"umc-agent/pkg/config"
 )
 
+// Deprecated: Metric wrapper has been changed to uniform aggregation metrics,
+// see: `indicators. New Metric Aggregator`.
 type TotalStat struct {
 	Meta      MetaInfo               `json:"meta"`
 	Mem       *mem.VirtualMemoryStat `json:"memInfo"`
@@ -29,11 +31,15 @@ type TotalStat struct {
 	NetStats  []NetworkStat          `json:"netInfos"`
 }
 
+// Deprecated: Metric wrapper has been changed to uniform aggregation metrics,
+// see: `indicators. New Metric Aggregator`.
 type DiskStat struct {
 	PartitionStat disk.PartitionStat `json:"partitionStat"`
 	Usage         disk.UsageStat     `json:"usage"`
 }
 
+// Deprecated: Metric wrapper has been changed to uniform aggregation metrics,
+// see: `indicators. New Metric Aggregator`.
 type NetworkStat struct {
 	Port      int `json:"port"`
 	Up        int `json:"up"`
@@ -47,12 +53,16 @@ type NetworkStat struct {
 	Closing   int `json:"closing"`
 }
 
+// Deprecated: Metric wrapper has been changed to uniform aggregation metrics,
+// see: `indicators. New Metric Aggregator`.
 type MetaInfo struct {
 	Id        string `json:"physicalId"`
 	Type      string `json:"type"`
 	Namespace string `json:"namespace"`
 }
 
+// Deprecated: Metric wrapper has been changed to uniform aggregation metrics,
+// see: `indicators. New Metric Aggregator`.
 // Create meta info
 func CreateMeta(metaType string) MetaInfo {
 	meta := MetaInfo{

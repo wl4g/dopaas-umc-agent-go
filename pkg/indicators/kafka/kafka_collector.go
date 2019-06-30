@@ -42,6 +42,7 @@ var (
 	metricKafkaClient sarama.Client
 )
 
+// Original see: https://github.com/danielqsj/kafka_exporter
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Kafka.Enabled {
 		logger.Main.Warn("No enabled kafka metrics runner!")
@@ -50,7 +51,7 @@ func IndicatorRunner() {
 	logger.Main.Info("Starting kafka indicators runner ...")
 
 	for true {
-		// New metric aggregator
+		// New kafka metric aggregator
 		kafkaAggregator := indicators.NewMetricAggregator("Kafka")
 
 		// Do collect brokers metrics.

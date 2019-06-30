@@ -26,6 +26,7 @@ import (
 	"umc-agent/pkg/transport"
 )
 
+// Original see: https://github.com/oliver006/redis_exporter
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicators.Redis.Enabled {
 		logger.Main.Warn("No enabled redis metrics runner!")
@@ -35,6 +36,9 @@ func IndicatorRunner() {
 
 	// Loop monitor
 	for true {
+		// New redis metric aggregator
+		//redisAggregator := indicators.NewMetricAggregator("Redis")
+
 		result := getRedisStats()
 		result.Meta = indicators.CreateMeta("redis")
 
