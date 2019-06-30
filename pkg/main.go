@@ -50,10 +50,10 @@ var (
 )
 
 func init() {
-	var confPath = constant.DefaultConfigPath
+	confPath := constant.DefaultConfigPath
 
 	// Command config path
-	flag.StringVar(&confPath, "c", constant.DefaultConfigPath, "Config must is required!")
+	flag.StringVar(&confPath, "c", constant.DefaultConfigPath, "Umc agent config path.")
 	flag.Parse()
 	//flag.Usage()
 	fmt.Printf("Initialize config path for - '%s'\n", confPath)

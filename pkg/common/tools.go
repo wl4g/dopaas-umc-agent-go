@@ -23,14 +23,14 @@ import (
 )
 
 var (
-	// Network commands buffer.
-	netPortStatCmdBuffer = ReadFileToString(constant.DefaultNetStatCmdConfigPath)
+	// Network state commands.
+	_netPortTcpStateCmd = constant.DefaultNetPortStateCmd
 )
 
 // Get network interfaces.
 // e.g. var sumCommand = "ss -n sport == 22|awk '{sumup += $3};{sumdo += $4};END {print sumup,sumdo}'"
 func GetNetworkInterfaces(port string) string {
-	cmd := strings.Replace(netPortStatCmdBuffer, "#{port}", port, -1)
+	cmd := strings.Replace(_netPortTcpStateCmd, "#{port}", port, -1)
 	s, _ := ExecShell(cmd)
 
 	//fmt.Printf("Execution completed for - '%s'", s)
