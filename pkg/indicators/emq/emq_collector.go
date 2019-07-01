@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Emq.Enabled {
+	if !config.GlobalConfig.Indicator.Emq.Enabled {
 		logger.Main.Warn("No enabled emq metrics runner!")
 		return
 	}

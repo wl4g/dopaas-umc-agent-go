@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Mongodb.Enabled {
+	if !config.GlobalConfig.Indicator.Mongodb.Enabled {
 		logger.Main.Warn("No enabled mongodb metrics runner!")
 		return
 	}

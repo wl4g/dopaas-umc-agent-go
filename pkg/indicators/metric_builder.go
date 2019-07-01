@@ -56,7 +56,7 @@ func NewMetricAggregator(metricType string) *MetricAggregator {
 	aggregator := new(MetricAggregator)
 	aggregator.metricType = metricType
 	aggregator.Instance = config.LocalHardwareAddrId
-	aggregator.Namespace = config.GlobalConfig.Indicators.Namespace
+	aggregator.Namespace = config.GlobalConfig.Indicator.Namespace
 	aggregator.Timestamp = time.Now().Unix()
 	return aggregator
 }

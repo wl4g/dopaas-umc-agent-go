@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.PostgreSQL.Enabled {
+	if !config.GlobalConfig.Indicator.PostgreSQL.Enabled {
 		logger.Main.Warn("No enabled postgresql metrics runner!")
 		return
 	}

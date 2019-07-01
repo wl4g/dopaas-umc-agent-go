@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Etcd.Enabled {
+	if !config.GlobalConfig.Indicator.Etcd.Enabled {
 		logger.Main.Warn("No enabled etcd metrics runner!")
 		return
 	}

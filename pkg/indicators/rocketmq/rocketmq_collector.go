@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.RocketMQ.Enabled {
+	if !config.GlobalConfig.Indicator.RocketMQ.Enabled {
 		logger.Main.Warn("No enabled rocketmq metrics runner!")
 		return
 	}

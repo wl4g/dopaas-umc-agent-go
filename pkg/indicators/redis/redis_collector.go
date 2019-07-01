@@ -28,7 +28,7 @@ import (
 
 // Original see: https://github.com/oliver006/redis_exporter
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Redis.Enabled {
+	if !config.GlobalConfig.Indicator.Redis.Enabled {
 		logger.Main.Warn("No enabled redis metrics runner!")
 		return
 	}
@@ -43,17 +43,17 @@ func IndicatorRunner() {
 		result.Meta = indicators.CreateMeta("redis")
 
 		transport.DoSendSubmit(result.Meta.Type, result)
-		time.Sleep(config.GlobalConfig.Indicators.Redis.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay * time.Millisecond)
 	}
 }
 
 func getRedisStats() Redis {
 	var redis Redis
 
-	servers := config.GlobalConfig.Indicators.Redis.Servers
+	servers := config.GlobalConfig.Indicator.Redis.Servers
 	serversArr := strings.Split(servers, ",")
 
-	propsText := config.GlobalConfig.Indicators.Redis.Properties
+	propsText := config.GlobalConfig.Indicator.Redis.Properties
 	propsTextArr := strings.Split(propsText, ",")
 
 	for _, addr := range serversArr {
@@ -68,7 +68,7 @@ func getRedisStats() Redis {
 }
 
 func getRedisInfo(parts []string) string {
-	redisPwd := config.GlobalConfig.Indicators.Redis.Password
+	redisPwd := config.GlobalConfig.Indicator.Redis.Password
 	// e.g: redis-cli -h localhost -p 6380 -a '123456' cluster info
 	// e.g: redis-cli -h localhost -p 6380 -a '123456' info all
 	var cmd1 = fmt.Sprintf("redis-cli -h %s -p %s -a %s cluster info", parts[0], parts[1], redisPwd)

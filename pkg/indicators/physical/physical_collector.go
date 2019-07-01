@@ -31,7 +31,7 @@ import (
 
 // Physical indicators runner
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Physical.Enabled {
+	if !config.GlobalConfig.Indicator.Physical.Enabled {
 		logger.Main.Warn("No enabled physical metrics runner!")
 		return
 	}
@@ -52,7 +52,7 @@ func IndicatorRunner() {
 		result.NetStats = getNetworkStatsInfo()
 
 		transport.DoSendSubmit("physical", result)
-		time.Sleep(config.GlobalConfig.Indicators.Docker.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicator.Docker.Delay * time.Millisecond)
 	}
 }
 
@@ -73,7 +73,7 @@ func getDiskStatsInfo() []indicators.DiskStat {
 
 // Network stats info
 func getNetworkStatsInfo() []indicators.NetworkStat {
-	ports := strings.Split(config.GlobalConfig.Indicators.Physical.NetPorts, ",")
+	ports := strings.Split(config.GlobalConfig.Indicator.Physical.NetPorts, ",")
 	//n, _ := net.IOCounters(true)
 	//fmt.Println(n)
 	//te, _ := net.Interfaces()

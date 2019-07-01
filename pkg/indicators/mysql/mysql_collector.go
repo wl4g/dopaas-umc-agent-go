@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.MySQL.Enabled {
+	if !config.GlobalConfig.Indicator.MySQL.Enabled {
 		logger.Main.Warn("No enabled mysql metrics runner!")
 		return
 	}

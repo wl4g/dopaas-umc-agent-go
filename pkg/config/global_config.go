@@ -28,16 +28,16 @@ import (
 const (
 	// Used for metric filtering checks.
 	// See: ./pkg/indicators/metric_builder.go#NewMetric()
-	IndicatorsFiledName = "Indicators"
+	IndicatorsFiledName = "Indicator"
 )
 
 // ---------------------
 // Global properties
 // ---------------------
 type GlobalProperties struct {
-	Logging    LoggingProperties   `yaml:"logging"`
-	Transport  TransportProperties `yaml:"transport"`
-	Indicators IndicatorProperties `yaml:"indicators"`
+	Logging   LoggingProperties   `yaml:"logging"`
+	Transport TransportProperties `yaml:"transport"`
+	Indicator IndicatorProperties `yaml:"indicator"`
 }
 
 var (
@@ -112,7 +112,7 @@ func createDefault() *GlobalProperties {
 				Timeout:      constant.DefaultTransportKafkaTimeout,
 			},
 		},
-		Indicators: IndicatorProperties{
+		Indicator: IndicatorProperties{
 			Namespace: constant.DefaultNamespace,
 			Netcard:   constant.DefaultNetcard,
 			Physical: PhysicalIndicatorProperties{
@@ -205,11 +205,11 @@ func afterPropertiesSet(globalConfig *GlobalProperties) {
 	// Environment variable priority.
 	var netcard = os.Getenv("indicators.netcard")
 	if !common.IsEmpty(netcard) {
-		globalConfig.Indicators.Netcard = netcard
+		globalConfig.Indicator.Netcard = netcard
 	}
 
 	// Local hardware addr.
-	LocalHardwareAddrId = common.GetHardwareAddr(globalConfig.Indicators.Netcard)
+	LocalHardwareAddrId = common.GetHardwareAddr(globalConfig.Indicator.Netcard)
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
 		panic("Failed to find network hardware info, please check the net config!")
 	}

@@ -28,7 +28,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Zookeeper.Enabled {
+	if !config.GlobalConfig.Indicator.Zookeeper.Enabled {
 		logger.Main.Warn("No enabled zookeeper metrics runner!")
 		return
 	}
@@ -40,15 +40,15 @@ func IndicatorRunner() {
 		result.Meta = indicators.CreateMeta("zookeeper")
 
 		transport.DoSendSubmit(result.Meta.Type, result)
-		time.Sleep(config.GlobalConfig.Indicators.Zookeeper.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicator.Zookeeper.Delay * time.Millisecond)
 	}
 }
 
 func getZookeeperStats() Zookeeper {
 	var result Zookeeper
 
-	comm := strings.Split(config.GlobalConfig.Indicators.Zookeeper.Command, ",")
-	props := strings.Split(config.GlobalConfig.Indicators.Zookeeper.MetricFilters, ",")
+	comm := strings.Split(config.GlobalConfig.Indicator.Zookeeper.Command, ",")
+	props := strings.Split(config.GlobalConfig.Indicator.Zookeeper.MetricFilters, ",")
 
 	var infoSum string
 	for _, command := range comm {
@@ -62,7 +62,7 @@ func getZookeeperStats() Zookeeper {
 }
 
 func getZkInfo(command string) (string, error) {
-	servers := config.GlobalConfig.Indicators.Zookeeper.Servers
+	servers := config.GlobalConfig.Indicator.Zookeeper.Servers
 	logger.Main.Info("Execution zookeeper stat", zap.String("servers", servers))
 
 	conn, err := net.Dial("tcp", servers)

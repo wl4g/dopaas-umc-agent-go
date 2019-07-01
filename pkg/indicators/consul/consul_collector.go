@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Consul.Enabled {
+	if !config.GlobalConfig.Indicator.Consul.Enabled {
 		logger.Main.Warn("No enabled consul metrics runner!")
 		return
 	}

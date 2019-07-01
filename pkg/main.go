@@ -18,9 +18,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
+	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/indicators/cassandra"
 	"umc-agent/pkg/indicators/consul"
 	"umc-agent/pkg/indicators/docker"
@@ -103,12 +105,12 @@ func startCollectorRunners(wg *sync.WaitGroup) {
 
 // Testing
 func testingIfNecessary() {
-	//var aggregator = indicators2.NewMetricAggregator("Kafka")
-	//aggregator.NewMetric("kafka_partition_current_offset", 10.12).ATag("topic", "testTopic1").ATag("partition", "1")
-	//
-	//fmt.Println(aggregator.ToJSONString())
-	//fmt.Println(aggregator.String())
-	//fmt.Println(aggregator.ToProtoBufArray())
-	//
-	//os.Exit(0)
+	var aggregator = indicators.NewMetricAggregator("Kafka")
+	aggregator.NewMetric("kafka_partition_current_offset", 10.12).ATag("topic", "testTopic1").ATag("partition", "1")
+
+	fmt.Println(aggregator.ToJSONString())
+	fmt.Println(aggregator.String())
+	fmt.Println(aggregator.ToProtoBufArray())
+
+	os.Exit(0)
 }

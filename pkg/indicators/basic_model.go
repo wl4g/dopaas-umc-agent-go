@@ -68,7 +68,7 @@ func CreateMeta(metaType string) MetaInfo {
 	meta := MetaInfo{
 		Id:        config.LocalHardwareAddrId,
 		Type:      metaType,
-		Namespace: config.GlobalConfig.Indicators.Namespace,
+		Namespace: config.GlobalConfig.Indicator.Namespace,
 	}
 	return meta
 }

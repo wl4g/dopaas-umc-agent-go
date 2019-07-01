@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Cassandra.Enabled {
+	if !config.GlobalConfig.Indicator.Cassandra.Enabled {
 		logger.Main.Warn("No enabled cassandra metrics runner!")
 		return
 	}

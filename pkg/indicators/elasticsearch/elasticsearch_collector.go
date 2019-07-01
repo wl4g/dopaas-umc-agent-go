@@ -21,7 +21,7 @@ import (
 )
 
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.ElasticSearch.Enabled {
+	if !config.GlobalConfig.Indicator.ElasticSearch.Enabled {
 		logger.Main.Warn("No enabled elasticsearch metrics runner!")
 		return
 	}

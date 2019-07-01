@@ -44,7 +44,7 @@ var (
 
 // Original see: https://github.com/danielqsj/kafka_exporter
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicators.Kafka.Enabled {
+	if !config.GlobalConfig.Indicator.Kafka.Enabled {
 		logger.Main.Warn("No enabled kafka metrics runner!")
 		return
 	}
@@ -61,7 +61,7 @@ func IndicatorRunner() {
 		transport.DoSendSubmit(metric.KafkaMeta, &kafkaAggregator)
 
 		// Sleep.
-		time.Sleep(config.GlobalConfig.Indicators.Kafka.Delay)
+		time.Sleep(config.GlobalConfig.Indicator.Kafka.Delay)
 	}
 }
 
