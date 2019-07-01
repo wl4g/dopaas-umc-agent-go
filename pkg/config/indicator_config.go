@@ -22,7 +22,7 @@ import (
 const (
 	// Used for metric filtering checks.
 	// See: ./pkg/indicators/metric_builder.go#NewMetric()
-	MetricFiltersFieldName = "MetricFilters"
+	MetricExcludeRegexFieldName = "MetricExcludeRegex"
 )
 
 // ----------------------
@@ -83,7 +83,7 @@ type ZookeeperIndicatorProperties struct {
 	Delay         time.Duration `yaml:"delay"`
 	Servers       string        `yaml:"servers"`
 	Command       string        `yaml:"command"`
-	MetricFilters string        `yaml:"metric-filters"`
+	MetricExcludeRegex string        `yaml:"metric-exclude-regex"`
 }
 
 // Indicator etcd properties.
@@ -104,7 +104,7 @@ type ConsulIndicatorProperties struct {
 type KafkaIndicatorProperties struct {
 	Enabled       bool          `yaml:"enabled"`
 	Delay         time.Duration `yaml:"delay"`
-	MetricFilters string        `yaml:"metric-filters"`
+	MetricExcludeRegex string        `yaml:"metric-exclude-regex"`
 }
 
 // Indicator emq properties.
@@ -129,11 +129,12 @@ type RocketMQIndicatorProperties struct {
 
 // Indicator redis properties.
 type RedisIndicatorProperties struct {
-	Enabled    bool          `yaml:"enabled"`
-	Delay      time.Duration `yaml:"delay"`
-	Servers    string        `yaml:"servers"`
-	Password   string        `yaml:"password"`
-	Properties string        `yaml:"properties"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	Servers       string        `yaml:"servers"`
+	Password      string        `yaml:"password"`
+	Properties    string        `yaml:"properties"`
+	MetricExcludeRegex string        `yaml:"metric-exclude-regex"`
 }
 
 // Indicator memcached properties.

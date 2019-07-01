@@ -27,7 +27,7 @@ import (
 )
 
 // Original see: https://github.com/oliver006/redis_exporter
-func IndicatorRunner() {
+func IndicatorRunner_bak() {
 	if !config.GlobalConfig.Indicator.Redis.Enabled {
 		logger.Main.Warn("No enabled redis metrics runner!")
 		return

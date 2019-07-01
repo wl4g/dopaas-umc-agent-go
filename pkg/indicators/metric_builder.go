@@ -17,6 +17,7 @@ package indicators
 
 import (
 	"github.com/gogo/protobuf/proto"
+	"regexp"
 	"strings"
 	"time"
 	"umc-agent/pkg/common"
@@ -66,16 +67,28 @@ func (self *MetricAggregator) NewMetric(metricName string, value float64) *Metri
 	var (
 		// Check necessary.(Note: that the project configuration
 		// structure must correspond to this.)
-		filters = config.GetConfig(config.IndicatorsFiledName, self.metricType, config.MetricFiltersFieldName)
+		filters = config.GetConfig(config.IndicatorsFiledName, self.metricType, config.MetricExcludeRegexFieldName)
 
 		// Create metricName.
 		_metric = internalNewMetric(metricName, value)
 	)
 
 	// Enabled only if the configuration metricName name is included.
-	if common.StringsContains(strings.Split(filters.ToString(), ","), metricName) {
-		self.Metrics = append(self.Metrics, &_metric.Metric)
+	reg := strings.Split(filters.ToString(), ",")
+	for _, r := range reg {
+		if r == "" {
+			break
+		}
+		b, _ := (regexp.Match(r, []byte(metricName)))
+		if b {
+			return _metric
+		}
 	}
+
+	self.Metrics = append(self.Metrics, &_metric.Metric)
+	/*if common.StringsContains(reg, metricName) {
+		self.Metrics = append(self.Metrics, &_metric.Metric)
+	}*/
 	return _metric
 }
 

@@ -48,7 +48,7 @@ func getZookeeperStats() Zookeeper {
 	var result Zookeeper
 
 	comm := strings.Split(config.GlobalConfig.Indicator.Zookeeper.Command, ",")
-	props := strings.Split(config.GlobalConfig.Indicator.Zookeeper.MetricFilters, ",")
+	props := strings.Split(config.GlobalConfig.Indicator.Zookeeper.MetricExcludeRegex, ",")
 
 	var infoSum string
 	for _, command := range comm {

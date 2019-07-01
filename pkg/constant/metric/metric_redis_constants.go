@@ -14,3 +14,9 @@
  * limitations under the License.
  */
 package metric
+
+const (
+
+	SERVER = "server"
+
+	)

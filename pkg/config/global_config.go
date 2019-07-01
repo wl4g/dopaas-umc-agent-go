@@ -133,7 +133,7 @@ func createDefault() *GlobalProperties {
 				Delay:         constant.DefaultIndicatorsDelay,
 				Servers:       constant.DefaultZkIndicatorsServers,
 				Command:       constant.DefaultZkIndicatorsCommands,
-				MetricFilters: constant.DefaultZkIndicatorsMetricFilters,
+				MetricExcludeRegex: constant.DefaultZkIndicatorsMetricExcludeRegex,
 			},
 			Etcd: EtcdIndicatorProperties{
 				Enabled: false,
@@ -146,7 +146,7 @@ func createDefault() *GlobalProperties {
 			Kafka: KafkaIndicatorProperties{
 				Enabled:       false,
 				Delay:         constant.DefaultIndicatorsDelay,
-				MetricFilters: constant.DefaultKafkaIndicatorsMetricFilters,
+				MetricExcludeRegex: constant.DefaultKafkaIndicatorsMetricExcludeRegex,
 			},
 			Emq: EmqIndicatorProperties{
 				Enabled: false,
@@ -165,7 +165,8 @@ func createDefault() *GlobalProperties {
 				Delay:      constant.DefaultIndicatorsDelay,
 				Servers:    constant.DefaultRedisIndicatorsServers,
 				Password:   constant.DefaultRedisIndicatorsPassword,
-				Properties: constant.DefaultRedisIndicatorsMetricFilters,
+				Properties: constant.DefaultRedisIndicatorsMetricExcludeRegex,
+				MetricExcludeRegex: constant.DefaultRedisIndicatorsMetricExcludeRegex,
 			},
 			Memcached: MemcachedIndicatorProperties{
 				Enabled: false,
@@ -200,7 +201,7 @@ func createDefault() *GlobalProperties {
 	return globalConfig
 }
 
-// MetricFilters settings after initialization
+// MetricExcludeRegex settings after initialization
 func afterPropertiesSet(globalConfig *GlobalProperties) {
 	// Environment variable priority.
 	var netcard = os.Getenv("indicators.netcard")

@@ -87,6 +87,7 @@ indicator:
 ### --------- Cache indicators ------------
   redis:
     enabled: false
+    metric-exclude-regex: all
     delay: 10000
     servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
     password: zzx!@#$%

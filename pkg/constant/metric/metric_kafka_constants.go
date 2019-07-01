@@ -16,15 +16,6 @@
 package metric
 
 const (
-	Topic = "topic"
-
-	GroupId = "groupid"
-
-	Partition = "partition"
-
-	Metric = "metric"
-
-	KafkaBrokersMetric = "kafka_brokers"
 
 	//KafkaExporterBuildInfoMetric = "kafka_exporter_build_info"
 

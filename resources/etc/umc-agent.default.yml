@@ -77,7 +77,7 @@ indicator:
     delay: 60000
     servers: localhost:2181
     commands: mntr # zookeeper indicators commands(e.g. mntr,conf)
-    metric-filters:
+    metric-exclude-regex:
       zk_avg_latency,
       zk_max_latency,
       zk_min_latency,
@@ -103,7 +103,7 @@ indicator:
   kafka:
     enabled: false
     delay: 60000
-    metric-filters:
+    metric-exclude-regex:
       kafka_brokers,
       kafka_exporter_build_info,
       kafka_topic_partition_current_offset,
@@ -134,7 +134,7 @@ indicator:
     delay: 60000
     servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
     password: 123456
-    metric-filters:
+    metric-exclude-regex:
       connected_clients,
       used_memory,
       used_memory_peak,
