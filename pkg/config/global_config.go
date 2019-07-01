@@ -146,6 +146,7 @@ func createDefault() *GlobalProperties {
 			Kafka: KafkaIndicatorProperties{
 				Enabled:       false,
 				Delay:         constant.DefaultIndicatorsDelay,
+				Servers:      constant.DefaultKafkaIndicatorsServers,
 				MetricExcludeRegex: constant.DefaultKafkaIndicatorsMetricExcludeRegex,
 			},
 			Emq: EmqIndicatorProperties{

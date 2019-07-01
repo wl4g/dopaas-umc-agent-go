@@ -75,6 +75,7 @@ indicator:
   kafka:
     enabled: true
     delay: 10000
+    servers: localhost:9092
   emq:
     enabled: false
     delay: 60000
@@ -89,7 +90,7 @@ indicator:
     enabled: false
     metric-exclude-regex: all
     delay: 10000
-    servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
+    servers: safecloud-test:6379,safecloud-test:6380 # Monitor local redis instances(ports).
     password: zzx!@#$%
   memcached:
     enabled: false

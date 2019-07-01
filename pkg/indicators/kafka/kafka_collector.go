@@ -20,6 +20,7 @@ import (
 	"crypto/x509"
 	"github.com/Shopify/sarama"
 	"strconv"
+	"strings"
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
@@ -67,15 +68,18 @@ func IndicatorRunner() {
 }
 
 func newConnectClient() sarama.Client {
-	//TODO read config
 	opts := kafkaOpts{}
-	opts.uri = append(opts.uri, "localhost:9092")
-	opts.useSASL = false
+	uris := strings.Split(config.GlobalConfig.Indicator.Kafka.Servers,",")
+	for _, v := range uris {
+		opts.uri = append(opts.uri, v)
+	}
+	//needn't config on properties
+	//opts.useSASL = false
 	opts.useSASLHandshake = true
-	opts.useTLS = false
-	opts.tlsInsecureSkipTLSVerify = false
+	//opts.useTLS = false
+	//opts.tlsInsecureSkipTLSVerify = false
 	opts.kafkaVersion = sarama.V1_0_0_0.String()
-	opts.useZooKeeperLag = false
+	//opts.useZooKeeperLag = false
 	//opts.uriZookeeper = append(opts.uriZookeeper, "localhost:2181")
 	opts.metadataRefreshInterval = "30s"
 

@@ -21,7 +21,7 @@ import (
 
 // Deprecated: Metric packaging has been changed to uniform aggregation metrics,
 // see: `indicators. New Metric Aggregator`.
-type Redis struct {
+type Redis_bak struct {
 	Meta       indicators.MetaInfo `json:"meta"`
 	RedisInfos []Info              `json:"redisInfos"`
 }

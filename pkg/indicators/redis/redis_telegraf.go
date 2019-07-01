@@ -44,14 +44,14 @@ func IndicatorRunner() {
 	}
 	logger.Main.Info("Starting kafka indicators runner ...")
 
-	for true {
+	/*for true {
 		// New redis metric aggregator
-		redisAggregator := indicators.NewMetricAggregator("Redis")
+		redisAggregator := indicators.NewMetricAggregator("Redis_bak")
 
 		now := time.Now().UnixNano() / 1e6
 		redisAggregator.Timestamp = now
 		// Do collect.
-		redis := Redis2{}
+		redis := Redis{}
 		redis.Gather(redisAggregator)
 
 		// Send to servers.
@@ -59,26 +59,22 @@ func IndicatorRunner() {
 
 		// Sleep.
 		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay)
-	}
+	}*/
 
 	//Test
-	/*now := time.Now().UnixNano() / 1e6
-	redisAggregator := indicators.NewMetricAggregator("Redis")
+	now := time.Now().UnixNano() / 1e6
+	redisAggregator := indicators.NewMetricAggregator("Redis_bak")
 	redisAggregator.Timestamp = now
-	redis := Redis2{}
+	redis := Redis{}
 	redis.Gather(redisAggregator)
-	transport.DoSendSubmit(constant.Metric, &redisAggregator)*/
+	transport.DoSendSubmit(constant.Metric, &redisAggregator)
 
 }
 
-
-
-
-type Redis2 struct {
+type Redis struct {
 	Servers  []string
 	Password string
 	tls.ClientConfig
-
 	clients     []Client
 	initialized bool
 }
@@ -105,50 +101,20 @@ func (r *RedisClient) BaseTags() map[string]string {
 	return tags
 }
 
-var sampleConfig = `
-  ## specify servers via a url matching:
-  ##  [protocol://][:password]@address[:port]
-  ##  e.g.
-  ##    tcp://localhost:6379
-  ##    tcp://:password@192.168.99.100
-  ##    unix:///var/run/redis.sock
-  ##
-  ## If no servers are specified, then localhost is used as the host.
-  ## If no port is specified, 6379 is used
-  servers = ["tcp://localhost:6379"]
-
-  ## specify server password
-  # password = "s#cr@t%"
-
-  ## Optional TLS Config
-  # tls_ca = "/etc/telegraf/ca.pem"
-  # tls_cert = "/etc/telegraf/cert.pem"
-  # tls_key = "/etc/telegraf/key.pem"
-  ## Use TLS but skip chain & host verification
-  # insecure_skip_verify = true
-`
-
-func (r *Redis2) SampleConfig() string {
-	return sampleConfig
-}
-
-func (r *Redis2) Description() string {
-	return "Read metrics from one or many redis servers"
-}
-
 var Tracking = map[string]string{
 	"uptime_in_seconds": "uptime",
 	"connected_clients": "clients",
 	"role":              "replication_role",
 }
 
-func (r *Redis2) init() error {
+func (r *Redis) init() error {
 	if r.initialized {
 		return nil
 	}
 
 	if len(r.Servers) == 0 {
-		r.Servers = []string{"tcp://safecloud-test:6379"}
+		urls := config.GlobalConfig.Indicator.Redis.Servers
+		r.Servers = strings.Split(urls,",")
 	}
 
 	r.clients = make([]Client, len(r.Servers))
@@ -164,7 +130,7 @@ func (r *Redis2) init() error {
 			return fmt.Errorf("Unable to parse to address %q: %v", serv, err)
 		}
 
-		password := "zzx!@#$%"
+		password := config.GlobalConfig.Indicator.Redis.Password
 		if u.User != nil {
 			pw, ok := u.User.Password()
 			if ok {
@@ -217,7 +183,7 @@ func (r *Redis2) init() error {
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (r *Redis2) Gather(redisAggregator *indicators.MetricAggregator) error {
+func (r *Redis) Gather(redisAggregator *indicators.MetricAggregator) error {
 	if !r.initialized {
 		err := r.init()
 		if err != nil {
@@ -240,7 +206,7 @@ func (r *Redis2) Gather(redisAggregator *indicators.MetricAggregator) error {
 	return nil
 }
 
-func (r *Redis2) gatherServer(client Client,redisAggregator *indicators.MetricAggregator) error {
+func (r *Redis) gatherServer(client Client,redisAggregator *indicators.MetricAggregator) error {
 	info, err := client.Info().Result()
 	if err != nil {
 		return err
@@ -389,9 +355,4 @@ func gatherKeyspaceLine(
 	}
 }
 
-/*func init() {
-	inputs.Add("redis", func() telegraf.Input {
-		return &Redis2{}
-	})
-}
-*/
+

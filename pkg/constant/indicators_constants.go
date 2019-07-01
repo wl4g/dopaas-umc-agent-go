@@ -61,7 +61,9 @@ const (
 
 	// Kafka indicators constants.
 	// Default watch redis indicators metric filters.
-	DefaultKafkaIndicatorsMetricExcludeRegex = "kafka_topic_partition_oldest_offset,kafka_brokers,kafka_partition_current_offset"
+	DefaultKafkaIndicatorsMetricExcludeRegex = ""
+	//default server
+	DefaultKafkaIndicatorsServers = "localhost:9092"
 
 	Topic = "topic"
 

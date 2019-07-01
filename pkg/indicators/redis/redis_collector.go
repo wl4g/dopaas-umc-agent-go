@@ -37,7 +37,7 @@ func IndicatorRunner_bak() {
 	// Loop monitor
 	for true {
 		// New redis metric aggregator
-		//redisAggregator := indicators.NewMetricAggregator("Redis")
+		//redisAggregator := indicators.NewMetricAggregator("Redis_bak")
 
 		result := getRedisStats()
 		result.Meta = indicators.CreateMeta("redis")
@@ -47,8 +47,8 @@ func IndicatorRunner_bak() {
 	}
 }
 
-func getRedisStats() Redis {
-	var redis Redis
+func getRedisStats() Redis_bak {
+	var redis Redis_bak
 
 	servers := config.GlobalConfig.Indicator.Redis.Servers
 	serversArr := strings.Split(servers, ",")
