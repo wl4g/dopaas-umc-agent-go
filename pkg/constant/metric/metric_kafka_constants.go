@@ -22,7 +22,7 @@ const (
 
 	Partition = "partition"
 
-	KafkaMeta = "kafka"
+	Metric = "metric"
 
 	KafkaBrokersMetric = "kafka_brokers"
 
