@@ -72,8 +72,9 @@ func init() {
 }
 
 func main() {
-	startCollectorRunners(wg)
-	wg.Wait()
+	/*startCollectorRunners(wg)
+	wg.Wait()*/
+	kafka.IndicatorRunner()
 }
 
 // Starting indicator runners all

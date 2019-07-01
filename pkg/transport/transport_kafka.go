@@ -132,6 +132,7 @@ func doProducerSend(key string, data string) {
 	}
 	msg := &sarama.ProducerMessage{
 		Topic: config.GlobalConfig.Transport.Kafka.MetricTopic,
+		Key: sarama.ByteEncoder(key),
 		Value: sarama.ByteEncoder(data),
 	}
 
