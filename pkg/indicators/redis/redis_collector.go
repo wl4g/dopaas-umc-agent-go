@@ -27,6 +27,7 @@ import (
 )
 
 // Original see: https://github.com/oliver006/redis_exporter
+// Deprecated: move to redis_telegraf
 func IndicatorRunner_bak() {
 	if !config.GlobalConfig.Indicator.Redis.Enabled {
 		logger.Main.Warn("No enabled redis metrics runner!")
