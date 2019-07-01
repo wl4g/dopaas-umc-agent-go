@@ -44,7 +44,7 @@ func IndicatorRunner() {
 	}
 	logger.Main.Info("Starting kafka indicators runner ...")
 
-	/*for true {
+	for true {
 		// New redis metric aggregator
 		redisAggregator := indicators.NewMetricAggregator("Redis")
 
@@ -59,15 +59,15 @@ func IndicatorRunner() {
 
 		// Sleep.
 		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay)
-	}*/
+	}
 
 	//Test
-	now := time.Now().UnixNano() / 1e6
+	/*now := time.Now().UnixNano() / 1e6
 	redisAggregator := indicators.NewMetricAggregator("Redis")
 	redisAggregator.Timestamp = now
 	redis := Redis2{}
 	redis.Gather(redisAggregator)
-	transport.DoSendSubmit(constant.Metric, &redisAggregator)
+	transport.DoSendSubmit(constant.Metric, &redisAggregator)*/
 
 }
 
