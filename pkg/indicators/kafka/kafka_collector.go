@@ -73,55 +73,53 @@ func newConnectClient() sarama.Client {
 	for _, v := range uris {
 		opts.uri = append(opts.uri, v)
 	}
-	//needn't config on properties
-	//opts.useSASL = false
-	opts.useSASLHandshake = true
-	//opts.useTLS = false
-	//opts.tlsInsecureSkipTLSVerify = false
+	opts.useSASL = config.GlobalConfig.Indicator.Kafka.UseSASL
+	opts.useSASLHandshake = config.GlobalConfig.Indicator.Kafka.UseSASLHandshake
+	opts.useTLS = config.GlobalConfig.Indicator.Kafka.UseTLS
+	opts.tlsInsecureSkipTLSVerify = config.GlobalConfig.Indicator.Kafka.TlsInsecureSkipTLSVerify
 	opts.kafkaVersion = sarama.V1_0_0_0.String()
-	//opts.useZooKeeperLag = false
-	//opts.uriZookeeper = append(opts.uriZookeeper, "localhost:2181")
-	opts.metadataRefreshInterval = "30s"
+	opts.useZooKeeperLag = config.GlobalConfig.Indicator.Kafka.UseZooKeeperLag
+	opts.metadataRefreshInterval = config.GlobalConfig.Indicator.Kafka.MetadataRefreshInterval
 
-	// Build config start
-	config := sarama.NewConfig()
-	config.ClientID = clientID
+	// Build configN start
+	configN := sarama.NewConfig()
+	configN.ClientID = clientID
 	kafkaVersion, err := sarama.ParseKafkaVersion(opts.kafkaVersion)
 	if err != nil {
 		panic(err)
 	}
-	config.Version = kafkaVersion
+	configN.Version = kafkaVersion
 	if opts.useSASL {
-		config.Net.SASL.Enable = true
-		config.Net.SASL.Handshake = opts.useSASLHandshake
-		if opts.saslUsername != "" {
-			config.Net.SASL.User = opts.saslUsername
+		configN.Net.SASL.Enable = true
+		configN.Net.SASL.Handshake = config.GlobalConfig.Indicator.Kafka.UseSASLHandshake
+		if config.GlobalConfig.Indicator.Kafka.SaslUsername != "" {
+			configN.Net.SASL.User = config.GlobalConfig.Indicator.Kafka.SaslUsername
 		}
-		if opts.saslPassword != "" {
-			config.Net.SASL.Password = opts.saslPassword
+		if config.GlobalConfig.Indicator.Kafka.SaslPassword != "" {
+			configN.Net.SASL.Password = config.GlobalConfig.Indicator.Kafka.SaslPassword
 		}
 	}
 	if opts.useTLS {
-		config.Net.TLS.Enable = true
-		config.Net.TLS.Config = &tls.Config{
+		configN.Net.TLS.Enable = true
+		configN.Net.TLS.Config = &tls.Config{
 			RootCAs:            x509.NewCertPool(),
-			InsecureSkipVerify: opts.tlsInsecureSkipTLSVerify,
+			InsecureSkipVerify: config.GlobalConfig.Indicator.Kafka.TlsInsecureSkipTLSVerify,
 		}
-		if opts.tlsCAFile != "" {
-			if ca, err := ioutil.ReadFile(opts.tlsCAFile); err == nil {
-				config.Net.TLS.Config.RootCAs.AppendCertsFromPEM(ca)
+		if config.GlobalConfig.Indicator.Kafka.TlsCAFile != "" {
+			if ca, err := ioutil.ReadFile(config.GlobalConfig.Indicator.Kafka.TlsCAFile); err == nil {
+				configN.Net.TLS.Config.RootCAs.AppendCertsFromPEM(ca)
 			} else {
 				logger.Main.Error("", zap.Error(err))
 			}
 		}
-		canReadCertAndKey, err := canReadCertAndKey(opts.tlsCertFile, opts.tlsKeyFile)
+		canReadCertAndKey, err := canReadCertAndKey(config.GlobalConfig.Indicator.Kafka.TlsCertFile, config.GlobalConfig.Indicator.Kafka.TlsKeyFile)
 		if err != nil {
 			logger.Main.Error("", zap.Error(err))
 		}
 		if canReadCertAndKey {
-			cert, err := tls.LoadX509KeyPair(opts.tlsCertFile, opts.tlsKeyFile)
+			cert, err := tls.LoadX509KeyPair(config.GlobalConfig.Indicator.Kafka.TlsCertFile, config.GlobalConfig.Indicator.Kafka.TlsKeyFile)
 			if err == nil {
-				config.Net.TLS.Config.Certificates = []tls.Certificate{cert}
+				configN.Net.TLS.Config.Certificates = []tls.Certificate{cert}
 			} else {
 				logger.Main.Error("", zap.Error(err))
 			}
@@ -135,8 +133,8 @@ func newConnectClient() sarama.Client {
 		logger.Main.Error("Cannot parse metadata refresh interval", zap.Error(err))
 		panic(err)
 	}
-	config.Metadata.RefreshFrequency = interval
-	client, err := sarama.NewClient(opts.uri, config)
+	configN.Metadata.RefreshFrequency = interval
+	client, err := sarama.NewClient(opts.uri, configN)
 	return client
 }
 

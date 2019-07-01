@@ -17,6 +17,6 @@ package metric
 
 const (
 
-	SERVER = "server"
+	REDIS_SERVER = "server"
 
 	)

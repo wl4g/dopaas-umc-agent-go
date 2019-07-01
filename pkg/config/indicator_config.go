@@ -106,6 +106,20 @@ type KafkaIndicatorProperties struct {
 	Delay              time.Duration `yaml:"delay"`
 	Servers            string        `yaml:"servers"`
 	MetricExcludeRegex string        `yaml:"metric-exclude-regex"`
+	UseSASL                  bool     `yaml:"useSASL"`
+	UseSASLHandshake         bool     `yaml:"useSASLHandshake"`
+	SaslUsername             string   `yaml:"saslUsername"`
+	SaslPassword             string   `yaml:"saslPassword"`
+	UseTLS                   bool     `yaml:"useTLS"`
+	TlsCAFile                string   `yaml:"tlsCAFile"`
+	TlsCertFile              string   `yaml:"tlsCertFile"`
+	TlsKeyFile               string   `yaml:"tlsKeyFile"`
+	TlsInsecureSkipTLSVerify bool     `yaml:"tlsInsecureSkipTLSVerify"`
+	KafkaVersion             string   `yaml:"kafkaVersion"`
+	UseZooKeeperLag          bool     `yaml:"useZooKeeperLag"`
+	UriZookeeper             []string `yaml:"uriZookeeper"`
+	Labels                   string   `yaml:"labels"`
+	MetadataRefreshInterval  string   `yaml:"metadataRefreshInterval"`
 }
 
 // Indicator emq properties.

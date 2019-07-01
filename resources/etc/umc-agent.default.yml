@@ -119,6 +119,16 @@ indicator:
       kafka_consumergroup_lag,
       kafka_consumergroup_current_offset_sum,
       kafka_consumergroup_lag_sum
+    useSASL:
+    useSASLHandshake: false
+    saslUsername:
+    saslPassword:
+    useTLS: false
+    tlsCAFile:
+    tlsCertFile:
+    tlsKeyFile:
+    tlsInsecureSkipTLSVerify: false
+    metadataRefreshInterval:
   emq:
     enabled: false
     delay: 60000
