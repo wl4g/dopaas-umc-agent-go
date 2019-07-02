@@ -143,9 +143,6 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 	defer client.Close()
 
 	var mu sync.Mutex
-	now := time.Now().UnixNano() / 1e6
-	kafkaAggregator.Timestamp = now
-
 	// Metric for brokers count
 	kafkaAggregator.NewMetric(metric.KafkaBrokersMetric, float64(len(client.Brokers())))
 
