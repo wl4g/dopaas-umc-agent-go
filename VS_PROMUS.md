@@ -1,5 +1,5 @@
 
-## UMC(统一监控中心) 自研 VS Prometheus 方案选型之路
+## UMC (Unified Monitoring Center) Self-research VS Prometheus solution selection path
 
 ### Prometheus
 #### Prepare environment:
@@ -65,7 +65,7 @@ Step 2: Turn on 57 again. Phenomenon: All data during the shutdown period is los
 | :--------------: | :---------------------------------------------------: | :-----------------------------:  |
 |      HA        |       ✅                                               | Temporarily no mature plan        |
 |Dynamic configuration|Support remote updates, such as: collection interval|Restart after updating the configuration|
-|Alarm rule update| ✅Management side updates take effect immediately|更新配置后reload好像有问题，新老规则都生效? |
+|Alarm rule update| ✅Management side updates take effect immediately|After updating the configuration, there seems to be a problem with reload. Both the old and new rules take effect?|
 |     存储      | Built in:openTSDB,derby，Provide store base classes for easy extension|Add the remote_read module to extend other data sources|
 |JVM health    | ✅Integration:spring boot admin                  |           Not support                   |
 |Distributed tracking| ✅Integration:spring cloud sleuth, zipkin        |           Not support                    |
