@@ -64,6 +64,7 @@ func IndicatorRunner() {
 	}
 }
 
+// New kafka connect client.
 func newConnectClient() sarama.Client {
 	opts := kafkaOpts{}
 	uris := strings.Split(config.GlobalConfig.Indicator.Kafka.Servers, ",")
