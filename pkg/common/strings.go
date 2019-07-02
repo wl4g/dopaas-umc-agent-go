@@ -15,10 +15,12 @@
  */
 package common
 
+import "strings"
+
 // Check whether the string contains
 func StringsContains(array []string, val string) bool {
 	for i := 0; i < len(array); i++ {
-		if array[i] == val {
+		if strings.TrimSpace(array[i]) == strings.TrimSpace(val) {
 			return true
 		}
 	}

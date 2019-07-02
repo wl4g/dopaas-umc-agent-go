@@ -16,30 +16,40 @@
 package transport
 
 import (
+	"bytes"
+	"fmt"
 	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 )
 
-// Send indicators to http gateway
-func doPostSend(key string, data string) {
-	if !config.GlobalConfig.Launcher.Kafka.Enabled {
-		request, _ := http.NewRequest("POST", config.GlobalConfig.Launcher.Http.ServerGateway+"/"+key, strings.NewReader(data))
+// Send metrics to http gateway
+func doHttpSend(aggregator *indicators.MetricAggregator) {
+	if !config.GlobalConfig.Transport.Kafka.Enabled {
+		request, err := http.NewRequest("POST", config.GlobalConfig.Transport.Http.ServerGateway,
+			bytes.NewReader(aggregator.ToProtoBufArray()))
+		if err != nil {
+			panic(fmt.Sprintf("Create post request failed! %s", err))
+		}
 		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Accept", "application/json, text/plain, */*")
+		//request.Header.Set("Connection", "keep-alive")
 
-		// Do execution
-		resp, err := http.DefaultClient.Do(request)
+		// Do request.
+		httpClient := &http.Client{Timeout: 30000}
+		resp, err := httpClient.Do(request)
+		defer resp.Body.Close()
 		if err != nil {
 			logger.Main.Error("Post failed", zap.Error(err))
 		} else {
 			ret, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				logger.Main.Error("Failed to get response body", zap.Error(err))
+				logger.Receive.Error("Failed to get response body", zap.Error(err))
 			} else {
-				logger.Main.Info("Receive response message", zap.String("data", string(ret)))
+				logger.Receive.Info("Receive response message", zap.String("data", string(ret)))
 			}
 		}
 	}

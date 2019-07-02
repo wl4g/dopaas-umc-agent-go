@@ -20,7 +20,9 @@ import (
 )
 
 const (
-	// ------ Basic share indicators -----
+	// =============================
+	// ------ Basic indicators -----
+	// =============================
 
 	// Default namespace.
 	DefaultNamespace = "defaultCloud"
@@ -34,13 +36,24 @@ const (
 	// Default network indicator ports range.
 	DefaultNetIndicatorsNetPorts = "22,8080"
 
+	//Tag disk device
+	TagDiskDevice = "device"
+
+	//Tag net port
+	TagNetPort = "port"
+
+	// =============================
 	// --------- Virtual -----------
+	// =============================
 
 	// Docker indicators constants.
+	TagDockerName = "name"
 
 	// Mesos indicators constants.
 
+	// =============================
 	// --------- Discovery ---------
+	// =============================
 
 	// Zk indicators constants.
 
@@ -50,16 +63,18 @@ const (
 	// Default watch zk commands(e.g. mntr,conf).
 	DefaultZkIndicatorsCommands = "mntr"
 
-	// Default watch redis indicators properties.
-	DefaultZkIndicatorsProperties = "zk_avg_latency,zk_max_latency,zk_min_latency,zk_packets_received,zk_packets_sent,zk_num_alive_connections,zk_outstanding_requests,zk_server_state,zk_znode_count,zk_watch_count,zk_ephemerals_count,zk_approximate_data_size,zk_open_file_descriptor_count,zk_max_file_descriptor_count,zk_fsync_threshold_exceed_count"
-
 	// Etcd indicators constants.
 
 	// Consul indicators constants.
 
-	// ----------- MQ -------------
+	// =============================
+	// ----------- MQ --------------
+	// =============================
 
 	// Kafka indicators constants.
+
+	// Default indicators kafka broker servers.
+	DefaultKafkaIndicatorsServers = "localhost:9092"
 
 	// EMQ indicators constants.
 
@@ -67,7 +82,9 @@ const (
 
 	// RocketMQ indicators constants.
 
+	// =============================
 	// ----------- Cache -----------
+	// =============================
 
 	// Redis indicators constants.
 
@@ -77,12 +94,11 @@ const (
 	// Default watch redis ports.
 	DefaultRedisIndicatorsPassword = "redis"
 
-	// Default watch redis indicators properties.
-	DefaultRedisIndicatorsProperties = "connected_clients,used_memory,used_memory_peak,used_memory_overhead,used_memory_dataset,used_memory_dataset_perc,aof_current_size,aof_buffer_length,total_connections_received,total_commands_processed,instantaneous_ops_per_sec,instantaneous_input_kbps,instantaneous_output_kbps,repl_backlog_size,repl_backlog_histlen,used_cpu_sys,used_cpu_user,used_cpu_sys_children,used_cpu_user_children,cluster_state,cluster_slots_assigned,cluster_slots_ok,cluster_slots_pfail,cluster_slots_fail,cluster_known_nodes,cluster_size,cluster_current_epoch,cluster_my_epoch"
-
 	// Memcached indicators constants.
 
+	// =============================
 	// ------------ DB -------------
+	// =============================
 
 	// ElasticSearch indicators constants.
 

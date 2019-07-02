@@ -17,28 +17,39 @@ package config
 
 import (
 	"fmt"
+	"github.com/json-iterator/go"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/monitor/share"
+)
+
+const (
+	// Used for metric filtering checks.
+	// See: ./pkg/indicators/metric_builder.go#NewMetric()
+	IndicatorFiledName = "Indicator"
 )
 
 // ---------------------
 // Global properties
 // ---------------------
 type GlobalProperties struct {
-	Logging    LoggingProperties    `yaml:"logging"`
-	Launcher   LauncherProperties   `yaml:"launcher"`
-	Indicators IndicatorsProperties `yaml:"indicators"`
+	Logging   LoggingProperties   `yaml:"logging"`
+	Transport TransportProperties `yaml:"transport"`
+	Indicator IndicatorProperties `yaml:"indicator"`
 }
 
-// Global configuration.
-var GlobalConfig GlobalProperties
+var (
+	// Global config.
+	GlobalConfig GlobalProperties
 
-// Local hardware addr ID.
-var LocalHardwareAddrId = ""
+	// Global config buffer.
+	_globalConfigBuffer []byte
+
+	// Local hardware addr ID.
+	LocalHardwareAddrId = ""
+)
 
 // Init global config properties.
 func InitGlobalConfig(path string) {
@@ -88,127 +99,147 @@ func createDefault() *GlobalProperties {
 				},
 			},
 		},
-		Launcher: LauncherProperties{
-			Http: HttpLauncherProperties{
+		Transport: TransportProperties{
+			Http: HttpTransportProperties{
 				ServerGateway: constant.DefaultHttpServerGateway,
 			},
-			Kafka: KafkaLauncherProperties{
-				Enabled:          false,
-				BootstrapServers: constant.DefaultLauncherKafkaServers,
-				MetricTopic:      constant.DefaultLauncherKafkaMetricTopic,
-				ReceiveTopic:     constant.DefaultLauncherKafkaReceiveTopic,
-				Ack:              constant.DefaultLauncherKafkaAck,
-				Timeout:          constant.DefaultLauncherKafkaTimeout,
+			Kafka: KafkaTransportProperties{
+				Enabled:      false,
+				Servers:      constant.DefaultTransportKafkaServers,
+				MetricTopic:  constant.DefaultTransportKafkaMetricTopic,
+				ReceiveTopic: constant.DefaultTransportKafkaReceiveTopic,
+				Ack:          constant.DefaultTransportKafkaAck,
+				Timeout:      constant.DefaultTransportKafkaTimeout,
 			},
 		},
-		Indicators: IndicatorsProperties{
+		Indicator: IndicatorProperties{
 			Namespace: constant.DefaultNamespace,
 			Netcard:   constant.DefaultNetcard,
 			Physical: PhysicalIndicatorProperties{
-				Enabled:  true,
-				Delay:    constant.DefaultIndicatorsDelay,
-				NetPorts: constant.DefaultNetIndicatorsNetPorts,
+				Enabled:       true,
+				Delay:         constant.DefaultIndicatorsDelay,
+				NetPorts:      constant.DefaultNetIndicatorsNetPorts,
+				MetricExclude: "",
 			},
 			Docker: DockerIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Mesos: MesosIndicatorProperties{
 				Enabled: false,
 				Delay:   constant.DefaultIndicatorsDelay,
 			},
 			Zookeeper: ZookeeperIndicatorProperties{
-				Enabled:    false,
-				Delay:      constant.DefaultIndicatorsDelay,
-				Servers:    constant.DefaultZkIndicatorsServers,
-				Command:    constant.DefaultZkIndicatorsCommands,
-				Properties: constant.DefaultZkIndicatorsProperties,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				Servers:       constant.DefaultZkIndicatorsServers,
+				Command:       constant.DefaultZkIndicatorsCommands,
+				MetricExclude: "",
 			},
 			Etcd: EtcdIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Consul: ConsulIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Kafka: KafkaIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:                  false,
+				Delay:                    constant.DefaultIndicatorsDelay,
+				Servers:                  constant.DefaultKafkaIndicatorsServers,
+				UseSASLHandshake:         false,
+				UseTLS:                   false,
+				TlsInsecureSkipTLSVerify: false,
+				MetadataRefreshInterval:  "300s",
+				MetricExclude:            "",
 			},
 			Emq: EmqIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			RabbitMQ: RabbitMQIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			RocketMQ: RocketMQIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Redis: RedisIndicatorProperties{
-				Enabled:    false,
-				Delay:      constant.DefaultIndicatorsDelay,
-				Servers:    constant.DefaultRedisIndicatorsServers,
-				Password:   constant.DefaultRedisIndicatorsPassword,
-				Properties: constant.DefaultRedisIndicatorsProperties,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				Servers:       constant.DefaultRedisIndicatorsServers,
+				Password:      constant.DefaultRedisIndicatorsPassword,
+				MetricExclude: "",
 			},
 			Memcached: MemcachedIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			ElasticSearch: ElasticSearchIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Mongodb: MongodbIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			MySQL: MySQLIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			PostgreSQL: PostgreSQLIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			OpenTSDB: OpenTSDBIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Cassandra: CassandraIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 		},
 	}
 	return globalConfig
 }
 
-// Properties settings after initialization
+// MetricExclude settings after initialization
 func afterPropertiesSet(globalConfig *GlobalProperties) {
-	// Environmental variable priority
+	// Environment variable priority.
 	var netcard = os.Getenv("indicators.netcard")
 	if !common.IsEmpty(netcard) {
-		globalConfig.Indicators.Netcard = netcard
+		globalConfig.Indicator.Netcard = netcard
 	}
 
-	// Got local hardware addr
-	LocalHardwareAddrId = common.GetHardwareAddr(globalConfig.Indicators.Netcard)
+	// Local hardware addr.
+	LocalHardwareAddrId = common.GetHardwareAddr(globalConfig.Indicator.Netcard)
 	if LocalHardwareAddrId == "" || len(LocalHardwareAddrId) <= 0 {
-		panic("net found ip,Please check the net conf")
+		panic("Failed to find network hardware info, please check the net config!")
 	}
+
+	// To config json buffer(see: #GetConfig()).
+	var buffer, _ = jsoniter.MarshalToString(GlobalConfig)
+	_globalConfigBuffer = []byte(buffer)
 }
 
-// Create meta info
-func CreateMeta(metaType string) share.MetaInfo {
-	meta := share.MetaInfo{
-		Id:        LocalHardwareAddrId,
-		Type:      metaType,
-		Namespace: GlobalConfig.Indicators.Namespace,
-	}
-	return meta
+// Get config value.
+func GetConfig(path ...interface{}) jsoniter.Any {
+	var value = jsoniter.Get(_globalConfigBuffer, path...)
+	return value
 }

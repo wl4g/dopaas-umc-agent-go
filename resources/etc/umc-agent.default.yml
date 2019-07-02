@@ -1,0 +1,153 @@
+# Copyright 2017 ~ 2025 the original author or authors[983708408@qq.com].
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+### ==================================================
+### Agent monitors production sending data configuration, supports HTTP and Kafka server
+### receiving gateway, defaults to http. post sending.
+### ==================================================
+
+transport:
+  http:
+    server-gateway: http://127.0.0.1:14046/umc/receiver
+  kafka:
+    enabled: true # This enabled switch takes precedence over the HTTP launcher.
+    servers: localhost:9092
+    metric-topic: umc_agent_metrics
+    receive-topic: umc_agent_receive
+    ack: 1
+    timeout: 60000
+
+### ==================================================
+### Logger configuration.
+### ==================================================
+
+logging:
+  log-items:
+    main:
+      file: ./log/umc-agent.log
+      level: INFO
+      date-format: 06-01-02 15:04:05 # ISO8601 => 2006-01-02 15:04:05
+      policy:
+        retention-days: 7 # Day
+        max-backups: 30 # Numbers
+        max-size: 128 # MB
+    receive:
+      file: ./log/umc-agent-receive.log
+      level: INFO
+      date-format: 06-01-02 15:04:05 # ISO8601 => 2006-01-02 15:04:05
+      policy:
+        retention-days: 7 # Day
+        max-backups: 30 # Numbers
+        max-size: 128 # MB
+
+### ==================================================
+### Resource health indicators monitor configuration.
+### ==================================================
+
+indicator:
+  namespace: default # Namespaces that support multiple tenants.
+  netcard: eth0 # Bind net-card name.
+### ------ Infrastructure indicators ------
+  physical:
+    enabled: false
+    delay: 60000 # Delay(ms)
+    range-port: 22,9092
+### --------- Virtual indicators ----------
+  docker:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  mesos:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+### --------- Discovery indicators --------
+  zookeeper:
+    enabled: false
+    delay: 60000
+    servers: localhost:2181
+    commands: mntr # zookeeper indicators commands(e.g. mntr,conf)
+    metric-exclude:
+  etcd:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  consul:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+### --------- MQ indicators ---------------
+  kafka:
+    enabled: false
+    delay: 60000
+    useSASL:
+    useSASLHandshake: false
+    saslUsername:
+    saslPassword:
+    useTLS: false
+    tlsCAFile:
+    tlsCertFile:
+    tlsKeyFile:
+    tlsInsecureSkipTLSVerify: false
+    metadataRefreshInterval: 300s
+    metric-exclude:
+  emq:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  rabbitmq:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  rocketmq:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+### --------- Cache indicators ------------
+  redis:
+    enabled: false
+    delay: 60000
+    servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
+    password: 123456
+    metric-exclude:
+  memcached:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+### --------- DB indicators ---------------
+  elasticsearch:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  mongodb:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  mysql:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  postgresql:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  opentsdb:
+    enabled: false
+    delay: 60000
+    metric-exclude:
+  cassandra:
+    enabled: false
+    delay: 60000
+    metric-exclude:

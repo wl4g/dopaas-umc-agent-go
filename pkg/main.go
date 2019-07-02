@@ -21,25 +21,25 @@ import (
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
+	"umc-agent/pkg/indicators/cassandra"
+	"umc-agent/pkg/indicators/consul"
+	"umc-agent/pkg/indicators/docker"
+	"umc-agent/pkg/indicators/elasticsearch"
+	"umc-agent/pkg/indicators/emq"
+	"umc-agent/pkg/indicators/etcd"
+	"umc-agent/pkg/indicators/kafka"
+	"umc-agent/pkg/indicators/memcached"
+	"umc-agent/pkg/indicators/mesos"
+	"umc-agent/pkg/indicators/mongodb"
+	"umc-agent/pkg/indicators/mysql"
+	"umc-agent/pkg/indicators/opentsdb"
+	"umc-agent/pkg/indicators/physical"
+	"umc-agent/pkg/indicators/postgresql"
+	"umc-agent/pkg/indicators/rabbitmq"
+	"umc-agent/pkg/indicators/redis"
+	"umc-agent/pkg/indicators/rocketmq"
+	"umc-agent/pkg/indicators/zookeeper"
 	"umc-agent/pkg/logger"
-	"umc-agent/pkg/monitor/cassandra"
-	"umc-agent/pkg/monitor/consul"
-	"umc-agent/pkg/monitor/docker"
-	"umc-agent/pkg/monitor/elasticsearch"
-	"umc-agent/pkg/monitor/emq"
-	"umc-agent/pkg/monitor/etcd"
-	"umc-agent/pkg/monitor/kafka"
-	"umc-agent/pkg/monitor/memcached"
-	"umc-agent/pkg/monitor/mesos"
-	"umc-agent/pkg/monitor/mongodb"
-	"umc-agent/pkg/monitor/mysqld"
-	"umc-agent/pkg/monitor/opentsdb"
-	"umc-agent/pkg/monitor/physical"
-	"umc-agent/pkg/monitor/postgresql"
-	"umc-agent/pkg/monitor/rabbitmq"
-	"umc-agent/pkg/monitor/redis"
-	"umc-agent/pkg/monitor/rocketmq"
-	"umc-agent/pkg/monitor/zookeeper"
 	"umc-agent/pkg/transport"
 )
 
@@ -48,10 +48,10 @@ var (
 )
 
 func init() {
-	var confPath = constant.DefaultConfigPath
+	confPath := constant.DefaultConfigPath
 
 	// Command config path
-	flag.StringVar(&confPath, "c", constant.DefaultConfigPath, "Config must is required!")
+	flag.StringVar(&confPath, "c", constant.DefaultConfigPath, "Umc agent config path.")
 	flag.Parse()
 	//flag.Usage()
 	fmt.Printf("Initialize config path for - '%s'\n", confPath)
@@ -62,17 +62,20 @@ func init() {
 	// Init zap logger.
 	logger.InitZapLogger()
 
+	// Testing if necessary.
+	testingIfNecessary()
+
 	// Init kafka launcher.(if necessary)
-	transport.InitKafkaLauncherIfNecessary()
+	transport.InitKafkaTransportIfNecessary()
 }
 
 func main() {
-	startCollectorRunners(wg)
+	startIndicatorRunners(wg)
 	wg.Wait()
 }
 
-// Starting indicator runners all
-func startCollectorRunners(wg *sync.WaitGroup) {
+// Starting indicator runners all.
+func startIndicatorRunners(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go physical.IndicatorRunner()
 
@@ -92,8 +95,22 @@ func startCollectorRunners(wg *sync.WaitGroup) {
 
 	go elasticsearch.IndicatorRunner()
 	go mongodb.IndicatorRunner()
-	go mysqld.IndicatorRunner()
+	go mysql.IndicatorRunner()
 	go postgresql.IndicatorRunner()
 	go opentsdb.IndicatorRunner()
 	go cassandra.IndicatorRunner()
+}
+
+// Testing
+func testingIfNecessary() {
+	/*var aggregator = indicators.NewMetricAggregator("Kafka")
+	aggregator.NewMetric("kafka_partition_current_offset", 10.12).ATag("topic", "testTopic1").ATag("partition", "1")
+
+	aggregator.NewMetric("kafka_partition_current_offset", 10.12).ATag("topic", "testTopic1").ATag("partition", "2")
+
+	fmt.Println(aggregator.ToJSONString())
+	fmt.Println(aggregator.String())
+	fmt.Println(aggregator.ToProtoBufArray())
+
+	os.Exit(0)*/
 }

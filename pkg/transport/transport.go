@@ -16,32 +16,16 @@
 package transport
 
 import (
-	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/indicators"
 )
 
-// Send submit
-func DoSendSubmit(key string, v interface{}) {
-	data := common.ToJSONString(v)
-
+// Send metrics message.
+func SendMetrics(aggregator *indicators.MetricAggregator) {
 	// Kafka launcher takes precedence over HTTP launcher.
-	if config.GlobalConfig.Launcher.Kafka.Enabled {
-		doSendKafka(key, data)
+	if config.GlobalConfig.Transport.Kafka.Enabled {
+		doKafkaProducer(aggregator)
 	} else {
-		doPostSend(key, data)
+		doHttpSend(aggregator)
 	}
-}
-
-// Send indicators to Kafka
-func doSendKafka(ty string, data string) {
-	doProducerSend(ty, data)
-}
-
-// Transport define.
-type Transport interface {
-	// Do send message.
-	doSend(key string, data string)
-
-	// Receive response message(e.g. refresh config).
-	receive(data string)
 }

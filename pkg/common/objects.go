@@ -22,11 +22,11 @@ import (
 
 // To JSON string.
 func ToJSONString(v interface{}) string {
-	s, err := jsoniter.Marshal(v)
+	s, err := jsoniter.MarshalToString(v)
 	if err != nil {
 		fmt.Printf("Marshal data error! %s", err)
 	}
-	return string(s)
+	return s
 }
 
 // Deep objects copy.

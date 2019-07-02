@@ -21,6 +21,7 @@ import (
 	"strings"
 	"sync"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 )
 
@@ -32,8 +33,8 @@ var kafkaProducer sarama.SyncProducer
 var kafkaConsumer sarama.Consumer
 
 // Init kafka producer launcher(if necessary)
-func InitKafkaLauncherIfNecessary() {
-	var kafkaProperties = config.GlobalConfig.Launcher.Kafka
+func InitKafkaTransportIfNecessary() {
+	var kafkaProperties = config.GlobalConfig.Transport.Kafka
 
 	// Check kafka producer enabled?
 	if !kafkaProperties.Enabled {
@@ -49,7 +50,7 @@ func InitKafkaLauncherIfNecessary() {
 }
 
 // create kafkaProducer
-func createKafkaProducer(kafkaProperties config.KafkaLauncherProperties) {
+func createKafkaProducer(kafkaProperties config.KafkaTransportProperties) {
 	logger.Main.Info("Kafka transport kafkaProducer starting...")
 
 	// Configuration
@@ -61,14 +62,14 @@ func createKafkaProducer(kafkaProperties config.KafkaLauncherProperties) {
 
 	// Create syncProducer
 	var err error
-	kafkaProducer, err = sarama.NewSyncProducer(strings.Split(kafkaProperties.BootstrapServers, ","), kafkaConfig)
+	kafkaProducer, err = sarama.NewSyncProducer(strings.Split(kafkaProperties.Servers, ","), kafkaConfig)
 	if err != nil {
 		panic(err)
 	}
 }
 
 // Create kafkaConsumer, See: https://github.com/Shopify/sarama/blob/master/examples/consumergroup/main.go
-func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
+func createKafkaConsumer(kafkaProperties config.KafkaTransportProperties) {
 	logger.Main.Info("Kafka transport kafkaConsumer starting...")
 
 	// Configuration
@@ -80,7 +81,7 @@ func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
 
 	// Create consumer
 	var err error
-	kafkaConsumer, err = sarama.NewConsumer(strings.Split(kafkaProperties.BootstrapServers, ","), kafkaConfig)
+	kafkaConsumer, err = sarama.NewConsumer(strings.Split(kafkaProperties.Servers, ","), kafkaConfig)
 	if err != nil {
 		logger.Receive.Error("Failed to start consumer: %s", zap.Error(err))
 		return
@@ -124,15 +125,17 @@ func createKafkaConsumer(kafkaProperties config.KafkaLauncherProperties) {
 	logger.Receive.Info("Finished kafka consumer!")
 }
 
-// Do production
-func doProducerSend(key string, data string) {
-	if !config.GlobalConfig.Launcher.Kafka.Enabled {
+// Send metrics to kafka brokers.
+func doKafkaProducer(aggregator *indicators.MetricAggregator) {
+	if !config.GlobalConfig.Transport.Kafka.Enabled {
 		panic("No enabled kafka launcher!")
 		return
 	}
 	msg := &sarama.ProducerMessage{
-		Topic: config.GlobalConfig.Launcher.Kafka.MetricTopic,
-		Value: sarama.ByteEncoder(data),
+		Topic: config.GlobalConfig.Transport.Kafka.MetricTopic,
+		//Key: sarama.ByteEncoder(key),
+		//Value: sarama.ByteEncoder(aggregator.ToJSONString()),
+		Value: sarama.ByteEncoder(aggregator.ToProtoBufArray()),
 	}
 
 	partition, offset, err := kafkaProducer.SendMessage(msg)
@@ -141,16 +144,11 @@ func doProducerSend(key string, data string) {
 	} else {
 		// Print details
 		if logger.Main.IsDebug() {
-			logger.Main.Debug("Sent completed",
-				zap.String("key", key),
-				zap.Int32("partition", partition),
-				zap.Int64("offset", offset),
-				zap.String("data", data))
+			logger.Main.Debug("Sent completed", zap.Int32("partition", partition),
+				zap.Int64("offset", offset), zap.String("data", aggregator.ToJSONString()))
 		} else if logger.Main.IsInfo() {
 			// Print simple
-			logger.Main.Info("Sent completed",
-				zap.String("key", key),
-				zap.Int32("partition", partition),
+			logger.Main.Info("Sent completed", zap.Int32("partition", partition),
 				zap.Int64("offset", offset))
 		}
 	}
