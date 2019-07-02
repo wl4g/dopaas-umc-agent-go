@@ -16,6 +16,7 @@
 syntax = "proto3";  // Must(proto2,proto3)
 
 package indicators;
+//package com.wl4g.devops.common.bean.umc.model.proto;
 
 message MetricAggregate {
     string Instance = 1;
