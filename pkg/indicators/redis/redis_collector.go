@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"io"
-	"log"
 	"net/url"
 	"strconv"
 	"strings"
@@ -106,7 +105,7 @@ func (r *Redis) init() error {
 
 	for i, serv := range r.Servers {
 		if !strings.HasPrefix(serv, "tcp://") && !strings.HasPrefix(serv, "unix://") {
-			log.Printf("W! [inputs.redis]: server URL found without scheme; please update your configuration file")
+			//log.Printf("W! [inputs.redis]: server URL found without scheme; please update your configuration file")
 			serv = "tcp://" + serv
 		}
 
