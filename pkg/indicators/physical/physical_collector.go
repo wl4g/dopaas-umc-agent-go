@@ -24,6 +24,8 @@ import (
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/constant"
+	"umc-agent/pkg/constant/metric"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
@@ -39,63 +41,90 @@ func IndicatorRunner() {
 
 	// Loop monitor
 	for true {
-		var result indicators.TotalStat
-		result.Meta = indicators.CreateMeta("physical")
-
-		p, _ := cpu.Percent(0, false)
-		result.Cpu = p
-
-		v, _ := mem.VirtualMemory()
-		result.Mem = v
-
-		result.DiskStats = getDiskStatsInfo()
-		result.NetStats = getNetworkStatsInfo()
-
-		transport.DoSendSubmit("physical", result)
-		time.Sleep(config.GlobalConfig.Indicator.Docker.Delay * time.Millisecond)
+		physicalAggregator := indicators.NewMetricAggregator("Physical")
+		now := time.Now().UnixNano() / 1e6
+		physicalAggregator.Timestamp = now
+		//gather
+		Gather(physicalAggregator)
+		// Send to servers.
+		transport.DoSendSubmit(constant.Metric, &physicalAggregator)
+		time.Sleep(config.GlobalConfig.Indicator.Physical.Delay * time.Millisecond)
 	}
 }
 
-// Disks stats info
-func getDiskStatsInfo() []indicators.DiskStat {
+func Gather(physicalAggregator *indicators.MetricAggregator)  {
+	//cpu
+	gatherCpu(physicalAggregator)
+
+	//mem
+	gatherMem(physicalAggregator)
+
+	//disk
+	gatherDisk(physicalAggregator)
+
+	//net
+	gatherNet(physicalAggregator)
+}
+
+//cpu
+func gatherCpu(physicalAggregator *indicators.MetricAggregator)  {
+	p, _ := cpu.Percent(0, false)
+	physicalAggregator.NewMetric(metric.PHYSICAL_CPU,p[0])
+}
+
+//mem
+func gatherMem(physicalAggregator *indicators.MetricAggregator)  {
+	v, _ := mem.VirtualMemory()
+	physicalAggregator.NewMetric(metric.PHYSICAL_MEM_TOTAL,float64(v.Total))
+	physicalAggregator.NewMetric(metric.PHYSICAL_MEM_FREE,float64(v.Free))
+	physicalAggregator.NewMetric(metric.PHYSICAL_MEM_USED_PERCENT,float64(v.UsedPercent))
+	physicalAggregator.NewMetric(metric.PHYSICAL_MEM_USED,float64(v.Used))
+	physicalAggregator.NewMetric(metric.PHYSICAL_MEM_CACHE,float64(v.Cached))
+	physicalAggregator.NewMetric(metric.PHYSICAL_MEM_BUFFERS,float64(v.Buffers))
+}
+
+// disk
+func gatherDisk(physicalAggregator *indicators.MetricAggregator) {
 	partitionStats, _ := disk.Partitions(false)
-	var disks []indicators.DiskStat
 	for _, value := range partitionStats {
-		var disk1 indicators.DiskStat
 		mountpoint := value.Mountpoint
 		usageStat, _ := disk.Usage(mountpoint)
-		disk1.PartitionStat = value
-		disk1.Usage = *usageStat
-		disks = append(disks, disk1)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_TOTAL,float64(usageStat.Total)).ATag(constant.TAG_DISK_DEVICE,value.Device)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_FREE,float64(usageStat.Free)).ATag(constant.TAG_DISK_DEVICE,value.Device)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_USED,float64(usageStat.Used)).ATag(constant.TAG_DISK_DEVICE,value.Device)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_USED_PERCENT,float64(usageStat.UsedPercent)).ATag(constant.TAG_DISK_DEVICE,value.Device)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_INODES_TOTAL,float64(usageStat.InodesTotal)).ATag(constant.TAG_DISK_DEVICE,value.Device)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_INODES_USED,float64(usageStat.InodesUsed)).ATag(constant.TAG_DISK_DEVICE,value.Device)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_INODES_FREE,float64(usageStat.InodesFree)).ATag(constant.TAG_DISK_DEVICE,value.Device)
+		physicalAggregator.NewMetric(metric.PHYSICAL_DISK_INODES_USED_PERCENT,float64(usageStat.InodesUsedPercent)).ATag(constant.TAG_DISK_DEVICE,value.Device)
 	}
-	return disks
 }
 
 // Network stats info
-func getNetworkStatsInfo() []indicators.NetworkStat {
+func gatherNet(physicalAggregator *indicators.MetricAggregator)  {
 	ports := strings.Split(config.GlobalConfig.Indicator.Physical.NetPorts, ",")
-	//n, _ := net.IOCounters(true)
-	//fmt.Println(n)
-	//te, _ := net.Interfaces()
-	//fmt.Println(te)
-	var n []indicators.NetworkStat
 	for _, p := range ports {
 		re := common.GetNetworkInterfaces(p)
 		res := strings.Split(re, " ")
 		if len(res) == 9 {
-			var netinfo indicators.NetworkStat
-			netinfo.Port, _ = strconv.Atoi(p)
-			netinfo.Up, _ = strconv.Atoi(res[0])
-			netinfo.Down, _ = strconv.Atoi(res[1])
-			netinfo.Count, _ = strconv.Atoi(res[2])
-			netinfo.Estab, _ = strconv.Atoi(res[3])
-			netinfo.CloseWait, _ = strconv.Atoi(res[4])
-			netinfo.TimeWait, _ = strconv.Atoi(res[5])
-			netinfo.Close, _ = strconv.Atoi(res[6])
-			netinfo.Listen, _ = strconv.Atoi(res[7])
-			netinfo.Closing, _ = strconv.Atoi(res[8])
-			n = append(n, netinfo)
+			up, _ := strconv.ParseFloat(res[0], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_UP, up).ATag(constant.TAG_NET_PORT, p)
+			down, _ := strconv.ParseFloat(res[2], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_DOWN, down).ATag(constant.TAG_NET_PORT, p)
+			count, _ := strconv.ParseFloat(res[2], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_COUNT, count).ATag(constant.TAG_NET_PORT, p)
+			estab, _ := strconv.ParseFloat(res[3], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_ESTAB, estab).ATag(constant.TAG_NET_PORT, p)
+			closeWait, _ := strconv.ParseFloat(res[4], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_CLOSE_WAIT, closeWait).ATag(constant.TAG_NET_PORT, p)
+			timeWait, _ := strconv.ParseFloat(res[5], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_TIME_WAIT, timeWait).ATag(constant.TAG_NET_PORT, p)
+			close, _ := strconv.ParseFloat(res[6], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_CLOSE, close).ATag(constant.TAG_NET_PORT, p)
+			listen, _ := strconv.ParseFloat(res[7], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_LISTEN, listen).ATag(constant.TAG_NET_PORT, p)
+			closing, _ := strconv.ParseFloat(res[8], 64)
+			physicalAggregator.NewMetric(metric.PHYSICAL_NET_CLOSING, closing).ATag(constant.TAG_NET_PORT, p)
 		}
 	}
-	return n
 }

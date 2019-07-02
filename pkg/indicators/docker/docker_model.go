@@ -15,15 +15,6 @@
  */
 package docker
 
-import (
-	"umc-agent/pkg/indicators"
-)
-
-type DockerStatInfo struct {
-	Meta        indicators.MetaInfo `json:"meta"`
-	DockerStats []DockerStat        `json:"dockerInfos"`
-}
-
 type DockerStat struct {
 	ContainerId string `json:"containerId"`
 	Name        string `json:"name"`
