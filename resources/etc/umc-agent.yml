@@ -49,21 +49,21 @@ indicator:
   netcard: en0 # Bind net-card name.
 ### ------ Infrastructure indicators ------
   physical:
-    enabled: false
+    enabled: true
     delay: 10000 # Delay(ms)
     range-port: 22,9092
 ### --------- Virtual indicators ----------
   docker:
-    enabled: false
+    enabled: true
     delay: 10000
   mesos:
     enabled: false
     delay: 60000
 ### --------- Discovery indicators --------
   zookeeper:
-    enabled: false
+    enabled: true
     delay: 10000
-    servers: localhost:2181
+    servers: 10.0.0.161:2181
     commands: mntr # zookeeper indicators commands(e.g. mntr,conf)
   etcd:
     enabled: false
@@ -87,7 +87,7 @@ indicator:
     delay: 60000
 ### --------- Cache indicators ------------
   redis:
-    enabled: false
+    enabled: true
     metric-exclude-regex: all
     delay: 10000
     servers: safecloud-test:6379,safecloud-test:6380 # Monitor local redis instances(ports).
