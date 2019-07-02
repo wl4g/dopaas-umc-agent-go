@@ -101,7 +101,7 @@ indicator:
     tlsCertFile:
     tlsKeyFile:
     tlsInsecureSkipTLSVerify: false
-    metadataRefreshInterval:
+    metadataRefreshInterval: 300s
     metric-exclude:
   emq:
     enabled: false

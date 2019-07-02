@@ -35,7 +35,7 @@ logging:
   log-items:
     main:
       file: ./log/umc-agent.log
-      level: INFO
+      level: DEBUG
     receive:
       file: ./log/umc-agent-receive.log
       level: INFO
@@ -75,7 +75,7 @@ indicator:
   kafka:
     enabled: true
     delay: 10000
-    servers: localhost:9092
+    servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
   emq:
     enabled: false
     delay: 60000

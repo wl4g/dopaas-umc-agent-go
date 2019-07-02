@@ -148,10 +148,14 @@ func createDefault() *GlobalProperties {
 				MetricExclude: "",
 			},
 			Kafka: KafkaIndicatorProperties{
-				Enabled:       false,
-				Delay:         constant.DefaultIndicatorsDelay,
-				Servers:       constant.DefaultKafkaIndicatorsServers,
-				MetricExclude: "",
+				Enabled:                  false,
+				Delay:                    constant.DefaultIndicatorsDelay,
+				Servers:                  constant.DefaultKafkaIndicatorsServers,
+				UseSASLHandshake:         false,
+				UseTLS:                   false,
+				TlsInsecureSkipTLSVerify: false,
+				MetadataRefreshInterval:  "300s",
+				MetricExclude:            "",
 			},
 			Emq: EmqIndicatorProperties{
 				Enabled:       false,

@@ -122,9 +122,9 @@ func newConnectClient() sarama.Client {
 			}
 		}
 	}
-	/*if opts.useZooKeeperLag {
-		zookeeperClient, err := kazoo.NewKazoo(opts.uriZookeeper, nil)
-	}*/
+	//if opts.useZooKeeperLag {
+	//	zookeeperClient, err := kazoo.NewKazoo(opts.uriZookeeper, nil)
+	//}
 	interval, err := time.ParseDuration(opts.metadataRefreshInterval)
 	if err != nil {
 		logger.Main.Error("Cannot parse metadata refresh interval", zap.Error(err))
