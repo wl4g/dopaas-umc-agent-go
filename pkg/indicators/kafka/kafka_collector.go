@@ -38,7 +38,7 @@ const (
 )
 
 var (
-	metricKafkaClient sarama.Client
+	kafkaClient sarama.Client
 )
 
 // Original see: https://github.com/danielqsj/kafka_exporter
@@ -136,9 +136,11 @@ func newConnectClient() sarama.Client {
 	return client
 }
 
+// Do kafka metrics collect.
 func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 	// Connect servers.
 	client := newConnectClient()
+	defer client.Close()
 
 	var mu sync.Mutex
 	now := time.Now().UnixNano() / 1e6
@@ -179,7 +181,8 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 					zap.Error(err))
 			} else {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionLeaderMetric,
-					float64(broker.ID())).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(broker.ID())).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			}
 			currentOffset, err := client.GetOffset(topic, partition, sarama.OffsetNewest)
 			if err != nil {
@@ -192,7 +195,8 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 				offset[topic][partition] = currentOffset
 				mu.Unlock()
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionCurrentOffsetMetric,
-					float64(currentOffset)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(currentOffset)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			}
 
 			oldestOffset, err := client.GetOffset(topic, partition, sarama.OffsetOldest)
@@ -203,7 +207,8 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 					zap.Error(err))
 			} else {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionOldestOffsetMetric,
-					float64(oldestOffset)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(oldestOffset)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			}
 
 			replicas, err := client.Replicas(topic, partition)
@@ -214,7 +219,8 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 					zap.Error(err))
 			} else {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionReplicasMetric,
-					float64(len(replicas))).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(len(replicas))).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			}
 
 			inSyncReplicas, err := client.InSyncReplicas(topic, partition)
@@ -225,23 +231,28 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 					zap.Error(err))
 			} else {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionInSyncReplicaMetric,
-					float64(len(inSyncReplicas))).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(len(inSyncReplicas))).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			}
 
 			if broker != nil && replicas != nil && len(replicas) > 0 && broker.ID() == replicas[0] {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionLeaderIsPreferredMetric,
-					float64(1)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(1)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			} else {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionLeaderIsPreferredMetric,
-					float64(0)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(0)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			}
 
 			if replicas != nil && inSyncReplicas != nil && len(inSyncReplicas) < len(replicas) {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionUnderReplicatedPartitionMetric,
-					float64(1)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(1)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			} else {
 				kafkaAggregator.NewMetric(metric.KafkaTopicPartitionUnderReplicatedPartitionMetric,
-					float64(0)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+					float64(0)).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+					strconv.FormatInt(int64(partition), 10))
 			}
 		}
 	}
@@ -291,8 +302,7 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 
 			if offsetFetchResponse, err := broker.FetchOffset(&offsetFetchRequest); err != nil {
 				logger.Main.Error("Cannot get offset of group",
-					zap.String("groudId", group.GroupId),
-					zap.Error(err))
+					zap.String("groudId", group.GroupId), zap.Error(err))
 			} else {
 				for topic, partitions := range offsetFetchResponse.Blocks {
 					// If the topic is not consumed by that consumer group, skip it
@@ -311,14 +321,16 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 							err := offsetFetchResponseBlock.Err
 							if err != sarama.ErrNoError {
 								logger.Main.Error("Error for  partition",
-									zap.Int32("partition", partition),
-									zap.Error(err))
+									zap.Int32("partition", partition), zap.Error(err))
 								continue
 							}
 							currentOffset := offsetFetchResponseBlock.Offset
 							currentOffsetSum += currentOffset
 
-							kafkaAggregator.NewMetric(metric.KafkaConsumerGroupCurrentOffset, float64(currentOffset)).ATag(metric.DefaultKafkaGroupIdTag, group.GroupId).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+							kafkaAggregator.NewMetric(metric.KafkaConsumerGroupCurrentOffset,
+								float64(currentOffset)).ATag(metric.DefaultKafkaGroupIdTag,
+								group.GroupId).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag,
+								strconv.FormatInt(int64(partition), 10))
 
 							mu.Lock()
 							if offset, ok := offset[topic][partition]; ok {
@@ -331,19 +343,20 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 									lag = offset - offsetFetchResponseBlock.Offset
 									lagSum += lag
 								}
-								kafkaAggregator.NewMetric(metric.KafkaConsumerGroupLag, float64(lag)).ATag(metric.DefaultKafkaGroupIdTag, group.GroupId).ATag(metric.DefaultKafkaTopicTag, topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
+								kafkaAggregator.NewMetric(metric.KafkaConsumerGroupLag,
+									float64(lag)).ATag(metric.DefaultKafkaGroupIdTag, group.GroupId).ATag(metric.DefaultKafkaTopicTag,
+									topic).ATag(metric.DefaultKafkaPartitionTag, strconv.FormatInt(int64(partition), 10))
 							} else {
-								logger.Main.Error("No offset of topic",
-									zap.Int32("partition", partition),
-									zap.String("topic", topic),
-									zap.Error(err))
+								logger.Main.Error("No offset of topic", zap.Int32("partition", partition),
+									zap.String("topic", topic), zap.Error(err))
 							}
 							mu.Unlock()
 						}
 
-						kafkaAggregator.NewMetric(metric.KafkaConsumerGroupCurrentOffsetSum, float64(currentOffsetSum)).ATag(metric.DefaultKafkaGroupIdTag, group.GroupId).ATag(metric.DefaultKafkaTopicTag, topic)
-
-						kafkaAggregator.NewMetric(metric.KafkaConsumerGroupLagSum, float64(lagSum)).ATag(metric.DefaultKafkaGroupIdTag, group.GroupId).ATag(metric.DefaultKafkaTopicTag, topic)
+						kafkaAggregator.NewMetric(metric.KafkaConsumerGroupCurrentOffsetSum,
+							float64(currentOffsetSum)).ATag(metric.DefaultKafkaGroupIdTag, group.GroupId).ATag(metric.DefaultKafkaTopicTag, topic)
+						kafkaAggregator.NewMetric(metric.KafkaConsumerGroupLagSum,
+							float64(lagSum)).ATag(metric.DefaultKafkaGroupIdTag, group.GroupId).ATag(metric.DefaultKafkaTopicTag, topic)
 					}
 				}
 			}
