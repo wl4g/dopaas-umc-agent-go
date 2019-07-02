@@ -19,7 +19,6 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/go-redis/redis"
-	"github.com/influxdata/telegraf/interna/tls"
 	"io"
 	"log"
 	"net/url"
@@ -66,7 +65,6 @@ func IndicatorRunner() {
 type Redis struct {
 	Servers  []string
 	Password string
-	tls.ClientConfig
 	clients     []Client
 	initialized bool
 }
@@ -140,7 +138,6 @@ func (r *Redis) init() error {
 			address = u.Host
 		}
 
-		tlsConfig, err := r.ClientConfig.TLSConfig()
 		if err != nil {
 			return err
 		}
@@ -151,7 +148,6 @@ func (r *Redis) init() error {
 				Password:  password,
 				Network:   u.Scheme,
 				PoolSize:  1,
-				TLSConfig: tlsConfig,
 			},
 		)
 

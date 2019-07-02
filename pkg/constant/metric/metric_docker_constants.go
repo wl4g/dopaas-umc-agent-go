@@ -14,3 +14,20 @@
  * limitations under the License.
  */
 package metric
+
+const (
+	/** metric -- docker : cpu.perc */
+	DOCKER_CPU_PERC = "docker.cpu.perc";
+	/** metric -- docker : mem.usage */
+	DOCKER_MEM_USAGE = "docker.mem.usage";
+	/** metric -- docker : mem.perc */
+	DOCKER_MEM_PERC = "docker.mem.perc";
+	/** metric -- docker : net.in */
+	DOCKER_NET_IN = "docker.net.in";
+	/** metric -- docker : net.out */
+	DOCKER_NET_OUT = "docker.net.out";
+	/** metric -- docker : block.in */
+	DOCKER_BLOCK_IN = "docker.block.in";
+	/** metric -- docker : block.out */
+	DOCKER_BLOCK_OUT = "docker.block.out";
+)

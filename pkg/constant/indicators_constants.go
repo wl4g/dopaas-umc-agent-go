@@ -34,9 +34,16 @@ const (
 	// Default network indicator ports range.
 	DefaultNetIndicatorsNetPorts = "22,8080"
 
+	//Tag disk device
+	TAG_DISK_DEVICE = "device";
+
+	//Tag net port
+	TAG_NET_PORT = "port";
+
 	// --------- Virtual -----------
 
 	// Docker indicators constants.
+	TAG_DOCKER_NAME = "name"
 
 	// Mesos indicators constants.
 

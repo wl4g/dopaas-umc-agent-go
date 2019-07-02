@@ -18,10 +18,11 @@ package zookeeper
 import (
 	"go.uber.org/zap"
 	"net"
+	"strconv"
 	"strings"
 	"time"
-	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/constant"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
@@ -36,29 +37,46 @@ func IndicatorRunner() {
 
 	// Loop monitor
 	for true {
-		result := getZookeeperStats()
-		result.Meta = indicators.CreateMeta("zookeeper")
-
-		transport.DoSendSubmit(result.Meta.Type, result)
+		zookeeperAggregator := indicators.NewMetricAggregator("Zookeeper")
+		now := time.Now().UnixNano() / 1e6
+		zookeeperAggregator.Timestamp = now
+		//gather
+		Gather(zookeeperAggregator)
+		// Send to servers.
+		transport.DoSendSubmit(constant.Metric, &zookeeperAggregator)
 		time.Sleep(config.GlobalConfig.Indicator.Zookeeper.Delay * time.Millisecond)
 	}
 }
 
-func getZookeeperStats() Zookeeper {
-	var result Zookeeper
-
+func Gather(zookeeperAggregator *indicators.MetricAggregator)  {
 	comm := strings.Split(config.GlobalConfig.Indicator.Zookeeper.Command, ",")
-	props := strings.Split(config.GlobalConfig.Indicator.Zookeeper.MetricExcludeRegex, ",")
-
 	var infoSum string
 	for _, command := range comm {
 		info, _ := getZkInfo(command)
 		infoSum = infoSum + info
 	}
-	infos := wrap(infoSum, props)
-	result.Properties = infos
-	return result
+	wrap(infoSum, zookeeperAggregator)
+}
 
+
+func wrap(info string,zookeeperAggregator *indicators.MetricAggregator) {
+	infos := strings.Split(info, "\n")
+	for _, line := range infos {
+
+		i := strings.Split(line, "\t")
+		if len(i) != 2 {
+			continue
+		}
+		s1 := i[0]
+		s2 := i[1]
+		s2 = strings.TrimSpace(s2)
+
+		//TODO
+		if fval, err := strconv.ParseFloat(s2, 64); err == nil {
+			key := "zookeeper." + strings.ReplaceAll(s1,"_",".");
+			zookeeperAggregator.NewMetric(key,fval)
+		}
+	}
 }
 
 func getZkInfo(command string) (string, error) {
@@ -100,23 +118,4 @@ func getZkInfo(command string) (string, error) {
 	return respStat, nil
 }
 
-func wrap(info string, property []string) map[string]string {
-	var mapInfo map[string]string
-	mapInfo = make(map[string]string)
-	infos := strings.Split(info, "\n")
-	for _, line := range infos {
 
-		i := strings.Split(line, "\t")
-		if len(i) != 2 {
-			continue
-		}
-		s1 := i[0]
-		if !common.StringsContains(property, s1) {
-			continue
-		}
-		s2 := i[1]
-		s2 = strings.TrimSpace(s2)
-		mapInfo[s1] = s2
-	}
-	return mapInfo
-}
