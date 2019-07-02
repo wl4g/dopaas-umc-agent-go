@@ -134,7 +134,8 @@ func doKafkaProducer(aggregator *indicators.MetricAggregator) {
 	msg := &sarama.ProducerMessage{
 		Topic: config.GlobalConfig.Transport.Kafka.MetricTopic,
 		//Key: sarama.ByteEncoder(key),
-		Value: sarama.ByteEncoder(aggregator.ToJSONString()),
+		//Value: sarama.ByteEncoder(aggregator.ToJSONString()),
+		Value: sarama.ByteEncoder(aggregator.ToProtoBufArray()),
 	}
 
 	partition, offset, err := kafkaProducer.SendMessage(msg)

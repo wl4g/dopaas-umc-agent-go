@@ -16,10 +16,11 @@
 package transport
 
 import (
+	"bytes"
+	"fmt"
 	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
@@ -28,13 +29,19 @@ import (
 // Send metrics to http gateway
 func doHttpSend(aggregator *indicators.MetricAggregator) {
 	if !config.GlobalConfig.Transport.Kafka.Enabled {
-		request, _ := http.NewRequest("POST", config.GlobalConfig.Transport.Http.ServerGateway,
-			strings.NewReader(aggregator.ToJSONString()))
+		request, err := http.NewRequest("POST", config.GlobalConfig.Transport.Http.ServerGateway,
+			bytes.NewReader(aggregator.ToProtoBufArray()))
+		if err != nil {
+			panic(fmt.Sprintf("Create post request failed! %s", err))
+		}
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Accept", "application/json, text/plain, */*")
+		//request.Header.Set("Connection", "keep-alive")
 
 		// Do request.
-		resp, err := http.DefaultClient.Do(request)
+		httpClient := &http.Client{Timeout: 30000}
+		resp, err := httpClient.Do(request)
+		defer resp.Body.Close()
 		if err != nil {
 			logger.Main.Error("Post failed", zap.Error(err))
 		} else {
