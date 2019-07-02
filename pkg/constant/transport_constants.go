@@ -29,10 +29,10 @@ const (
 	DefaultTransportKafkaServers = "localhost:9092"
 
 	// Default transport kafka metric topic.
-	DefaultTransportKafkaMetricTopic = "__umc_agent_metric_"
+	DefaultTransportKafkaMetricTopic = "umc_agent_metrics"
 
 	// Default transport kafka receive topic.
-	DefaultTransportKafkaReceiveTopic = "__umc_agent_metric_receive"
+	DefaultTransportKafkaReceiveTopic = "umc_agent_receive"
 
 	// Default transport kafka producer ack.
 	DefaultTransportKafkaAck = 1

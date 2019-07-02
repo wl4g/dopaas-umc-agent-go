@@ -24,8 +24,8 @@ transport:
   kafka:
     enabled: true # This enabled switch takes precedence over the HTTP launcher.
     servers: localhost:9092
-    metric-topic: __umc_agent_metric_
-    receive-topic: __umc_agent_metric_receive
+    metric-topic: umc_agent_metrics
+    receive-topic: umc_agent_receive
     ack: 1
     timeout: 60000
 
