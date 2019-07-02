@@ -60,7 +60,7 @@ func IndicatorRunner() {
 		transport.SendMetrics(aggregator)
 
 		// Sleep.
-		time.Sleep(config.GlobalConfig.Indicator.Kafka.Delay)
+		time.Sleep(config.GlobalConfig.Indicator.Kafka.Delay*time.Millisecond)
 	}
 }
 

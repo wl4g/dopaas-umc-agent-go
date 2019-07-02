@@ -52,7 +52,7 @@ func IndicatorRunner() {
 		transport.SendMetrics(aggregator)
 
 		// Sleep.
-		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay)
+		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay*time.Millisecond)
 	}
 
 }
