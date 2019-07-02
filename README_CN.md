@@ -1,6 +1,6 @@
 UMC一个轻量级基于SpringBoot Cloud开发完全开源的统一监控告警平台，也是Super DevOps平台中的核心子系统之一
 
-English version goes [here](README_EN.md).
+English version goes [here](README.md).
 
 ## 背景
 虽然，目前有流行的开源监控告警解决方案，如：zabbix、prometheus+grafana，

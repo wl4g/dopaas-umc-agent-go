@@ -1,6 +1,6 @@
 UMC - A lightweight, fully open source unified monitoring and alerting platform based on SpringBoot Cloud, and one of the core subsystems in the Super DevOps platform.
 
-English version goes [here](README_EN.md).
+[中文文档](README_CN.md).
 
 ## Background
 Although there are currently popular open source monitoring and alerting solutions, such as: zabbix, prometheus + grafana.
