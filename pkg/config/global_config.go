@@ -222,7 +222,7 @@ func createDefault() *GlobalProperties {
 // MetricExclude settings after initialization
 func afterPropertiesSet(globalConfig *GlobalProperties) {
 	// Environment variable priority.
-	var netcard = os.Getenv("indicators.netcard")
+	var netcard = os.Getenv("indicator.netcard")
 	if !common.IsEmpty(netcard) {
 		globalConfig.Indicator.Netcard = netcard
 	}
