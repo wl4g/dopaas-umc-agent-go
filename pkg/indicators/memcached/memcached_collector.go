@@ -22,7 +22,7 @@ import (
 
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.Memcached.Enabled {
-		logger.Main.Warn("No enabled memcached metrics runner!")
+		logger.Main.Debug("No enabled memcached metrics runner!")
 		return
 	}
 	logger.Main.Info("Starting memcached indicators runner ...")

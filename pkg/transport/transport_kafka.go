@@ -21,6 +21,7 @@ import (
 	"strings"
 	"sync"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 )
 
@@ -124,16 +125,16 @@ func createKafkaConsumer(kafkaProperties config.KafkaTransportProperties) {
 	logger.Receive.Info("Finished kafka consumer!")
 }
 
-// Do production
-func doProducerSend(key string, data string) {
+// Send metrics to kafka brokers.
+func doKafkaProducer(aggregator *indicators.MetricAggregator) {
 	if !config.GlobalConfig.Transport.Kafka.Enabled {
 		panic("No enabled kafka launcher!")
 		return
 	}
 	msg := &sarama.ProducerMessage{
 		Topic: config.GlobalConfig.Transport.Kafka.MetricTopic,
-		Key: sarama.ByteEncoder(key),
-		Value: sarama.ByteEncoder(data),
+		//Key: sarama.ByteEncoder(key),
+		Value: sarama.ByteEncoder(aggregator.ToJSONString()),
 	}
 
 	partition, offset, err := kafkaProducer.SendMessage(msg)
@@ -142,16 +143,11 @@ func doProducerSend(key string, data string) {
 	} else {
 		// Print details
 		if logger.Main.IsDebug() {
-			logger.Main.Debug("Sent completed",
-				zap.String("key", key),
-				zap.Int32("partition", partition),
-				zap.Int64("offset", offset),
-				zap.String("data", data))
+			logger.Main.Debug("Sent completed", zap.Int32("partition", partition),
+				zap.Int64("offset", offset), zap.String("data", aggregator.ToJSONString()))
 		} else if logger.Main.IsInfo() {
 			// Print simple
-			logger.Main.Info("Sent completed",
-				zap.String("key", key),
-				zap.Int32("partition", partition),
+			logger.Main.Info("Sent completed", zap.Int32("partition", partition),
 				zap.Int64("offset", offset))
 		}
 	}

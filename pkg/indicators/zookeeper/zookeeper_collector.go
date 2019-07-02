@@ -22,7 +22,6 @@ import (
 	"strings"
 	"time"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
@@ -30,25 +29,25 @@ import (
 
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.Zookeeper.Enabled {
-		logger.Main.Warn("No enabled zookeeper metrics runner!")
+		logger.Main.Debug("No enabled zookeeper metrics runner!")
 		return
 	}
 	logger.Main.Info("Starting zookeeper indicators runner ...")
 
 	// Loop monitor
 	for true {
-		zookeeperAggregator := indicators.NewMetricAggregator("Zookeeper")
-		now := time.Now().UnixNano() / 1e6
-		zookeeperAggregator.Timestamp = now
-		//gather
-		Gather(zookeeperAggregator)
+		aggregator := indicators.NewMetricAggregator("Zookeeper")
+
+		// Do zookeeper metric collect.
+		handleZookeeperMetricCollect(aggregator)
+
 		// Send to servers.
-		transport.DoSendSubmit(constant.Metric, &zookeeperAggregator)
+		transport.SendMetrics(aggregator)
 		time.Sleep(config.GlobalConfig.Indicator.Zookeeper.Delay * time.Millisecond)
 	}
 }
 
-func Gather(zookeeperAggregator *indicators.MetricAggregator)  {
+func handleZookeeperMetricCollect(zookeeperAggregator *indicators.MetricAggregator) {
 	comm := strings.Split(config.GlobalConfig.Indicator.Zookeeper.Command, ",")
 	var infoSum string
 	for _, command := range comm {
@@ -58,8 +57,7 @@ func Gather(zookeeperAggregator *indicators.MetricAggregator)  {
 	wrap(infoSum, zookeeperAggregator)
 }
 
-
-func wrap(info string,zookeeperAggregator *indicators.MetricAggregator) {
+func wrap(info string, zookeeperAggregator *indicators.MetricAggregator) {
 	infos := strings.Split(info, "\n")
 	for _, line := range infos {
 
@@ -73,8 +71,8 @@ func wrap(info string,zookeeperAggregator *indicators.MetricAggregator) {
 
 		//TODO
 		if fval, err := strconv.ParseFloat(s2, 64); err == nil {
-			key := "zookeeper." + strings.ReplaceAll(s1,"_",".");
-			zookeeperAggregator.NewMetric(key,fval)
+			key := "zookeeper." + strings.ReplaceAll(s1, "_", ".")
+			zookeeperAggregator.NewMetric(key, fval)
 		}
 	}
 }
@@ -117,5 +115,3 @@ func getZkInfo(command string) (string, error) {
 	logger.Main.Debug("Zookeeper server response", zap.String("respStat", respStat))
 	return respStat, nil
 }
-
-

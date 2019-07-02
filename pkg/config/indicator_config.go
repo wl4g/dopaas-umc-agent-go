@@ -22,7 +22,7 @@ import (
 const (
 	// Used for metric filtering checks.
 	// See: ./pkg/indicators/metric_builder.go#NewMetric()
-	MetricExcludeRegexFieldName = "MetricExcludeRegex"
+	MetricExcludeFieldName = "MetricExclude"
 )
 
 // ----------------------
@@ -56,23 +56,26 @@ type IndicatorProperties struct {
 
 // Indicator physical properties.
 type PhysicalIndicatorProperties struct {
-	Enabled  bool          `yaml:"enabled"`
-	Delay    time.Duration `yaml:"delay"`
-	NetPorts string        `yaml:"range-port"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	NetPorts      string        `yaml:"range-port"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // ---------- Virtual ----------
 
 // Indicator docker properties.
 type DockerIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator mesos properties.
 type MesosIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // --------- Discovery --------
@@ -83,61 +86,66 @@ type ZookeeperIndicatorProperties struct {
 	Delay         time.Duration `yaml:"delay"`
 	Servers       string        `yaml:"servers"`
 	Command       string        `yaml:"command"`
-	MetricExcludeRegex string        `yaml:"metric-exclude-regex"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator etcd properties.
 type EtcdIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator consul properties.
 type ConsulIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // ----------- MQ -------------
 
 // Indicator kafka properties.
 type KafkaIndicatorProperties struct {
-	Enabled            bool          `yaml:"enabled"`
-	Delay              time.Duration `yaml:"delay"`
-	Servers            string        `yaml:"servers"`
-	MetricExcludeRegex string        `yaml:"metric-exclude-regex"`
-	UseSASL                  bool     `yaml:"useSASL"`
-	UseSASLHandshake         bool     `yaml:"useSASLHandshake"`
-	SaslUsername             string   `yaml:"saslUsername"`
-	SaslPassword             string   `yaml:"saslPassword"`
-	UseTLS                   bool     `yaml:"useTLS"`
-	TlsCAFile                string   `yaml:"tlsCAFile"`
-	TlsCertFile              string   `yaml:"tlsCertFile"`
-	TlsKeyFile               string   `yaml:"tlsKeyFile"`
-	TlsInsecureSkipTLSVerify bool     `yaml:"tlsInsecureSkipTLSVerify"`
-	KafkaVersion             string   `yaml:"kafkaVersion"`
-	UseZooKeeperLag          bool     `yaml:"useZooKeeperLag"`
-	UriZookeeper             []string `yaml:"uriZookeeper"`
-	Labels                   string   `yaml:"labels"`
-	MetadataRefreshInterval  string   `yaml:"metadataRefreshInterval"`
+	Enabled                  bool          `yaml:"enabled"`
+	Delay                    time.Duration `yaml:"delay"`
+	Servers                  string        `yaml:"servers"`
+	UseSASL                  bool          `yaml:"useSASL"`
+	UseSASLHandshake         bool          `yaml:"useSASLHandshake"`
+	SaslUsername             string        `yaml:"saslUsername"`
+	SaslPassword             string        `yaml:"saslPassword"`
+	UseTLS                   bool          `yaml:"useTLS"`
+	TlsCAFile                string        `yaml:"tlsCAFile"`
+	TlsCertFile              string        `yaml:"tlsCertFile"`
+	TlsKeyFile               string        `yaml:"tlsKeyFile"`
+	TlsInsecureSkipTLSVerify bool          `yaml:"tlsInsecureSkipTLSVerify"`
+	KafkaVersion             string        `yaml:"kafkaVersion"`
+	UseZooKeeperLag          bool          `yaml:"useZooKeeperLag"`
+	UriZookeeper             []string      `yaml:"uriZookeeper"`
+	Labels                   string        `yaml:"labels"`
+	MetadataRefreshInterval  string        `yaml:"metadataRefreshInterval"`
+	MetricExclude            string        `yaml:"metric-exclude"`
 }
 
 // Indicator emq properties.
 type EmqIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator rabbitMQ properties.
 type RabbitMQIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator rocketMQ properties.
 type RocketMQIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // ----------- Cache -----------
@@ -148,50 +156,56 @@ type RedisIndicatorProperties struct {
 	Delay         time.Duration `yaml:"delay"`
 	Servers       string        `yaml:"servers"`
 	Password      string        `yaml:"password"`
-	Properties    string        `yaml:"properties"`
-	MetricExcludeRegex string        `yaml:"metric-exclude-regex"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator memcached properties.
 type MemcachedIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // ------------ DB -------------
 
 // Indicator elastic-search properties.
 type ElasticSearchIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator Mongodb properties.
 type MongodbIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator MySQL properties.
 type MySQLIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator PostgreSQL properties.
 type PostgreSQLIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator OpenTSDB properties.
 type OpenTSDBIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }
 
 // Indicator Cassandra properties.
 type CassandraIndicatorProperties struct {
-	Enabled bool          `yaml:"enabled"`
-	Delay   time.Duration `yaml:"delay"`
+	Enabled       bool          `yaml:"enabled"`
+	Delay         time.Duration `yaml:"delay"`
+	MetricExclude string        `yaml:"metric-exclude"`
 }

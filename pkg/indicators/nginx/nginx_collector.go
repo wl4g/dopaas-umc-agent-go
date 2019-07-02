@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 package nginx
+
+import (
+	"umc-agent/pkg/config"
+	"umc-agent/pkg/logger"
+)
+
+func IndicatorRunner() {
+	if !config.GlobalConfig.Indicator.MySQL.Enabled {
+		logger.Main.Debug("No enabled nginx metrics runner!")
+		return
+	}
+	logger.Main.Info("Starting nginx indicators runner ...")
+
+}

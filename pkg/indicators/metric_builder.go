@@ -16,9 +16,9 @@
 package indicators
 
 import (
+	"fmt"
 	"github.com/gogo/protobuf/proto"
 	"regexp"
-	"strings"
 	"time"
 	"umc-agent/pkg/common"
 	"umc-agent/pkg/config"
@@ -26,7 +26,7 @@ import (
 
 // Metric aggregate wrapper.
 type MetricAggregator struct {
-	metricType string // Temporary
+	MetricType string `json:"metricType"`
 	MetricAggregate
 }
 
@@ -55,7 +55,7 @@ func (self *MetricWrapper) ATag(key string, value string) *MetricWrapper {
 // See: `./pkg/config/indicator_config.go#type[IndicatorProperties]` for names of members
 func NewMetricAggregator(metricType string) *MetricAggregator {
 	aggregator := new(MetricAggregator)
-	aggregator.metricType = metricType
+	aggregator.MetricType = metricType
 	aggregator.Instance = config.LocalHardwareAddrId
 	aggregator.Namespace = config.GlobalConfig.Indicator.Namespace
 	aggregator.Timestamp = time.Now().Unix()
@@ -65,30 +65,26 @@ func NewMetricAggregator(metricType string) *MetricAggregator {
 // Create metrics with the creator.
 func (self *MetricAggregator) NewMetric(metricName string, value float64) *MetricWrapper {
 	var (
-		// Check necessary.(Note: that the project configuration
+		// Check metric stat necessary.(Note: that the project configuration
 		// structure must correspond to this.)
-		filters = config.GetConfig(config.IndicatorsFiledName, self.metricType, config.MetricExcludeRegexFieldName)
+		regex = config.GetConfig(config.IndicatorFiledName, self.MetricType, config.MetricExcludeFieldName)
 
-		// Create metricName.
+		// Create metric.
 		_metric = internalNewMetric(metricName, value)
 	)
 
-	// Enabled only if the configuration metricName name is included.
-	reg := strings.Split(filters.ToString(), ",")
-	for _, r := range reg {
-		if r == "" {
-			break
+	// Using regular expression filtering.
+	if regex != nil && !common.IsEmpty(regex.ToString()) {
+		match, err := regexp.Match(regex.ToString(), []byte(metricName))
+		if err != nil {
+			panic(fmt.Sprintf("Invalid metric regular expression for %s", regex))
 		}
-		b, _ := (regexp.Match(r, []byte(metricName)))
-		if b {
+		if !match {
 			return _metric
 		}
 	}
 
 	self.Metrics = append(self.Metrics, &_metric.Metric)
-	/*if common.StringsContains(reg, metricName) {
-		self.Metrics = append(self.Metrics, &_metric.Metric)
-	}*/
 	return _metric
 }
 

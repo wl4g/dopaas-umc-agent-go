@@ -68,57 +68,30 @@ indicator:
   docker:
     enabled: false
     delay: 60000
+    metric-exclude:
   mesos:
     enabled: false
     delay: 60000
+    metric-exclude:
 ### --------- Discovery indicators --------
   zookeeper:
     enabled: false
     delay: 60000
     servers: localhost:2181
     commands: mntr # zookeeper indicators commands(e.g. mntr,conf)
-    metric-exclude-regex:
-      zk_avg_latency,
-      zk_max_latency,
-      zk_min_latency,
-      zk_packets_received,
-      zk_packets_sent,
-      zk_num_alive_connections,
-      zk_outstanding_requests,
-      zk_server_state,
-      zk_znode_count,
-      zk_watch_count,
-      zk_ephemerals_count,
-      zk_approximate_data_size,
-      zk_open_file_descriptor_count,
-      zk_max_file_descriptor_count,
-      zk_fsync_threshold_exceed_count
+    metric-exclude:
   etcd:
     enabled: false
     delay: 60000
+    metric-exclude:
   consul:
     enabled: false
     delay: 60000
+    metric-exclude:
 ### --------- MQ indicators ---------------
   kafka:
     enabled: false
     delay: 60000
-    metric-exclude-regex:
-      kafka_brokers,
-      kafka_exporter_build_info,
-      kafka_topic_partition_current_offset,
-      kafka_topic_partition_in_sync_replica,
-      kafka_topic_partition_leader,
-      kafka_topic_partition_leader_is_preferred,
-      kafka_topic_partition_oldest_offset,
-      kafka_topic_partition_replicas,
-      kafka_topic_partition_under_replicated_partition,
-      kafka_topic_partitions,
-      kafka_consumergroup_members,
-      kafka_consumergroup_current_offset,
-      kafka_consumergroup_lag,
-      kafka_consumergroup_current_offset_sum,
-      kafka_consumergroup_lag_sum
     useSASL:
     useSASLHandshake: false
     saslUsername:
@@ -129,69 +102,52 @@ indicator:
     tlsKeyFile:
     tlsInsecureSkipTLSVerify: false
     metadataRefreshInterval:
+    metric-exclude:
   emq:
     enabled: false
     delay: 60000
+    metric-exclude:
   rabbitmq:
     enabled: false
     delay: 60000
+    metric-exclude:
   rocketmq:
     enabled: false
     delay: 60000
+    metric-exclude:
 ### --------- Cache indicators ------------
   redis:
     enabled: false
     delay: 60000
     servers: localhost:6379,localhost:6380 # Monitor local redis instances(ports).
     password: 123456
-    metric-exclude-regex:
-      connected_clients,
-      used_memory,
-      used_memory_peak,
-      used_memory_overhead,
-      used_memory_dataset,
-      used_memory_dataset_perc,
-      aof_current_size,
-      aof_buffer_length,
-      total_connections_received,
-      total_commands_processed,
-      instantaneous_ops_per_sec,
-      instantaneous_input_kbps,
-      instantaneous_output_kbps,
-      repl_backlog_size,
-      repl_backlog_histlen,
-      used_cpu_sys,
-      used_cpu_user,
-      used_cpu_sys_children,
-      used_cpu_user_children,
-      cluster_state,
-      cluster_slots_assigned,
-      cluster_slots_ok,
-      cluster_slots_pfail,
-      cluster_slots_fail,
-      cluster_known_nodes,
-      cluster_size,
-      cluster_current_epoch,
-      cluster_my_epoch
+    metric-exclude:
   memcached:
     enabled: false
     delay: 60000
+    metric-exclude:
 ### --------- DB indicators ---------------
   elasticsearch:
     enabled: false
     delay: 60000
+    metric-exclude:
   mongodb:
     enabled: false
     delay: 60000
+    metric-exclude:
   mysql:
     enabled: false
     delay: 60000
+    metric-exclude:
   postgresql:
     enabled: false
     delay: 60000
+    metric-exclude:
   opentsdb:
     enabled: false
     delay: 60000
+    metric-exclude:
   cassandra:
     enabled: false
     delay: 60000
+    metric-exclude:

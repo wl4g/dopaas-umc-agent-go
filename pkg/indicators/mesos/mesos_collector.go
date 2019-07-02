@@ -22,7 +22,7 @@ import (
 
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.Mesos.Enabled {
-		logger.Main.Warn("No enabled mesos metrics runner!")
+		logger.Main.Debug("No enabled mesos metrics runner!")
 		return
 	}
 	logger.Main.Info("Starting mesos indicators runner ...")

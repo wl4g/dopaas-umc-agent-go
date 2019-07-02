@@ -16,8 +16,21 @@
 package metric
 
 const (
+	//
+	// Tags.
+	//
 
-	//KafkaExporterBuildInfoMetric = "kafka_exporter_build_info"
+	DefaultKafkaTopicTag = "topic"
+
+	DefaultKafkaGroupIdTag = "groupid"
+
+	DefaultKafkaPartitionTag = "partition"
+
+	//
+	// Metrics.
+	//
+
+	KafkaBrokersMetric = "kafka_brokers"
 
 	KafkaTopicPartitionCurrentOffsetMetric = "kafka_topic_partition_current_offset"
 

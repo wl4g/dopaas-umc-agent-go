@@ -27,34 +27,29 @@ import (
 	"sync"
 	"time"
 	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
 	"umc-agent/pkg/constant/metric"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
 )
 
-
-
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.Redis.Enabled {
-		logger.Main.Warn("No enabled redis metrics runner!")
+		logger.Main.Debug("No enabled redis metrics runner!")
 		return
 	}
 	logger.Main.Info("Starting redis indicators runner ...")
 
 	for true {
 		// New redis metric aggregator
-		redisAggregator := indicators.NewMetricAggregator("Redis")
+		aggregator := indicators.NewMetricAggregator("Redis")
 
-		now := time.Now().UnixNano() / 1e6
-		redisAggregator.Timestamp = now
-		// Do collect.
+		// Do redis metric collect.
 		redis := Redis{}
-		redis.Gather(redisAggregator)
+		redis.handleRedisMeticCollect(aggregator)
 
 		// Send to servers.
-		transport.DoSendSubmit(constant.Metric, &redisAggregator)
+		transport.SendMetrics(aggregator)
 
 		// Sleep.
 		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay)
@@ -63,8 +58,8 @@ func IndicatorRunner() {
 }
 
 type Redis struct {
-	Servers  []string
-	Password string
+	Servers     []string
+	Password    string
 	clients     []Client
 	initialized bool
 }
@@ -104,7 +99,7 @@ func (r *Redis) init() error {
 
 	if len(r.Servers) == 0 {
 		urls := config.GlobalConfig.Indicator.Redis.Servers
-		r.Servers = strings.Split(urls,",")
+		r.Servers = strings.Split(urls, ",")
 	}
 
 	r.clients = make([]Client, len(r.Servers))
@@ -144,10 +139,10 @@ func (r *Redis) init() error {
 
 		client := redis.NewClient(
 			&redis.Options{
-				Addr:      address,
-				Password:  password,
-				Network:   u.Scheme,
-				PoolSize:  1,
+				Addr:     address,
+				Password: password,
+				Network:  u.Scheme,
+				PoolSize: 1,
 			},
 		)
 
@@ -171,7 +166,7 @@ func (r *Redis) init() error {
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (r *Redis) Gather(redisAggregator *indicators.MetricAggregator) error {
+func (r *Redis) handleRedisMeticCollect(redisAggregator *indicators.MetricAggregator) error {
 	if !r.initialized {
 		err := r.init()
 		if err != nil {
@@ -186,7 +181,7 @@ func (r *Redis) Gather(redisAggregator *indicators.MetricAggregator) error {
 		go func(client Client) {
 			defer wg.Done()
 			//acc.AddError(r.gatherServer(client, acc))
-			r.gatherServer(client,redisAggregator)
+			r.gatherServer(client, redisAggregator)
 		}(client)
 	}
 
@@ -194,14 +189,14 @@ func (r *Redis) Gather(redisAggregator *indicators.MetricAggregator) error {
 	return nil
 }
 
-func (r *Redis) gatherServer(client Client,redisAggregator *indicators.MetricAggregator) error {
+func (r *Redis) gatherServer(client Client, redisAggregator *indicators.MetricAggregator) error {
 	info, err := client.Info().Result()
 	if err != nil {
 		return err
 	}
 
 	rdr := strings.NewReader(info)
-	return gatherInfoOutput(rdr, client.BaseTags(),redisAggregator)
+	return gatherInfoOutput(rdr, client.BaseTags(), redisAggregator)
 }
 
 // gatherInfoOutput gathers
@@ -214,7 +209,7 @@ func gatherInfoOutput(
 	var section string
 	var keyspace_hits, keyspace_misses int64
 
-	server := tags["server"]+":"+tags["port"]
+	server := tags["server"] + ":" + tags["port"]
 
 	scanner := bufio.NewScanner(rdr)
 	fields := make(map[string]interface{})
@@ -280,14 +275,14 @@ func gatherInfoOutput(
 				fields["rdb_last_save_time_elapsed"] = time.Now().Unix() - ival
 			}
 			fields[metri] = ival
-			redisAggregator.NewMetric(metri,float64(ival)).ATag(metric.REDIS_SERVER,server)
+			redisAggregator.NewMetric(metri, float64(ival)).ATag(metric.REDIS_SERVER, server)
 			continue
 		}
 
 		// Try parsing as a float
 		if fval, err := strconv.ParseFloat(val, 64); err == nil {
 			fields[metri] = fval
-			redisAggregator.NewMetric(metri,fval).ATag(metric.REDIS_SERVER,server)
+			redisAggregator.NewMetric(metri, fval).ATag(metric.REDIS_SERVER, server)
 			continue
 		}
 
@@ -299,11 +294,11 @@ func gatherInfoOutput(
 		}
 		fields[metri] = val
 	}
-	var keyspace_hitrate float64 = 0.0
+	var keyspaceHitrate = 0.0
 	if keyspace_hits != 0 || keyspace_misses != 0 {
-		keyspace_hitrate = float64(keyspace_hits) / float64(keyspace_hits+keyspace_misses)
+		keyspaceHitrate = float64(keyspace_hits) / float64(keyspace_hits+keyspace_misses)
 	}
-	fields["keyspace_hitrate"] = keyspace_hitrate
+	fields["keyspace_hitrate"] = keyspaceHitrate
 	//acc.AddFields("redis", fields, tags)
 
 	//fmt.Println(common.ToJSONString(fields))
@@ -320,12 +315,12 @@ func gatherKeyspaceLine(
 	name string,
 	line string,
 	//acc telegraf.Accumulator,
-	global_tags map[string]string,
+	globalTags map[string]string,
 ) {
 	if strings.Contains(line, "keys=") {
 		fields := make(map[string]interface{})
 		tags := make(map[string]string)
-		for k, v := range global_tags {
+		for k, v := range globalTags {
 			tags[k] = v
 		}
 		tags["database"] = name
@@ -337,10 +332,5 @@ func gatherKeyspaceLine(
 				fields[kv[0]] = ival
 			}
 		}
-		//acc.AddFields("redis_keyspace", fields, tags)
-		//fmt.Println(common.ToJSONString(fields))
-		//fmt.Println(common.ToJSONString(tags))
 	}
 }
-
-

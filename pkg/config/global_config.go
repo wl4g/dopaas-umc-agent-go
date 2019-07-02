@@ -28,7 +28,7 @@ import (
 const (
 	// Used for metric filtering checks.
 	// See: ./pkg/indicators/metric_builder.go#NewMetric()
-	IndicatorsFiledName = "Indicator"
+	IndicatorFiledName = "Indicator"
 )
 
 // ---------------------
@@ -116,13 +116,15 @@ func createDefault() *GlobalProperties {
 			Namespace: constant.DefaultNamespace,
 			Netcard:   constant.DefaultNetcard,
 			Physical: PhysicalIndicatorProperties{
-				Enabled:  true,
-				Delay:    constant.DefaultIndicatorsDelay,
-				NetPorts: constant.DefaultNetIndicatorsNetPorts,
+				Enabled:       true,
+				Delay:         constant.DefaultIndicatorsDelay,
+				NetPorts:      constant.DefaultNetIndicatorsNetPorts,
+				MetricExclude: "",
 			},
 			Docker: DockerIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Mesos: MesosIndicatorProperties{
 				Enabled: false,
@@ -133,76 +135,87 @@ func createDefault() *GlobalProperties {
 				Delay:         constant.DefaultIndicatorsDelay,
 				Servers:       constant.DefaultZkIndicatorsServers,
 				Command:       constant.DefaultZkIndicatorsCommands,
-				MetricExcludeRegex: constant.DefaultZkIndicatorsMetricExcludeRegex,
+				MetricExclude: "",
 			},
 			Etcd: EtcdIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Consul: ConsulIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Kafka: KafkaIndicatorProperties{
 				Enabled:       false,
 				Delay:         constant.DefaultIndicatorsDelay,
-				Servers:      constant.DefaultKafkaIndicatorsServers,
-				MetricExcludeRegex: constant.DefaultKafkaIndicatorsMetricExcludeRegex,
+				Servers:       constant.DefaultKafkaIndicatorsServers,
+				MetricExclude: "",
 			},
 			Emq: EmqIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			RabbitMQ: RabbitMQIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			RocketMQ: RocketMQIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Redis: RedisIndicatorProperties{
-				Enabled:    false,
-				Delay:      constant.DefaultIndicatorsDelay,
-				Servers:    constant.DefaultRedisIndicatorsServers,
-				Password:   constant.DefaultRedisIndicatorsPassword,
-				Properties: constant.DefaultRedisIndicatorsMetricExcludeRegex,
-				MetricExcludeRegex: constant.DefaultRedisIndicatorsMetricExcludeRegex,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				Servers:       constant.DefaultRedisIndicatorsServers,
+				Password:      constant.DefaultRedisIndicatorsPassword,
+				MetricExclude: "",
 			},
 			Memcached: MemcachedIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			ElasticSearch: ElasticSearchIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Mongodb: MongodbIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			MySQL: MySQLIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			PostgreSQL: PostgreSQLIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			OpenTSDB: OpenTSDBIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 			Cassandra: CassandraIndicatorProperties{
-				Enabled: false,
-				Delay:   constant.DefaultIndicatorsDelay,
+				Enabled:       false,
+				Delay:         constant.DefaultIndicatorsDelay,
+				MetricExclude: "",
 			},
 		},
 	}
 	return globalConfig
 }
 
-// MetricExcludeRegex settings after initialization
+// MetricExclude settings after initialization
 func afterPropertiesSet(globalConfig *GlobalProperties) {
 	// Environment variable priority.
 	var netcard = os.Getenv("indicators.netcard")

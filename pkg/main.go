@@ -70,16 +70,12 @@ func init() {
 }
 
 func main() {
-	startCollectorRunners(wg)
+	startIndicatorRunners(wg)
 	wg.Wait()
-	//kafka.IndicatorRunner()
-
-	//redis.IndicatorRunner()
-
 }
 
-// Starting indicator runners all
-func startCollectorRunners(wg *sync.WaitGroup) {
+// Starting indicator runners all.
+func startIndicatorRunners(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go physical.IndicatorRunner()
 

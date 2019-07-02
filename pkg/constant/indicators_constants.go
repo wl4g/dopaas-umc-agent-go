@@ -20,7 +20,9 @@ import (
 )
 
 const (
+	// =============================
 	// ------ Basic indicators -----
+	// =============================
 
 	// Default namespace.
 	DefaultNamespace = "defaultCloud"
@@ -35,19 +37,23 @@ const (
 	DefaultNetIndicatorsNetPorts = "22,8080"
 
 	//Tag disk device
-	TAG_DISK_DEVICE = "device";
+	TagDiskDevice = "device"
 
 	//Tag net port
-	TAG_NET_PORT = "port";
+	TagNetPort = "port"
 
+	// =============================
 	// --------- Virtual -----------
+	// =============================
 
 	// Docker indicators constants.
-	TAG_DOCKER_NAME = "name"
+	TagDockerName = "name"
 
 	// Mesos indicators constants.
 
+	// =============================
 	// --------- Discovery ---------
+	// =============================
 
 	// Zk indicators constants.
 
@@ -57,30 +63,18 @@ const (
 	// Default watch zk commands(e.g. mntr,conf).
 	DefaultZkIndicatorsCommands = "mntr"
 
-	// Default watch zk indicators metric filters.
-	DefaultZkIndicatorsMetricExcludeRegex = "zk_avg_latency,zk_max_latency,zk_min_latency,zk_packets_received,zk_packets_sent,zk_num_alive_connections,zk_outstanding_requests,zk_server_state,zk_znode_count,zk_watch_count,zk_ephemerals_count,zk_approximate_data_size,zk_open_file_descriptor_count,zk_max_file_descriptor_count,zk_fsync_threshold_exceed_count"
-
 	// Etcd indicators constants.
 
 	// Consul indicators constants.
 
-	// ----------- MQ -------------
+	// =============================
+	// ----------- MQ --------------
+	// =============================
 
 	// Kafka indicators constants.
-	// Default watch redis indicators metric filters.
-	DefaultKafkaIndicatorsMetricExcludeRegex = ""
-	//default server
+
+	// Default indicators kafka broker servers.
 	DefaultKafkaIndicatorsServers = "localhost:9092"
-
-	Topic = "topic"
-
-	GroupId = "groupid"
-
-	Partition = "partition"
-
-	Metric = "metric"
-
-	KafkaBrokersMetric = "kafka_brokers"
 
 	// EMQ indicators constants.
 
@@ -88,7 +82,9 @@ const (
 
 	// RocketMQ indicators constants.
 
+	// =============================
 	// ----------- Cache -----------
+	// =============================
 
 	// Redis indicators constants.
 
@@ -98,12 +94,11 @@ const (
 	// Default watch redis ports.
 	DefaultRedisIndicatorsPassword = "redis"
 
-	// Default watch redis indicators metric filters.
-	//DefaultRedisIndicatorsMetricExcludeRegex = "connected_clients,used_memory,used_memory_peak,used_memory_overhead,used_memory_dataset,used_memory_dataset_perc,aof_current_size,aof_buffer_length,total_connections_received,total_commands_processed,instantaneous_ops_per_sec,instantaneous_input_kbps,instantaneous_output_kbps,repl_backlog_size,repl_backlog_histlen,used_cpu_sys,used_cpu_user,used_cpu_sys_children,used_cpu_user_children,cluster_state,cluster_slots_assigned,cluster_slots_ok,cluster_slots_pfail,cluster_slots_fail,cluster_known_nodes,cluster_size,cluster_current_epoch,cluster_my_epoch"
-	DefaultRedisIndicatorsMetricExcludeRegex = "" //be blank , gather all
 	// Memcached indicators constants.
 
+	// =============================
 	// ------------ DB -------------
+	// =============================
 
 	// ElasticSearch indicators constants.
 

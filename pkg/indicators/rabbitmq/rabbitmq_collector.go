@@ -22,7 +22,7 @@ import (
 
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.RabbitMQ.Enabled {
-		logger.Main.Warn("No enabled rabbitmq metrics runner!")
+		logger.Main.Debug("No enabled rabbitmq metrics runner!")
 		return
 	}
 	logger.Main.Info("Starting rabbitmq indicators runner ...")

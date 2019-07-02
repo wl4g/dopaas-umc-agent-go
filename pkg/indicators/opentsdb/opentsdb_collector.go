@@ -22,7 +22,7 @@ import (
 
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.OpenTSDB.Enabled {
-		logger.Main.Warn("No enabled openTSDB metrics runner!")
+		logger.Main.Debug("No enabled openTSDB metrics runner!")
 		return
 	}
 	logger.Main.Info("Starting openTSDB indicators runner ...")

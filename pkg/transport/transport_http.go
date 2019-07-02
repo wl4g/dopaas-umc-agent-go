@@ -21,25 +21,28 @@ import (
 	"net/http"
 	"strings"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 )
 
-// Send indicators to http gateway
-func doPostSend(key string, data string) {
+// Send metrics to http gateway
+func doHttpSend(aggregator *indicators.MetricAggregator) {
 	if !config.GlobalConfig.Transport.Kafka.Enabled {
-		request, _ := http.NewRequest("POST", config.GlobalConfig.Transport.Http.ServerGateway+"/"+key, strings.NewReader(data))
+		request, _ := http.NewRequest("POST", config.GlobalConfig.Transport.Http.ServerGateway,
+			strings.NewReader(aggregator.ToJSONString()))
 		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Accept", "application/json, text/plain, */*")
 
-		// Do execution
+		// Do request.
 		resp, err := http.DefaultClient.Do(request)
 		if err != nil {
 			logger.Main.Error("Post failed", zap.Error(err))
 		} else {
 			ret, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				logger.Main.Error("Failed to get response body", zap.Error(err))
+				logger.Receive.Error("Failed to get response body", zap.Error(err))
 			} else {
-				logger.Main.Info("Receive response message", zap.String("data", string(ret)))
+				logger.Receive.Info("Receive response message", zap.String("data", string(ret)))
 			}
 		}
 	}
