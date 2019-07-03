@@ -88,7 +88,6 @@ indicator:
 ### --------- Cache indicators ------------
   redis:
     enabled: true
-    metric-exclude-regex: all
     delay: 10000
     servers: safecloud-test:6379,safecloud-test:6380 # Monitor local redis instances(ports).
     password: zzx!@#$%
