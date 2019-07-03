@@ -19,10 +19,11 @@ package indicators;
 //package com.wl4g.devops.common.bean.umc.model.proto;
 
 message MetricAggregate {
-    string instance = 1;
-    string namespace = 2;
-    int64 timestamp = 3;
-    repeated Metric metrics = 4; // Array<Metric>
+    string classify = 1;
+    string instance = 2;
+    string namespace = 3;
+    int64 timestamp = 4;
+    repeated Metric metrics = 5; // Array<Metric>
 }
 
 message Metric {
