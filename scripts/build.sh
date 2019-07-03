@@ -16,5 +16,5 @@
 # --- Compiling Mac and Windows 64-bit executable programs under Linux. ---
 # -------------------------------------------------------------------------
 cd ../pkg/ && CGO_ENABLED=0 GOARCH=amd64
-#GOOS=darwin go build -o UmcAgent
-GOOS=windows go build -o UmcAgent
+#GOOS=darwin go build -o umcagent
+GOOS=windows go build -o umcagent
