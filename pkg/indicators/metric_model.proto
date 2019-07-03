@@ -47,7 +47,7 @@ message Metric {
 // cd $PROJECT_HOME/pkg
 // protoc --gogo_out=. indicators/metric_model.proto
 //
-// [java]
+// [java] @SuppressWarnings({ "unused", "unchecked", "deprecation" })
 //
 // cd $PROJECT_HOME/src/main/java
 // protoc --java_out=. com/wl4g/devops/common/bean/umc/model/proto/metric_model.proto
