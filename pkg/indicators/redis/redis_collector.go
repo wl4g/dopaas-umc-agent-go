@@ -208,7 +208,7 @@ func gatherInfoOutput(
 	var section string
 	var keyspace_hits, keyspace_misses int64
 
-	server := tags["server"] + ":" + tags["port"]
+	server := tags["server"] +"_"+ tags["port"]
 
 	scanner := bufio.NewScanner(rdr)
 	fields := make(map[string]interface{})
@@ -259,6 +259,8 @@ func gatherInfoOutput(
 			}
 			metri = name
 		}
+		metri = strings.ReplaceAll(metri,"_",".")
+		metri = "redis."+metri
 
 		val := strings.TrimSpace(parts[1])
 
