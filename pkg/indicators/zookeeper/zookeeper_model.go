@@ -14,12 +14,3 @@
  * limitations under the License.
  */
 package zookeeper
-
-import (
-	"umc-agent/pkg/indicators"
-)
-
-type Zookeeper struct {
-	Meta       indicators.MetaInfo `json:"meta"`
-	Properties map[string]string   `json:"properties"`
-}

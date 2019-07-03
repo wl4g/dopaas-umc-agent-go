@@ -14,21 +14,3 @@
  * limitations under the License.
  */
 package redis
-
-import (
-	"umc-agent/pkg/indicators"
-)
-
-// Deprecated: Metric packaging has been changed to uniform aggregation metrics,
-// see: `indicators. New Metric Aggregator`.
-type Redis_bak struct {
-	Meta       indicators.MetaInfo `json:"meta"`
-	RedisInfos []Info              `json:"redisInfos"`
-}
-
-// Deprecated: Metric packaging has been changed to uniform aggregation metrics,
-// see: `indicators. New Metric Aggregator`.
-type Info struct {
-	Port       string            `json:"port"`
-	Properties map[string]string `json:"properties"`
-}
