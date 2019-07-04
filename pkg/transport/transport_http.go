@@ -21,6 +21,7 @@ import (
 	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
+	"time"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
@@ -34,15 +35,16 @@ func doHttpSend(aggregator *indicators.MetricAggregator) {
 		if err != nil {
 			panic(fmt.Sprintf("Create post request failed! %s", err))
 		}
-		//request.Header.Set("Content-Type", "application/json")
-		//request.Header.Set("Accept", "application/json, text/plain, */*")
-
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Accept", "application/json, text/plain, */*")
 		//request.Header.Set("Connection", "keep-alive")
 
 		// Do request.
-		httpClient := &http.Client{Timeout: 30000}
+		httpClient := &http.Client{Timeout:30000*time.Millisecond}
 		resp, err := httpClient.Do(request)
-		defer resp.Body.Close()
+		if(resp!=nil){
+			defer resp.Body.Close()
+		}
 		if err != nil {
 			logger.Main.Error("Post failed", zap.Error(err))
 		} else {
