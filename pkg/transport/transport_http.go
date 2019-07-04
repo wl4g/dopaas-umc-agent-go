@@ -40,19 +40,22 @@ func doHttpSend(aggregator *indicators.MetricAggregator) {
 		//request.Header.Set("Connection", "keep-alive")
 
 		// Do request.
-		httpClient := &http.Client{Timeout:30000*time.Millisecond}
+		httpClient := &http.Client{Timeout: 30000 * time.Millisecond}
 		resp, err := httpClient.Do(request)
-		if(resp!=nil){
+		if resp != nil {
 			defer resp.Body.Close()
 		}
 		if err != nil {
-			logger.Main.Error("Post failed", zap.Error(err))
+			logger.Receive.Error("Post failed", zap.Error(err))
 		} else {
 			ret, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
 				logger.Receive.Error("Failed to get response body", zap.Error(err))
 			} else {
 				logger.Receive.Info("Receive response message", zap.String("data", string(ret)))
+
+				// Refresh global config.
+				//config.RefreshConfig(nil)
 			}
 		}
 	}

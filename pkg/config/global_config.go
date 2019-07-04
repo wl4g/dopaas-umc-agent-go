@@ -243,3 +243,8 @@ func GetConfig(path ...interface{}) jsoniter.Any {
 	var value = jsoniter.Get(_globalConfigBuffer, path...)
 	return value
 }
+
+// Refresh global config.
+func RefreshConfig(config *GlobalProperties) {
+	common.CopyProperties(&config, &GlobalConfig)
+}
