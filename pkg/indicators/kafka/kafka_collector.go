@@ -27,6 +27,7 @@ import (
 	"sync"
 	"time"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/constant"
 	"umc-agent/pkg/constant/metric"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
@@ -52,6 +53,7 @@ func IndicatorRunner() {
 	for true {
 		// New kafka metric aggregator
 		aggregator := indicators.NewMetricAggregator("Kafka")
+		aggregator.Instance = constant.USE_GROUP
 
 		// Do collect brokers metrics.
 		handleKafkaMetricCollect(aggregator)
