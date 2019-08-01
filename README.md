@@ -9,7 +9,7 @@ Although there are currently popular open source monitoring and alerting solutio
 - The grafana interface design is very good, and it also provides a more flexible Dashboard configuration, but there are still some problems if it is directly used in the enterprise production environment, such as: no support for multi-tenancy (the author is currently responsible
   Some Internet of Things paas/saas cloud platform, multi-tenant is a must, it seems that there is no better HA solution;
 
-- The Prom ecosystem has a relatively wide coverage and a variety of xx_exporter plugins, but there are still some problems in large-scale deployment. The most prominent problem is
+- The Prometheus ecosystem has a relatively wide coverage and a variety of xx_exporter plugins, but there are still some problems in large-scale deployment. The most prominent problem is
   Prom does not have a mature distributed cluster solution (only federated clusters, deploying multiple Prom instances, manually configuring partition control targets), and there is a bottleneck in natural stand-alone performance.
   When a Prom instance hangs, you can only manually re-segment the cluster, and the data between the Prom instances cannot be shared (of course, you can use a third-party plug-in to wrap a layer.
   Such as: Thanos, but this architecture is too complicated, production environment failure is difficult to check), then the pull model is not working well on compatible multi-data sources, such as we have
@@ -22,7 +22,7 @@ Although there are currently popular open source monitoring and alerting solutio
   It can also be rich, and only one client of the umc-agent executable file can not be installed more easily, and dynamic hot update (such as update collection interval) is also supported in configuration update.
   The backend is based on springcloud, there is no need to worry about scalability, secondary development is also very easy, the boss's perspective: it is easy to find a slightly better java to maintain!
 
-[VS Prometheus](VS_PROMUS_CN.md)
+[VS Prometheus](VS_PROMUS.md)
 
 ## Quick start
 
