@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package physical
+package host
 
 import (
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/wl4g/super-devops-umc-agent/pkg/common"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant/metric"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
+	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
 	"strconv"
 	"strings"
 	"time"
-	"umc-agent/pkg/common"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
-	"umc-agent/pkg/constant/metric"
-	"umc-agent/pkg/indicators"
-	"umc-agent/pkg/logger"
-	"umc-agent/pkg/transport"
 )
 
 // Physical indicators runner
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.Physical.Enabled {
-		logger.Main.Debug("No enabled physical metrics runner!")
+		logger.Main.Debug("No enabled host metrics runner!")
 		return
 	}
-	logger.Main.Info("Starting physical indicators runner ...")
+	logger.Main.Info("Starting host indicators runner ...")
 
 	// Loop monitor
 	for true {
 		aggregator := indicators.NewMetricAggregator("Physical")
 
-		// Do physical metric collect.
+		// Do host metric collect.
 		handlePhysicalMetricCollect(aggregator)
 
 		// Send to servers.

@@ -18,11 +18,11 @@ package config
 import (
 	"fmt"
 	"github.com/json-iterator/go"
+	"github.com/wl4g/super-devops-umc-agent/pkg/common"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"umc-agent/pkg/common"
-	"umc-agent/pkg/constant"
 )
 
 const (

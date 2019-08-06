@@ -16,8 +16,8 @@
 package transport
 
 import (
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
 )
 
 // Send metrics message.

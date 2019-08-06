@@ -18,10 +18,10 @@ package indicators
 import (
 	"fmt"
 	"github.com/gogo/protobuf/proto"
+	"github.com/wl4g/super-devops-umc-agent/pkg/common"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
 	"regexp"
 	"time"
-	"umc-agent/pkg/common"
-	"umc-agent/pkg/config"
 )
 
 // Metric aggregate wrapper.

@@ -19,17 +19,17 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/go-redis/redis"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant/metric"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
+	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
 	"io"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant/metric"
-	"umc-agent/pkg/indicators"
-	"umc-agent/pkg/logger"
-	"umc-agent/pkg/transport"
 )
 
 func IndicatorRunner() {
@@ -51,7 +51,7 @@ func IndicatorRunner() {
 		//transport.SendMetrics(aggregator)
 
 		// Sleep.
-		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay*time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay * time.Millisecond)
 	}
 
 }
@@ -182,7 +182,7 @@ func (r *Redis) handleRedisMeticCollect() error {
 
 			// Each gather and submit
 			aggregator := indicators.NewMetricAggregator("Redis")
-			aggregator.Instance=client.BaseTags()["server"]+":"+client.BaseTags()["port"]
+			aggregator.Instance = client.BaseTags()["server"] + ":" + client.BaseTags()["port"]
 			r.gatherServer(client, aggregator)
 			// Send to servers.
 			transport.SendMetrics(aggregator)
@@ -214,7 +214,7 @@ func gatherInfoOutput(
 	var section string
 	var keyspace_hits, keyspace_misses int64
 
-	server := tags["server"] +"_"+ tags["port"]
+	server := tags["server"] + "_" + tags["port"]
 
 	scanner := bufio.NewScanner(rdr)
 	fields := make(map[string]interface{})
@@ -265,8 +265,8 @@ func gatherInfoOutput(
 			}
 			metri = name
 		}
-		metri = strings.ReplaceAll(metri,"_",".")
-		metri = "redis."+metri
+		metri = strings.ReplaceAll(metri, "_", ".")
+		metri = "redis." + metri
 
 		val := strings.TrimSpace(parts[1])
 

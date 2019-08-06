@@ -20,4 +20,4 @@ SET CGO_ENABLED=0
 SET GOOS=darwin
 SET GOOS=linux
 SET GOARCH=amd64
-go build -o umcagent ..\pkg\
+go build -o ..\bin\umcAgent ..\pkg\

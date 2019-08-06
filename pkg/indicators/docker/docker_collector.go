@@ -17,17 +17,17 @@ package docker
 
 import (
 	"encoding/json"
+	"github.com/wl4g/super-devops-umc-agent/pkg/common"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant/metric"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
+	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
 	"go.uber.org/zap"
 	"strconv"
 	"strings"
 	"time"
-	"umc-agent/pkg/common"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
-	"umc-agent/pkg/constant/metric"
-	"umc-agent/pkg/indicators"
-	"umc-agent/pkg/logger"
-	"umc-agent/pkg/transport"
 )
 
 // Docker indicators runner

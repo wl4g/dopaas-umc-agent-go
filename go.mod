@@ -1,4 +1,4 @@
-module umc-agent
+module github.com/wl4g/super-devops-umc-agent
 
 go 1.12
 
@@ -10,7 +10,6 @@ require (
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/influxdata/telegraf v0.10.1
 	github.com/json-iterator/go v1.1.6
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect

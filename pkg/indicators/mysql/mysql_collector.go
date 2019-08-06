@@ -16,8 +16,8 @@
 package mysql
 
 import (
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/logger"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
 )
 
 func IndicatorRunner() {

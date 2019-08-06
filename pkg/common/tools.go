@@ -17,9 +17,9 @@ package common
 
 import (
 	"github.com/shirou/gopsutil/net"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
 	"regexp"
 	"strings"
-	"umc-agent/pkg/constant"
 )
 
 var (
@@ -38,7 +38,7 @@ func GetNetworkInterfaces(port string) string {
 }
 
 // Get hardware information such as network card as
-// physical host identification.
+// host host identification.
 func GetHardwareAddr(netcard string) string {
 	var hardwareId = ""
 	nets, _ := net.Interfaces()
