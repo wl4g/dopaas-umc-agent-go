@@ -240,8 +240,7 @@ func afterPropertiesSet(globalConfig *GlobalProperties) {
 
 // Get config value.
 func GetConfig(path ...interface{}) jsoniter.Any {
-	var value = jsoniter.Get(_globalConfigBuffer, path...)
-	return value
+	return jsoniter.Get(_globalConfigBuffer, path...)
 }
 
 // Refresh global config.
