@@ -66,7 +66,7 @@ Step 2: Turn on 57 again. Phenomenon: All data during the shutdown period is los
 |      HA        |       ✅                                               | Temporarily no mature plan        |
 |Dynamic configuration|Support remote updates, such as: collection interval|Restart after updating the configuration|
 |Alarm rule update| ✅Management side updates take effect immediately|After updating the configuration, there seems to be a problem with reload. Both the old and new rules take effect?|
-|     存储      | Built in:openTSDB,derby，Provide store base classes for easy extension|Add the remote_read module to extend other data sources|
+|    storage     | Built in:openTSDB,derby，Provide store base classes for easy extension|Add the remote_read module to extend other data sources|
 |JVM health    | ✅Integration:spring boot admin                  |           Not support                   |
 |Distributed tracking| ✅Integration:spring cloud sleuth, zipkin        |           Not support                    |
 | Complexity   |      Lightweight                                 |           Heavy                        |
