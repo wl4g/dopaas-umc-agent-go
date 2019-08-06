@@ -1,5 +1,7 @@
 UMC - A lightweight, fully open source unified monitoring and alerting platform based on SpringBoot Cloud, and one of the core subsystems in the Super DevOps platform.
 
+![Build Status](https://api.travis-ci.org/wl4g/super-devops-umc-agent.svg?branch=master)
+
 [中文文档](README_CN.md).
 
 ## Background

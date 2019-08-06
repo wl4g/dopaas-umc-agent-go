@@ -1,5 +1,7 @@
 UMC一个轻量级基于SpringBoot Cloud开发完全开源的统一监控告警平台，也是Super DevOps平台中的核心子系统之一
 
+![Build Status](https://api.travis-ci.org/wl4g/super-devops-umc-agent.svg?branch=master)
+
 English version goes [here](README.md).
 
 ## 背景
