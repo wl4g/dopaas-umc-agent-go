@@ -32,7 +32,7 @@ const (
 type IndicatorProperties struct {
 	Namespace     string                           `yaml:"namespace"`
 	Netcard       string                           `yaml:"netcard"`
-	Physical      PhysicalIndicatorProperties      `yaml:"physical"`
+	Physical      PhysicalIndicatorProperties      `yaml:"host"`
 	Docker        DockerIndicatorProperties        `yaml:"docker"`
 	Mesos         MesosIndicatorProperties         `yaml:"mesos"`
 	Zookeeper     ZookeeperIndicatorProperties     `yaml:"zookeeper"`
@@ -54,7 +54,7 @@ type IndicatorProperties struct {
 
 // ------- Infrastructure ------
 
-// Indicator physical properties.
+// Indicator host properties.
 type PhysicalIndicatorProperties struct {
 	Enabled       bool          `yaml:"enabled"`
 	Delay         time.Duration `yaml:"delay"`

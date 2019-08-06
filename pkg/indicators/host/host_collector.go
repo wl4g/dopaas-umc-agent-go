@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package physical
+package host
 
 import (
 	"github.com/shirou/gopsutil/cpu"
@@ -34,16 +34,16 @@ import (
 // Physical indicators runner
 func IndicatorRunner() {
 	if !config.GlobalConfig.Indicator.Physical.Enabled {
-		logger.Main.Debug("No enabled physical metrics runner!")
+		logger.Main.Debug("No enabled host metrics runner!")
 		return
 	}
-	logger.Main.Info("Starting physical indicators runner ...")
+	logger.Main.Info("Starting host indicators runner ...")
 
 	// Loop monitor
 	for true {
 		aggregator := indicators.NewMetricAggregator("Physical")
 
-		// Do physical metric collect.
+		// Do host metric collect.
 		handlePhysicalMetricCollect(aggregator)
 
 		// Send to servers.

@@ -38,7 +38,7 @@ func GetNetworkInterfaces(port string) string {
 }
 
 // Get hardware information such as network card as
-// physical host identification.
+// host host identification.
 func GetHardwareAddr(netcard string) string {
 	var hardwareId = ""
 	nets, _ := net.Interfaces()
