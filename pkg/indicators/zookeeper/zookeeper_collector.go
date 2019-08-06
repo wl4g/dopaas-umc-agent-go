@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 	"umc-agent/pkg/config"
+	"umc-agent/pkg/constant"
 	"umc-agent/pkg/indicators"
 	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
@@ -37,6 +38,7 @@ func IndicatorRunner() {
 	// Loop monitor
 	for true {
 		aggregator := indicators.NewMetricAggregator("Zookeeper")
+		aggregator.Instance = constant.USE_GROUP
 
 		// Do zookeeper metric collect.
 		handleZookeeperMetricCollect(aggregator)

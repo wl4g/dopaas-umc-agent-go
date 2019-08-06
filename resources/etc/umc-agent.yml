@@ -20,10 +20,11 @@
 
 transport:
   http:
-    server-gateway: http://127.0.0.1:14046/umc/receiver
+    server-gateway: http://127.0.0.1:14047/umc-receiver/receiver/metric
   kafka:
     enabled: true # This enabled switch takes precedence over the HTTP launcher.
-    servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
+    #servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
+    servers: localhost:9092
     ack: 1
     timeout: 60000
 
@@ -88,7 +89,6 @@ indicator:
 ### --------- Cache indicators ------------
   redis:
     enabled: true
-    metric-exclude-regex: all
     delay: 10000
     servers: safecloud-test:6379,safecloud-test:6380 # Monitor local redis instances(ports).
     password: zzx!@#$%

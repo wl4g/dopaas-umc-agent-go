@@ -222,7 +222,7 @@ func createDefault() *GlobalProperties {
 // MetricExclude settings after initialization
 func afterPropertiesSet(globalConfig *GlobalProperties) {
 	// Environment variable priority.
-	var netcard = os.Getenv("indicators.netcard")
+	var netcard = os.Getenv("indicator.netcard")
 	if !common.IsEmpty(netcard) {
 		globalConfig.Indicator.Netcard = netcard
 	}
@@ -240,6 +240,10 @@ func afterPropertiesSet(globalConfig *GlobalProperties) {
 
 // Get config value.
 func GetConfig(path ...interface{}) jsoniter.Any {
-	var value = jsoniter.Get(_globalConfigBuffer, path...)
-	return value
+	return jsoniter.Get(_globalConfigBuffer, path...)
+}
+
+// Refresh global config.
+func RefreshConfig(config *GlobalProperties) {
+	common.CopyProperties(&config, &GlobalConfig)
 }

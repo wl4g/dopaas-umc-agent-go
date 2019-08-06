@@ -21,24 +21,7 @@ import (
 	"sync"
 	"umc-agent/pkg/config"
 	"umc-agent/pkg/constant"
-	"umc-agent/pkg/indicators/cassandra"
-	"umc-agent/pkg/indicators/consul"
-	"umc-agent/pkg/indicators/docker"
-	"umc-agent/pkg/indicators/elasticsearch"
-	"umc-agent/pkg/indicators/emq"
-	"umc-agent/pkg/indicators/etcd"
-	"umc-agent/pkg/indicators/kafka"
-	"umc-agent/pkg/indicators/memcached"
-	"umc-agent/pkg/indicators/mesos"
-	"umc-agent/pkg/indicators/mongodb"
-	"umc-agent/pkg/indicators/mysql"
-	"umc-agent/pkg/indicators/opentsdb"
-	"umc-agent/pkg/indicators/physical"
-	"umc-agent/pkg/indicators/postgresql"
-	"umc-agent/pkg/indicators/rabbitmq"
 	"umc-agent/pkg/indicators/redis"
-	"umc-agent/pkg/indicators/rocketmq"
-	"umc-agent/pkg/indicators/zookeeper"
 	"umc-agent/pkg/logger"
 	"umc-agent/pkg/transport"
 )
@@ -67,6 +50,9 @@ func init() {
 
 	// Init kafka launcher.(if necessary)
 	transport.InitKafkaTransportIfNecessary()
+
+	//test
+	testAlarm()
 }
 
 func main() {
@@ -77,7 +63,7 @@ func main() {
 // Starting indicator runners all.
 func startIndicatorRunners(wg *sync.WaitGroup) {
 	wg.Add(1)
-	go physical.IndicatorRunner()
+	/*go physical.IndicatorRunner()
 
 	go docker.IndicatorRunner()
 	go mesos.IndicatorRunner()
@@ -98,7 +84,9 @@ func startIndicatorRunners(wg *sync.WaitGroup) {
 	go mysql.IndicatorRunner()
 	go postgresql.IndicatorRunner()
 	go opentsdb.IndicatorRunner()
-	go cassandra.IndicatorRunner()
+	go cassandra.IndicatorRunner()*/
+
+	go redis.IndicatorRunner()
 }
 
 // Testing
@@ -112,5 +100,12 @@ func testingIfNecessary() {
 	fmt.Println(aggregator.String())
 	fmt.Println(aggregator.ToProtoBufArray())
 
+	os.Exit(0)*/
+}
+
+func testAlarm()  {
+	/*aggregator := indicators.NewMetricAggregator("Test")
+	aggregator.NewMetric("hwjtest.cpu", float64(79)).ATag("tag1","1").ATag("tag2","2")
+	transport.SendMetrics(aggregator)
 	os.Exit(0)*/
 }
