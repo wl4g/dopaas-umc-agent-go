@@ -41,14 +41,14 @@ func IndicatorRunner() {
 
 	for true {
 		// New redis metric aggregator
-		aggregator := indicators.NewMetricAggregator("Redis")
+		//aggregator := indicators.NewMetricAggregator("Redis")
 
 		// Do redis metric collect.
 		redis := Redis{}
-		redis.handleRedisMeticCollect(aggregator)
+		redis.handleRedisMeticCollect()
 
 		// Send to servers.
-		transport.SendMetrics(aggregator)
+		//transport.SendMetrics(aggregator)
 
 		// Sleep.
 		time.Sleep(config.GlobalConfig.Indicator.Redis.Delay*time.Millisecond)
@@ -165,7 +165,7 @@ func (r *Redis) init() error {
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (r *Redis) handleRedisMeticCollect(redisAggregator *indicators.MetricAggregator) error {
+func (r *Redis) handleRedisMeticCollect() error {
 	if !r.initialized {
 		err := r.init()
 		if err != nil {
@@ -179,8 +179,14 @@ func (r *Redis) handleRedisMeticCollect(redisAggregator *indicators.MetricAggreg
 		wg.Add(1)
 		go func(client Client) {
 			defer wg.Done()
-			//acc.AddError(r.gatherServer(client, acc))
-			r.gatherServer(client, redisAggregator)
+
+			// Each gather and submit
+			aggregator := indicators.NewMetricAggregator("Redis")
+			aggregator.Instance=client.BaseTags()["server"]+":"+client.BaseTags()["port"]
+			r.gatherServer(client, aggregator)
+			// Send to servers.
+			transport.SendMetrics(aggregator)
+
 		}(client)
 	}
 
