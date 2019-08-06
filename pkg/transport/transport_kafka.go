@@ -17,12 +17,12 @@ package transport
 
 import (
 	"github.com/Shopify/sarama"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
 	"go.uber.org/zap"
 	"strings"
 	"sync"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/indicators"
-	"umc-agent/pkg/logger"
 )
 
 var (

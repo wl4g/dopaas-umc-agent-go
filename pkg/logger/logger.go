@@ -16,13 +16,13 @@
 package logger
 
 import (
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"time"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
 )
 
 //

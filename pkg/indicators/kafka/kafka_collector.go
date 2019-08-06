@@ -19,6 +19,12 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"github.com/Shopify/sarama"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant/metric"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
+	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
 	"go.uber.org/zap"
 	"io/ioutil"
 	"os"
@@ -26,12 +32,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
-	"umc-agent/pkg/constant/metric"
-	"umc-agent/pkg/indicators"
-	"umc-agent/pkg/logger"
-	"umc-agent/pkg/transport"
 )
 
 const (
@@ -62,7 +62,7 @@ func IndicatorRunner() {
 		transport.SendMetrics(aggregator)
 
 		// Sleep.
-		time.Sleep(config.GlobalConfig.Indicator.Kafka.Delay*time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicator.Kafka.Delay * time.Millisecond)
 	}
 }
 

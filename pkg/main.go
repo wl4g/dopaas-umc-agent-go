@@ -18,12 +18,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators/redis"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
+	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
 	"sync"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
-	"umc-agent/pkg/indicators/redis"
-	"umc-agent/pkg/logger"
-	"umc-agent/pkg/transport"
 )
 
 var (
@@ -103,7 +103,7 @@ func testingIfNecessary() {
 	os.Exit(0)*/
 }
 
-func testAlarm()  {
+func testAlarm() {
 	/*aggregator := indicators.NewMetricAggregator("Test")
 	aggregator.NewMetric("hwjtest.cpu", float64(79)).ATag("tag1","1").ATag("tag2","2")
 	transport.SendMetrics(aggregator)

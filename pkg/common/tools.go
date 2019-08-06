@@ -17,9 +17,9 @@ package common
 
 import (
 	"github.com/shirou/gopsutil/net"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
 	"regexp"
 	"strings"
-	"umc-agent/pkg/constant"
 )
 
 var (

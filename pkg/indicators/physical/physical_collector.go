@@ -19,16 +19,16 @@ import (
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/wl4g/super-devops-umc-agent/pkg/common"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
+	"github.com/wl4g/super-devops-umc-agent/pkg/constant/metric"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
+	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
 	"strconv"
 	"strings"
 	"time"
-	"umc-agent/pkg/common"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/constant"
-	"umc-agent/pkg/constant/metric"
-	"umc-agent/pkg/indicators"
-	"umc-agent/pkg/logger"
-	"umc-agent/pkg/transport"
 )
 
 // Physical indicators runner

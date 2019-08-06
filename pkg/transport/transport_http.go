@@ -18,13 +18,13 @@ package transport
 import (
 	"bytes"
 	"fmt"
+	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
+	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
 	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
 	"time"
-	"umc-agent/pkg/config"
-	"umc-agent/pkg/indicators"
-	"umc-agent/pkg/logger"
 )
 
 // Send metrics to http gateway
