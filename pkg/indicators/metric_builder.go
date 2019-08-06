@@ -26,7 +26,6 @@ import (
 
 // Metric aggregate wrapper.
 type MetricAggregator struct {
-	MetricType string `json:"metricType"`
 	MetricAggregate
 }
 
@@ -53,9 +52,9 @@ func (self *MetricWrapper) ATag(key string, value string) *MetricWrapper {
 // New metric aggregator. Indicator names must be consistent with the global configuration,
 // pay attention to case-sensitive (e.g., optional values: Redis, Kafka, Emq...),
 // See: `./pkg/config/indicator_config.go#type[IndicatorProperties]` for names of members
-func NewMetricAggregator(metricType string) *MetricAggregator {
+func NewMetricAggregator(classify string) *MetricAggregator {
 	aggregator := new(MetricAggregator)
-	aggregator.MetricType = metricType
+	aggregator.Classify = classify
 	aggregator.Instance = config.LocalHardwareAddrId
 	aggregator.Namespace = config.GlobalConfig.Indicator.Namespace
 	aggregator.Timestamp = time.Now().Unix()
@@ -67,7 +66,7 @@ func (self *MetricAggregator) NewMetric(metricName string, value float64) *Metri
 	var (
 		// Check metric stat necessary.(Note: that the project configuration
 		// structure must correspond to this.)
-		regex = config.GetConfig(config.IndicatorFiledName, self.MetricType, config.MetricExcludeFieldName)
+		regex = config.GetConfig(config.IndicatorFiledName, self.Classify, config.MetricExcludeFieldName)
 
 		// Create metric.
 		_metric = internalNewMetric(metricName, value)

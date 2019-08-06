@@ -117,6 +117,9 @@ func createKafkaConsumer(kafkaProperties config.KafkaTransportProperties) {
 					zap.Int64("offset", msg.Offset),
 					zap.String("key", key),
 					zap.String("data", data))
+
+				// Refresh global config.
+				//config.RefreshConfig(nil)
 			}
 		}(pc)
 	}

@@ -39,4 +39,6 @@ const (
 
 	// Default transport kafka producer timeout.
 	DefaultTransportKafkaTimeout = 10 * time.Second
+
+	USE_GROUP = "USEGROUP"
 )
