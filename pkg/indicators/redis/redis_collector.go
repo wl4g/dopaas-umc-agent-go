@@ -182,7 +182,10 @@ func (r *Redis) handleRedisMeticCollect() error {
 
 			// Each gather and submit
 			aggregator := indicators.NewMetricAggregator("Redis")
-			aggregator.Instance = client.BaseTags()["server"] + ":" + client.BaseTags()["port"]
+			//aggregator.Instance = client.BaseTags()["server"] + ":" + client.BaseTags()["port"]
+			aggregator.Host = client.BaseTags()["server"]
+			aggregator.Endpoint = client.BaseTags()["port"]
+
 			r.gatherServer(client, aggregator)
 			// Send to servers.
 			transport.SendMetrics(aggregator)

@@ -20,6 +20,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/wl4g/super-devops-umc-agent/pkg/common"
 	"github.com/wl4g/super-devops-umc-agent/pkg/config"
+	"os"
 	"regexp"
 	"time"
 )
@@ -55,7 +56,10 @@ func (self *MetricWrapper) ATag(key string, value string) *MetricWrapper {
 func NewMetricAggregator(classify string) *MetricAggregator {
 	aggregator := new(MetricAggregator)
 	aggregator.Classify = classify
-	aggregator.Instance = config.LocalHardwareAddrId
+	hostname, _ := os.Hostname();
+	//aggregator.Instance = config.LocalHardwareAddrId
+	aggregator.Host = hostname
+	aggregator.Endpoint = config.GlobalConfig.Endpoint
 	aggregator.Namespace = config.GlobalConfig.Indicator.Namespace
 	aggregator.Timestamp = time.Now().Unix()
 	return aggregator

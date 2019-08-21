@@ -20,7 +20,6 @@ import (
 	"crypto/x509"
 	"github.com/Shopify/sarama"
 	"github.com/wl4g/super-devops-umc-agent/pkg/config"
-	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
 	"github.com/wl4g/super-devops-umc-agent/pkg/constant/metric"
 	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
 	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
@@ -53,7 +52,7 @@ func IndicatorRunner() {
 	for true {
 		// New kafka metric aggregator
 		aggregator := indicators.NewMetricAggregator("Kafka")
-		aggregator.Instance = constant.USE_GROUP
+		//aggregator.Instance = constant.USE_GROUP
 
 		// Do collect brokers metrics.
 		handleKafkaMetricCollect(aggregator)

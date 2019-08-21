@@ -38,6 +38,7 @@ type GlobalProperties struct {
 	Logging   LoggingProperties   `yaml:"logging"`
 	Transport TransportProperties `yaml:"transport"`
 	Indicator IndicatorProperties `yaml:"indicator"`
+	Endpoint string `yaml:"endpoint"`
 }
 
 var (

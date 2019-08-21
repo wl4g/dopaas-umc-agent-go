@@ -17,7 +17,6 @@ package zookeeper
 
 import (
 	"github.com/wl4g/super-devops-umc-agent/pkg/config"
-	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
 	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
 	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
 	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
@@ -38,7 +37,7 @@ func IndicatorRunner() {
 	// Loop monitor
 	for true {
 		aggregator := indicators.NewMetricAggregator("Zookeeper")
-		aggregator.Instance = constant.USE_GROUP
+		//aggregator.Host = constant.USE_GROUP
 
 		// Do zookeeper metric collect.
 		handleZookeeperMetricCollect(aggregator)

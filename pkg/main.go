@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/wl4g/super-devops-umc-agent/pkg/config"
 	"github.com/wl4g/super-devops-umc-agent/pkg/constant"
+	"github.com/wl4g/super-devops-umc-agent/pkg/indicators"
 	"github.com/wl4g/super-devops-umc-agent/pkg/indicators/cassandra"
 	"github.com/wl4g/super-devops-umc-agent/pkg/indicators/consul"
 	"github.com/wl4g/super-devops-umc-agent/pkg/indicators/docker"
@@ -40,6 +41,7 @@ import (
 	"github.com/wl4g/super-devops-umc-agent/pkg/indicators/zookeeper"
 	"github.com/wl4g/super-devops-umc-agent/pkg/logger"
 	"github.com/wl4g/super-devops-umc-agent/pkg/transport"
+	"os"
 	"sync"
 )
 
@@ -124,8 +126,8 @@ func testing1() {
 
 // Testing
 func testing2() {
-	//aggregator := indicators.NewMetricAggregator("Test")
-	//aggregator.NewMetric("Host.cpu.utilization", float64(79)).ATag("tag1", "1").ATag("tag2", "2")
-	//transport.SendMetrics(aggregator)
-	//os.Exit(0)
+	aggregator := indicators.NewMetricAggregator("Test")
+	aggregator.NewMetric("Host.cpu.utilization", float64(79)).ATag("tag1", "1").ATag("tag2", "2")
+	transport.SendMetrics(aggregator)
+	os.Exit(0)
 }

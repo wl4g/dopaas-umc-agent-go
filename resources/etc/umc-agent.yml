@@ -18,6 +18,8 @@
 #### receiving gateway, defaults to http. post sending.
 #### ==================================================
 
+endpoint: agent_0001
+
 transport:
   http:
     server-gateway: http://127.0.0.1:14047/umc-receiver/receiver/metric

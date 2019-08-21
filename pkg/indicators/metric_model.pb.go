@@ -4,9 +4,9 @@
 package indicators
 
 import (
-	fmt "fmt"
-	proto "github.com/gogo/protobuf/proto"
-	math "math"
+	"fmt"
+	"github.com/gogo/protobuf/proto"
+	"math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -22,10 +22,11 @@ const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 type MetricAggregate struct {
 	Classify             string    `protobuf:"bytes,1,opt,name=classify,proto3" json:"classify,omitempty"`
-	Instance             string    `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
-	Namespace            string    `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace,omitempty"`
-	Timestamp            int64     `protobuf:"varint,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Metrics              []*Metric `protobuf:"bytes,5,rep,name=metrics,proto3" json:"metrics,omitempty"`
+	Host                 string    `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
+	Endpoint             string    `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	Namespace            string    `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
+	Timestamp            int64     `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Metrics              []*Metric `protobuf:"bytes,6,rep,name=metrics,proto3" json:"metrics,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
 	XXX_unrecognized     []byte    `json:"-"`
 	XXX_sizecache        int32     `json:"-"`
@@ -62,9 +63,15 @@ func (m *MetricAggregate) GetClassify() string {
 	return ""
 }
 
-func (m *MetricAggregate) GetInstance() string {
+func (m *MetricAggregate) GetHost() string {
 	if m != nil {
-		return m.Instance
+		return m.Host
+	}
+	return ""
+}
+func (m *MetricAggregate) GetEndpoint() string {
+	if m != nil {
+		return m.Endpoint
 	}
 	return ""
 }
