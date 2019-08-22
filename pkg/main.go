@@ -127,7 +127,7 @@ func testing1() {
 // Testing
 func testing2() {
 	aggregator := indicators.NewMetricAggregator("Test")
-	aggregator.NewMetric("Host.cpu.utilization", float64(79)).ATag("tag1", "1").ATag("tag2", "2")
+	aggregator.NewMetric("Host.cpu.utilization", float64(81)).ATag("tag1", "1").ATag("tag2", "2")
 	transport.SendMetrics(aggregator)
 	os.Exit(0)
 }

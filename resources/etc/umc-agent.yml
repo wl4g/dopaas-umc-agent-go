@@ -25,8 +25,8 @@ transport:
     server-gateway: http://127.0.0.1:14047/umc-receiver/receiver/metric
   kafka:
     enabled: true # This enabled switch takes precedence over the HTTP launcher.
-    #servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
-    servers: localhost:9092
+    servers: owner-node1:9092,owner-node2:9092,owner-node3:9092,owner-node4:9092
+    #servers: localhost:9092
     ack: 1
     timeout: 60000
 
