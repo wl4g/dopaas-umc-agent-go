@@ -69,7 +69,7 @@ func init() {
 
 	// For testing
 	testing1()
-	testing2()
+	//testing2()
 }
 
 func main() {
@@ -126,8 +126,8 @@ func testing1() {
 
 // Testing
 func testing2() {
-	aggregator := indicators.NewMetricAggregator("Test")
-	aggregator.NewMetric("Host.cpu.utilization", float64(81)).ATag("tag1", "1").ATag("tag2", "2")
+	aggregator := indicators.NewMetricAggregator("basic")
+	aggregator.NewMetric("host.cpu", float64(80)).ATag("tag1", "1").ATag("tag2", "2")
 	transport.SendMetrics(aggregator)
 	os.Exit(0)
 }

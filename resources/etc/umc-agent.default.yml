@@ -60,7 +60,7 @@ indicator:
   namespace: default # Namespaces that support multiple tenants.
   netcard: eth0 # Bind net-card name.
 ### ------ Infrastructure indicators ------
-  physical:
+  host:
     enabled: false
     delay: 60000 # Delay(ms)
     range-port: 22,9092

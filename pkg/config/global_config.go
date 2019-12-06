@@ -116,7 +116,7 @@ func createDefault() *GlobalProperties {
 		Indicator: IndicatorProperties{
 			Namespace: constant.DefaultNamespace,
 			Netcard:   constant.DefaultNetcard,
-			Physical: PhysicalIndicatorProperties{
+			Host: HostIndicatorProperties{
 				Enabled:       true,
 				Delay:         constant.DefaultIndicatorsDelay,
 				NetPorts:      constant.DefaultNetIndicatorsNetPorts,

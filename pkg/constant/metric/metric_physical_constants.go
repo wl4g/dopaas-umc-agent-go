@@ -40,7 +40,7 @@ const (
 	PHYSICAL_DISK_USED = "host.disk.used"
 	/** metric -- disk : used Percent */
 	PHYSICAL_DISK_USED_PERCENT = "host.disk.usedPercent"
-	/** metric -- disk : inodes Physical */
+	/** metric -- disk : inodes Host */
 	PHYSICAL_DISK_INODES_TOTAL = "host.disk.inodesTotal"
 	/** metric -- disk : inodes Used */
 	PHYSICAL_DISK_INODES_USED = "host.disk.inodesUsed"

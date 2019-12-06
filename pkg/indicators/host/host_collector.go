@@ -31,9 +31,9 @@ import (
 	"time"
 )
 
-// Physical indicators runner
+// Host indicators runner
 func IndicatorRunner() {
-	if !config.GlobalConfig.Indicator.Physical.Enabled {
+	if !config.GlobalConfig.Indicator.Host.Enabled {
 		logger.Main.Debug("No enabled host metrics runner!")
 		return
 	}
@@ -41,14 +41,14 @@ func IndicatorRunner() {
 
 	// Loop monitor
 	for true {
-		aggregator := indicators.NewMetricAggregator("Physical")
+		aggregator := indicators.NewMetricAggregator("Host")
 
 		// Do host metric collect.
 		handlePhysicalMetricCollect(aggregator)
 
 		// Send to servers.
 		transport.SendMetrics(aggregator)
-		time.Sleep(config.GlobalConfig.Indicator.Physical.Delay * time.Millisecond)
+		time.Sleep(config.GlobalConfig.Indicator.Host.Delay * time.Millisecond)
 	}
 }
 
@@ -102,7 +102,7 @@ func gatherDisk(physicalAggregator *indicators.MetricAggregator) {
 
 // Network stats info
 func gatherNet(physicalAggregator *indicators.MetricAggregator) {
-	ports := strings.Split(config.GlobalConfig.Indicator.Physical.NetPorts, ",")
+	ports := strings.Split(config.GlobalConfig.Indicator.Host.NetPorts, ",")
 	for _, p := range ports {
 		re := common.GetNetworkInterfaces(p)
 		res := strings.Split(re, " ")
