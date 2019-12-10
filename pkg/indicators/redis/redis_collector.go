@@ -39,12 +39,13 @@ func IndicatorRunner() {
 	}
 	logger.Main.Info("Starting redis indicators runner ...")
 
+	redis := Redis{}
+
 	for true {
 		// New redis metric aggregator
 		//aggregator := indicators.NewMetricAggregator("Redis")
 
 		// Do redis metric collect.
-		redis := Redis{}
 		redis.handleRedisMeticCollect()
 
 		// Send to servers.
