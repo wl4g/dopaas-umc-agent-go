@@ -39,11 +39,11 @@ func IndicatorRunner() {
 	}
 	logger.Main.Info("Starting redis indicators runner ...")
 
-	redis := Redis{}
+	redis := RedisClusterWrapper{}
 
 	for true {
 		// New redis metric aggregator
-		//aggregator := indicators.NewMetricAggregator("Redis")
+		//aggregator := indicators.NewMetricAggregator("RedisClusterWrapper")
 
 		// Do redis metric collect.
 		redis.handleRedisMeticCollect()
@@ -57,14 +57,14 @@ func IndicatorRunner() {
 
 }
 
-type Redis struct {
+type RedisClusterWrapper struct {
 	Servers     []string
 	Password    string
-	clients     []Client
+	clients     []ClientInfo
 	initialized bool
 }
 
-type Client interface {
+type ClientInfo interface {
 	Info() *redis.StringCmd
 	BaseTags() map[string]string
 }
@@ -92,7 +92,7 @@ var Tracking = map[string]string{
 	"role":              "replication_role",
 }
 
-func (r *Redis) init() error {
+func (r *RedisClusterWrapper) init() error {
 	if r.initialized {
 		return nil
 	}
@@ -102,7 +102,7 @@ func (r *Redis) init() error {
 		r.Servers = strings.Split(urls, ",")
 	}
 
-	r.clients = make([]Client, len(r.Servers))
+	r.clients = make([]ClientInfo, len(r.Servers))
 
 	for i, serv := range r.Servers {
 		if !strings.HasPrefix(serv, "tcp://") && !strings.HasPrefix(serv, "unix://") {
@@ -166,7 +166,7 @@ func (r *Redis) init() error {
 
 // Reads stats from all configured servers accumulates stats.
 // Returns one of the errors encountered while gather stats (if any).
-func (r *Redis) handleRedisMeticCollect() error {
+func (r *RedisClusterWrapper) handleRedisMeticCollect() error {
 	if !r.initialized {
 		err := r.init()
 		if err != nil {
@@ -178,11 +178,11 @@ func (r *Redis) handleRedisMeticCollect() error {
 
 	for _, client := range r.clients {
 		wg.Add(1)
-		go func(client Client) {
+		go func(client ClientInfo) {
 			defer wg.Done()
 
 			// Each gather and submit
-			aggregator := indicators.NewMetricAggregator("Redis")
+			aggregator := indicators.NewMetricAggregator("RedisClusterWrapper")
 			//aggregator.Instance = client.BaseTags()["server"] + ":" + client.BaseTags()["port"]
 			aggregator.Host = client.BaseTags()["server"]
 			aggregator.Endpoint = client.BaseTags()["port"]
@@ -198,7 +198,7 @@ func (r *Redis) handleRedisMeticCollect() error {
 	return nil
 }
 
-func (r *Redis) gatherServer(client Client, redisAggregator *indicators.MetricAggregator) error {
+func (r *RedisClusterWrapper) gatherServer(client ClientInfo, redisAggregator *indicators.MetricAggregator) error {
 	info, err := client.Info().Result()
 	if err != nil {
 		return err
