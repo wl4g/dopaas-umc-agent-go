@@ -152,7 +152,7 @@ func doKafkaProducer(aggregator *indicators.MetricAggregator) {
 		} else if logger.Main.IsInfo() {
 			// Print simple
 			logger.Main.Info("Sent completed", zap.Int32("partition", partition),
-				zap.Int64("offset", offset))
+				zap.Int64("offset", offset),zap.Int("data.bytes", len(aggregator.ToProtoBufArray())))
 		}
 	}
 
