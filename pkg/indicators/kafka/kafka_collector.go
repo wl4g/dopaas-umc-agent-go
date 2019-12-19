@@ -151,6 +151,10 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 	client.RefreshMetadata()
 
 	topics, err := client.Topics()
+	if err != nil {
+		logger.Main.Error("Cannot get topic ", zap.Error(err))
+		panic(err)
+	}
 
 	var wg = sync.WaitGroup{}
 	offset := make(map[string]map[int32]int64)
@@ -271,7 +275,7 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 			panic(err)
 		}
 		defer broker.Close()
-		//groups, err := broker.ListGroups(&sarama.ListGroupsRequest{})
+		groups, err := broker.ListGroups(&sarama.ListGroupsRequest{})
 		if err != nil {
 			logger.Main.Error("Cannot get consumer group",
 				zap.Error(err))
@@ -279,6 +283,9 @@ func handleKafkaMetricCollect(kafkaAggregator *indicators.MetricAggregator) {
 		}
 
 		groupIds := make([]string, 0)
+		for groupId, _ := range groups.Groups {
+			groupIds = append(groupIds, groupId)
+		}
 		describeGroups, err := broker.DescribeGroups(&sarama.DescribeGroupsRequest{Groups: groupIds})
 		if err != nil {
 			logger.Main.Error("Cannot get describe groups",

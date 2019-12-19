@@ -134,11 +134,20 @@ func doKafkaProducer(aggregator *indicators.MetricAggregator) {
 		panic("No enabled kafka launcher!")
 		return
 	}
+	if nil == aggregator{
+		println("aggregator is null");
+		return
+	}
+	var protoBufArray = aggregator.ToProtoBufArray()
+	if nil == protoBufArray {
+		println("protoBufArray is null");
+		return
+	}
 	msg := &sarama.ProducerMessage{
 		Topic: config.GlobalConfig.Transport.Kafka.MetricTopic,
 		//Key: sarama.ByteEncoder(key),
 		//Value: sarama.ByteEncoder(aggregator.ToJSONString()),
-		Value: sarama.ByteEncoder(aggregator.ToProtoBufArray()),
+		Value: sarama.ByteEncoder(protoBufArray),
 	}
 
 	partition, offset, err := kafkaProducer.SendMessage(msg)
@@ -147,7 +156,7 @@ func doKafkaProducer(aggregator *indicators.MetricAggregator) {
 	} else {
 		// Print details
 		if logger.Main.IsDebug() {
-			logger.Main.Debug("Sent completed", zap.Int32("partition", partition),
+			logger.Main.Debug("Sent completed", zap.Int32("MetricAggregatepartition", partition),
 				zap.Int64("offset", offset), zap.String("data", aggregator.ToJSONString()))
 		} else if logger.Main.IsInfo() {
 			// Print simple
